@@ -4,7 +4,7 @@ import { AppLayout } from "@/components/layout/AppLayout";
 import { PageHeader } from "@/components/layout/PageHeader";
 import { SectionHeader } from "@/components/layout/SectionHeader";
 
-export const Route = createFileRoute("/contatos")({
+export const Route = createFileRoute("/contatos/")({
   head: () => ({
     meta: [
       { title: "Contatos — PRODEM" },
