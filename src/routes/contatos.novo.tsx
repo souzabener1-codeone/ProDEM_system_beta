@@ -1,5 +1,6 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { UserPlus, X, Save } from "lucide-react";
+import { toast } from "sonner";
 import { AppLayout } from "@/components/layout/AppLayout";
 import { PageHeader } from "@/components/layout/PageHeader";
 
@@ -39,6 +40,14 @@ const textareaCls =
   "w-full rounded-2xl border border-slate-200 bg-slate-50/50 px-4 py-3 text-sm text-foreground placeholder:text-slate-400 focus:border-brand-blue focus:bg-white focus:outline-none focus:ring-2 focus:ring-brand-blue/20 transition-all";
 
 function NovoContato() {
+  const navigate = useNavigate();
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    toast.success("Contato salvo com sucesso!");
+    navigate({ to: "/contatos" });
+  };
+
   return (
     <AppLayout>
       <PageHeader
@@ -47,7 +56,7 @@ function NovoContato() {
         subtitle="Cadastre um novo contato"
       />
 
-      <form className="rounded-[24px] border border-border bg-white p-8 shadow-sm">
+      <form onSubmit={handleSubmit} className="rounded-[24px] border border-border bg-white p-8 shadow-sm">
         <div className="space-y-10">
           {/* Dados Pessoais */}
           <section>
