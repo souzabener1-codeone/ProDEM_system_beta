@@ -9,6 +9,7 @@ import {
   LogOut,
 } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
+import prodemLogo from "@/assets/prodem-logo.png.asset.json";
 
 interface NavItem {
   to: string;
