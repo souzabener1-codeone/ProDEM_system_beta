@@ -1,0 +1,199 @@
+import { createFileRoute, Link } from "@tanstack/react-router";
+import { Users, Plus, Search, Eye, Pencil, Phone, Mail } from "lucide-react";
+import { AppLayout } from "@/components/layout/AppLayout";
+import { PageHeader } from "@/components/layout/PageHeader";
+import { SectionHeader } from "@/components/layout/SectionHeader";
+
+export const Route = createFileRoute("/contatos")({
+  head: () => ({
+    meta: [
+      { title: "Contatos — PRODEM" },
+      { name: "description", content: "Cadastro e gestão de contatos do gabinete." },
+    ],
+  }),
+  component: Contatos,
+});
+
+const contacts = [
+  {
+    id: 1,
+    name: "José Almeida",
+    email: "jose.almeida@email.com",
+    phone: "(11) 98765-4321",
+    city: "São Paulo/SP",
+    demands: 4,
+    color: "bg-cat-1",
+  },
+  {
+    id: 2,
+    name: "Ana Ribeiro",
+    email: "ana.ribeiro@email.com",
+    phone: "(11) 97654-3210",
+    city: "Guarulhos/SP",
+    demands: 2,
+    color: "bg-cat-2",
+  },
+  {
+    id: 3,
+    name: "Carlos Souza",
+    email: "carlos.souza@email.com",
+    phone: "(11) 96543-2109",
+    city: "Osasco/SP",
+    demands: 7,
+    color: "bg-cat-3",
+  },
+  {
+    id: 4,
+    name: "Fernanda Lima",
+    email: "fernanda.lima@email.com",
+    phone: "(11) 95432-1098",
+    city: "Santo André/SP",
+    demands: 1,
+    color: "bg-cat-4",
+  },
+  {
+    id: 5,
+    name: "Roberto Nunes",
+    email: "roberto.nunes@email.com",
+    phone: "(11) 94321-0987",
+    city: "São Bernardo/SP",
+    demands: 3,
+    color: "bg-cat-5",
+  },
+  {
+    id: 6,
+    name: "Patrícia Gomes",
+    email: "patricia.gomes@email.com",
+    phone: "(11) 93210-9876",
+    city: "Diadema/SP",
+    demands: 5,
+    color: "bg-cat-6",
+  },
+];
+
+function initials(name: string) {
+  return name
+    .split(" ")
+    .map((n) => n[0])
+    .slice(0, 2)
+    .join("")
+    .toUpperCase();
+}
+
+function Contatos() {
+  return (
+    <AppLayout>
+      <PageHeader
+        icon={Users}
+        title="Contatos"
+        subtitle="Cadastro e gestão de cidadãos atendidos pelo gabinete"
+        action={
+          <Link
+            to="/contatos/novo"
+            className="inline-flex items-center gap-2 rounded-full bg-brand-blue px-5 py-2.5 text-sm font-semibold text-white shadow-sm transition-all hover:bg-brand-blue-strong active:scale-[0.98]"
+          >
+            <Plus className="h-4 w-4" />
+            Novo Contato
+          </Link>
+        }
+      />
+
+      {/* Filter bar */}
+      <div className="mb-6 rounded-2xl bg-navy-800 p-4 shadow-[var(--shadow-card)]">
+        <div className="grid grid-cols-1 gap-3 md:grid-cols-[1fr_200px_200px_auto]">
+          <input
+            type="text"
+            placeholder="Buscar por nome, email ou telefone…"
+            className="rounded-lg border-0 bg-white px-4 py-2.5 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-brand-blue"
+          />
+          <select className="rounded-lg border-0 bg-white px-3 py-2.5 text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-brand-blue">
+            <option>Todas as cidades</option>
+            <option>São Paulo/SP</option>
+            <option>Guarulhos/SP</option>
+          </select>
+          <select className="rounded-lg border-0 bg-white px-3 py-2.5 text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-brand-blue">
+            <option>Todas as categorias</option>
+            <option>Emenda</option>
+            <option>Ofício</option>
+          </select>
+          <button
+            aria-label="Buscar"
+            className="inline-flex h-10 w-10 items-center justify-center rounded-full bg-brand-orange text-white transition-transform hover:brightness-110 active:scale-95"
+          >
+            <Search className="h-4 w-4" />
+          </button>
+        </div>
+      </div>
+
+      <div className="overflow-hidden rounded-2xl border border-border bg-card shadow-[var(--shadow-card)]">
+        <SectionHeader title="Lista de Contatos" count={266} />
+        <div className="overflow-x-auto">
+          <table className="w-full text-sm">
+            <thead className="bg-slate-50 text-xs uppercase tracking-wide text-muted-foreground">
+              <tr>
+                <th className="px-5 py-3 text-left font-semibold">Contato</th>
+                <th className="px-5 py-3 text-left font-semibold">Telefone</th>
+                <th className="px-5 py-3 text-left font-semibold">Cidade</th>
+                <th className="px-5 py-3 text-left font-semibold">Demandas</th>
+                <th className="px-5 py-3 text-right font-semibold">Ações</th>
+              </tr>
+            </thead>
+            <tbody>
+              {contacts.map((c) => (
+                <tr
+                  key={c.id}
+                  className="border-t border-border transition-colors hover:bg-slate-50"
+                >
+                  <td className="px-5 py-3.5">
+                    <div className="flex items-center gap-3">
+                      <div
+                        className={`flex h-9 w-9 items-center justify-center rounded-full text-xs font-bold text-white ${c.color}`}
+                      >
+                        {initials(c.name)}
+                      </div>
+                      <div>
+                        <div className="font-semibold text-foreground">{c.name}</div>
+                        <div className="flex items-center gap-1 text-xs text-muted-foreground">
+                          <Mail className="h-3 w-3" />
+                          {c.email}
+                        </div>
+                      </div>
+                    </div>
+                  </td>
+                  <td className="px-5 py-3.5">
+                    <span className="inline-flex items-center gap-1.5 text-muted-foreground">
+                      <Phone className="h-3.5 w-3.5" />
+                      {c.phone}
+                    </span>
+                  </td>
+                  <td className="px-5 py-3.5 text-muted-foreground">{c.city}</td>
+                  <td className="px-5 py-3.5">
+                    <span className="inline-flex items-center justify-center rounded-full bg-brand-blue-soft px-2.5 py-0.5 text-xs font-semibold text-brand-blue-strong">
+                      {c.demands}
+                    </span>
+                  </td>
+                  <td className="px-5 py-3.5">
+                    <div className="flex items-center justify-end gap-1">
+                      <button
+                        aria-label="Visualizar"
+                        className="rounded-md p-1.5 text-muted-foreground transition-colors hover:bg-brand-blue-soft hover:text-brand-blue-strong"
+                      >
+                        <Eye className="h-4 w-4" />
+                      </button>
+                      <button
+                        aria-label="Editar"
+                        className="rounded-md p-1.5 text-muted-foreground transition-colors hover:bg-brand-blue-soft hover:text-brand-blue-strong"
+                      >
+                        <Pencil className="h-4 w-4" />
+                      </button>
+                    </div>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </AppLayout>
+  );
+}
