@@ -77,20 +77,24 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
     meta: [
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
-      { title: "PRODEM — Gestão de Gabinete" },
+      { title: "Dashboard — PRODEM" },
       {
         name: "description",
         content:
-          "Sistema PRODEM para gestão de contatos, demandas e atendimentos de gabinete parlamentar.",
+          "Visão geral de contatos, demandas e indicadores do gabinete.",
       },
-      { property: "og:title", content: "PRODEM — Gestão de Gabinete" },
+      { property: "og:title", content: "Dashboard — PRODEM" },
       {
         property: "og:description",
         content:
-          "Plataforma interna para acompanhamento de contatos, demandas e relatórios do gabinete.",
+          "Visão geral de contatos, demandas e indicadores do gabinete.",
       },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
+      { name: "twitter:title", content: "Dashboard — PRODEM" },
+      { name: "twitter:description", content: "Visão geral de contatos, demandas e indicadores do gabinete." },
+      { property: "og:image", content: "https://storage.googleapis.com/gpt-engineer-file-uploads/bGOdiZyNnZdlbAgeVPbBIu6b4KE3/social-images/social-1783545384326-prodem_logo.webp" },
+      { name: "twitter:image", content: "https://storage.googleapis.com/gpt-engineer-file-uploads/bGOdiZyNnZdlbAgeVPbBIu6b4KE3/social-images/social-1783545384326-prodem_logo.webp" },
     ],
     links: [
       { rel: "stylesheet", href: appCss },
