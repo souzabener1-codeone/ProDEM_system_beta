@@ -1,5 +1,5 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { UserPlus, ArrowLeft } from "lucide-react";
+import { UserPlus, X, Save } from "lucide-react";
 import { AppLayout } from "@/components/layout/AppLayout";
 import { PageHeader } from "@/components/layout/PageHeader";
 
@@ -24,8 +24,8 @@ function Field({
 }) {
   return (
     <label className="block">
-      <span className="mb-1.5 block text-xs font-semibold uppercase tracking-wide text-muted-foreground">
-        {label} {required && <span className="text-danger">*</span>}
+      <span className="mb-2 block text-sm font-medium text-slate-800">
+        {label} {required && "*"}
       </span>
       {children}
     </label>
@@ -33,7 +33,10 @@ function Field({
 }
 
 const inputCls =
-  "w-full rounded-lg border border-input bg-slate-50 px-3.5 py-2.5 text-sm text-foreground placeholder:text-muted-foreground/60 focus:border-brand-blue focus:bg-white focus:outline-none focus:ring-2 focus:ring-brand-blue/20";
+  "w-full rounded-full border border-slate-200 bg-slate-50/50 px-4 py-2.5 text-sm text-foreground placeholder:text-slate-400 focus:border-brand-blue focus:bg-white focus:outline-none focus:ring-2 focus:ring-brand-blue/20 transition-all";
+
+const textareaCls =
+  "w-full rounded-2xl border border-slate-200 bg-slate-50/50 px-4 py-3 text-sm text-foreground placeholder:text-slate-400 focus:border-brand-blue focus:bg-white focus:outline-none focus:ring-2 focus:ring-brand-blue/20 transition-all";
 
 function NovoContato() {
   return (
@@ -41,137 +44,160 @@ function NovoContato() {
       <PageHeader
         icon={UserPlus}
         title="Novo Contato"
-        subtitle="Preencha os dados do cidadão para adicioná-lo ao cadastro"
-        action={
-          <Link
-            to="/contatos"
-            className="inline-flex items-center gap-2 rounded-lg border border-input bg-white px-4 py-2.5 text-sm font-medium text-foreground transition-colors hover:bg-slate-50"
-          >
-            <ArrowLeft className="h-4 w-4" />
-            Voltar
-          </Link>
-        }
+        subtitle="Cadastre um novo contato"
       />
 
-      <form className="space-y-6">
-        {/* Dados Pessoais */}
-        <section className="rounded-2xl border border-border bg-card p-6 shadow-[var(--shadow-card)]">
-          <header className="mb-5 border-b border-border pb-3">
-            <h2 className="text-base font-bold text-foreground">Dados Pessoais</h2>
-            <p className="mt-0.5 text-xs text-muted-foreground">
-              Informações de identificação do contato
-            </p>
-          </header>
-          <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
-            <Field label="Nome completo" required>
-              <input className={inputCls} placeholder="Ex: João da Silva" />
-            </Field>
-            <Field label="CPF">
-              <input className={inputCls} placeholder="000.000.000-00" />
-            </Field>
-            <Field label="Data de nascimento">
-              <input type="date" className={inputCls} />
-            </Field>
-            <Field label="Gênero">
-              <select className={inputCls}>
-                <option>Selecione…</option>
-                <option>Masculino</option>
-                <option>Feminino</option>
-                <option>Outro</option>
-              </select>
-            </Field>
-          </div>
-        </section>
-
-        {/* Contato */}
-        <section className="rounded-2xl border border-border bg-card p-6 shadow-[var(--shadow-card)]">
-          <header className="mb-5 border-b border-border pb-3">
-            <h2 className="text-base font-bold text-foreground">Contato</h2>
-            <p className="mt-0.5 text-xs text-muted-foreground">
-              Formas de contato para retorno
-            </p>
-          </header>
-          <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
-            <Field label="Telefone" required>
-              <input className={inputCls} placeholder="(00) 00000-0000" />
-            </Field>
-            <Field label="E-mail">
-              <input type="email" className={inputCls} placeholder="email@exemplo.com" />
-            </Field>
-          </div>
-        </section>
-
-        {/* Endereço */}
-        <section className="rounded-2xl border border-border bg-card p-6 shadow-[var(--shadow-card)]">
-          <header className="mb-5 border-b border-border pb-3">
-            <h2 className="text-base font-bold text-foreground">Endereço</h2>
-            <p className="mt-0.5 text-xs text-muted-foreground">Localização do contato</p>
-          </header>
-          <div className="grid grid-cols-1 gap-4 md:grid-cols-6">
-            <div className="md:col-span-2">
-              <Field label="CEP">
-                <input className={inputCls} placeholder="00000-000" />
-              </Field>
-            </div>
-            <div className="md:col-span-4">
-              <Field label="Logradouro">
-                <input className={inputCls} placeholder="Rua, avenida…" />
-              </Field>
-            </div>
-            <div className="md:col-span-2">
-              <Field label="Número">
-                <input className={inputCls} placeholder="123" />
-              </Field>
-            </div>
-            <div className="md:col-span-4">
-              <Field label="Bairro">
-                <input className={inputCls} placeholder="Bairro" />
-              </Field>
-            </div>
-            <div className="md:col-span-4">
-              <Field label="Cidade">
-                <input className={inputCls} placeholder="Cidade" />
-              </Field>
-            </div>
-            <div className="md:col-span-2">
-              <Field label="UF">
+      <form className="rounded-[24px] border border-border bg-white p-8 shadow-sm">
+        <div className="space-y-10">
+          {/* Dados Pessoais */}
+          <section>
+            <h2 className="mb-6 text-[15px] font-medium text-slate-800">Dados Pessoais</h2>
+            <div className="grid gap-x-6 gap-y-5 md:grid-cols-2">
+              <div className="md:col-span-2">
+                <Field label="Nome Completo" required>
+                  <input className={inputCls} placeholder="Digite o nome completo" />
+                </Field>
+              </div>
+              <Field label="Tipo de Contato" required>
                 <select className={inputCls}>
-                  <option>SP</option>
-                  <option>RJ</option>
-                  <option>MG</option>
+                  <option>Cidadão</option>
+                  <option>Empresa</option>
+                  <option>Servidor</option>
                 </select>
               </Field>
+              <Field label="CPF/CNPJ">
+                <input className={inputCls} placeholder="000.000.000-00" />
+              </Field>
             </div>
-          </div>
-        </section>
+          </section>
 
-        {/* Observações */}
-        <section className="rounded-2xl border border-border bg-card p-6 shadow-[var(--shadow-card)]">
-          <header className="mb-5 border-b border-border pb-3">
-            <h2 className="text-base font-bold text-foreground">Observações</h2>
-          </header>
-          <textarea
-            rows={4}
-            className={inputCls}
-            placeholder="Notas internas sobre o contato…"
-          />
-        </section>
+          <hr className="border-slate-100" />
 
-        <div className="flex items-center justify-end gap-3">
+          {/* Informações de Contato */}
+          <section>
+            <h2 className="mb-6 text-[15px] font-medium text-slate-800">Informações de Contato</h2>
+            <div className="grid gap-x-6 gap-y-5 md:grid-cols-2">
+              <Field label="Telefone">
+                <input className={inputCls} placeholder="(00) 00000-0000" />
+              </Field>
+              <Field label="Email">
+                <input type="email" className={inputCls} placeholder="email@exemplo.com" />
+              </Field>
+            </div>
+          </section>
+
+          <hr className="border-slate-100" />
+
+          {/* Endereço */}
+          <section>
+            <h2 className="mb-6 text-[15px] font-medium text-slate-800">Endereço</h2>
+            <div className="grid gap-x-6 gap-y-5 md:grid-cols-12">
+              <div className="md:col-span-3">
+                <Field label="CEP">
+                  <input className={inputCls} placeholder="00000-000" />
+                </Field>
+                <p className="mt-2 text-xs text-slate-500">
+                  Digite o CEP para preencher o endereço automaticamente
+                </p>
+              </div>
+              <div className="md:col-span-7">
+                <Field label="Endereço">
+                  <input className={inputCls} placeholder="Rua, Avenida..." />
+                </Field>
+              </div>
+              <div className="md:col-span-2">
+                <Field label="Número">
+                  <input className={inputCls} placeholder="Nº" />
+                </Field>
+              </div>
+              
+              <div className="md:col-span-4">
+                <Field label="Complemento">
+                  <input className={inputCls} placeholder="Apto, Bloco, Sala..." />
+                </Field>
+              </div>
+              <div className="md:col-span-4">
+                <Field label="Bairro">
+                  <input className={inputCls} placeholder="Bairro" />
+                </Field>
+              </div>
+              <div className="md:col-span-4">
+                <Field label="Cidade">
+                  <input className={inputCls} placeholder="Cidade" />
+                </Field>
+              </div>
+
+              <div className="md:col-span-4">
+                <Field label="Estado">
+                  <select className={inputCls}>
+                    <option>-</option>
+                    <option>AC</option>
+                    <option>AL</option>
+                    <option>AP</option>
+                    <option>AM</option>
+                    <option>BA</option>
+                    <option>CE</option>
+                    <option>DF</option>
+                    <option>ES</option>
+                    <option>GO</option>
+                    <option>MA</option>
+                    <option>MT</option>
+                    <option>MS</option>
+                    <option>MG</option>
+                    <option>PA</option>
+                    <option>PB</option>
+                    <option>PR</option>
+                    <option>PE</option>
+                    <option>PI</option>
+                    <option>RJ</option>
+                    <option>RN</option>
+                    <option>RS</option>
+                    <option>RO</option>
+                    <option>RR</option>
+                    <option>SC</option>
+                    <option>SP</option>
+                    <option>SE</option>
+                    <option>TO</option>
+                  </select>
+                </Field>
+              </div>
+            </div>
+          </section>
+
+          <hr className="border-slate-100" />
+
+          {/* Informações Adicionais */}
+          <section>
+            <h2 className="mb-6 text-[15px] font-medium text-slate-800">Informações Adicionais</h2>
+            <Field label="Observações">
+              <textarea
+                rows={4}
+                className={textareaCls}
+                placeholder="Observações adicionais sobre o contato..."
+              />
+            </Field>
+          </section>
+        </div>
+
+        {/* Footer Buttons */}
+        <div className="mt-10 flex items-center justify-end gap-4 border-t border-slate-100 pt-6">
           <Link
             to="/contatos"
-            className="rounded-lg border border-input bg-white px-5 py-2.5 text-sm font-medium text-foreground transition-colors hover:bg-slate-50"
+            className="inline-flex items-center gap-2 rounded-full px-5 py-2.5 text-sm font-medium text-slate-600 transition-colors hover:bg-slate-100"
           >
+            <X className="h-4 w-4" />
             Cancelar
           </Link>
           <button
             type="submit"
-            className="rounded-full bg-brand-blue px-6 py-2.5 text-sm font-semibold text-white shadow-sm transition-all hover:bg-brand-blue-strong active:scale-[0.98]"
+            className="inline-flex items-center gap-2 rounded-full bg-brand-blue px-6 py-2.5 text-sm font-semibold text-white shadow-sm transition-all hover:bg-brand-blue-strong active:scale-[0.98]"
           >
-            Salvar contato
+            <Save className="h-4 w-4" />
+            Salvar Contato
           </button>
         </div>
       </form>
     </AppLayout>
   );
 }
+
