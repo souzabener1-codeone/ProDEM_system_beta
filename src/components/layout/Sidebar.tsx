@@ -32,15 +32,16 @@ export function Sidebar() {
   return (
     <aside className="fixed inset-y-0 left-0 z-40 flex w-60 flex-col bg-navy-800 text-white">
       {/* Logo */}
-      <div className="flex items-center gap-3 px-6 py-6">
-        <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-brand-wine text-lg font-extrabold text-white">
-          D
+      <div className="px-4 py-5">
+        <div className="flex items-center justify-center rounded-xl bg-white px-4 py-3 shadow-sm">
+          <img
+            src={prodemLogo.url}
+            alt="PRODEM — Tecnologia & Inovação"
+            className="h-10 w-auto object-contain"
+          />
         </div>
-        <div className="leading-tight">
-          <div className="text-lg font-bold tracking-tight">PRODEM</div>
-          <div className="text-[11px] font-medium uppercase tracking-widest text-white/50">
-            Gabinete
-          </div>
+        <div className="mt-2 text-center text-[11px] font-medium uppercase tracking-widest text-white/50">
+          Gabinete
         </div>
       </div>
 
