@@ -60,7 +60,8 @@ function NovoContato() {
         <div className="space-y-10">
           {/* Dados Pessoais */}
           <section>
-            <h2 className="mb-6 text-[15px] font-medium text-slate-800">Dados Pessoais</h2>
+            <h2 className="text-[15px] font-medium text-slate-800">Dados Pessoais</h2>
+            <hr className="mb-6 mt-3 border-slate-100" />
             <div className="grid gap-x-6 gap-y-5 md:grid-cols-2">
               <div className="md:col-span-2">
                 <Field label="Nome Completo" required>
@@ -80,11 +81,10 @@ function NovoContato() {
             </div>
           </section>
 
-          <hr className="border-slate-100" />
-
           {/* Informações de Contato */}
           <section>
-            <h2 className="mb-6 text-[15px] font-medium text-slate-800">Informações de Contato</h2>
+            <h2 className="text-[15px] font-medium text-slate-800">Informações de Contato</h2>
+            <hr className="mb-6 mt-3 border-slate-100" />
             <div className="grid gap-x-6 gap-y-5 md:grid-cols-2">
               <Field label="Telefone">
                 <input className={inputCls} placeholder="(00) 00000-0000" />
@@ -95,11 +95,10 @@ function NovoContato() {
             </div>
           </section>
 
-          <hr className="border-slate-100" />
-
           {/* Endereço */}
           <section>
-            <h2 className="mb-6 text-[15px] font-medium text-slate-800">Endereço</h2>
+            <h2 className="text-[15px] font-medium text-slate-800">Endereço</h2>
+            <hr className="mb-6 mt-3 border-slate-100" />
             <div className="grid gap-x-6 gap-y-5 md:grid-cols-12">
               <div className="md:col-span-3">
                 <Field label="CEP">
@@ -173,11 +172,10 @@ function NovoContato() {
             </div>
           </section>
 
-          <hr className="border-slate-100" />
-
           {/* Informações Adicionais */}
           <section>
-            <h2 className="mb-6 text-[15px] font-medium text-slate-800">Informações Adicionais</h2>
+            <h2 className="text-[15px] font-medium text-slate-800">Informações Adicionais</h2>
+            <hr className="mb-6 mt-3 border-slate-100" />
             <Field label="Observações">
               <textarea
                 rows={4}
