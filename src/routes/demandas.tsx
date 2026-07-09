@@ -45,6 +45,16 @@ function Demandas() {
         }
       />
 
+      {/* KPIs */}
+      <div className="mb-8 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6">
+        <KPICard icon={ClipboardList} value={354} label="Total de Demandas" tone="navy" />
+        <KPICard icon={Clock} value={12} label="Vencendo em 7 dias" tone="orange" />
+        <KPICard icon={Loader2} value={59} label="Em Progresso" tone="blue" />
+        <KPICard icon={AlertTriangle} value={78} label="Atrasadas" tone="red" />
+        <KPICard icon={CheckCircle2} value={171} label="Concluídas" tone="green" />
+        <KPICard icon={Users} value={266} label="Total de Contatos" tone="purple" />
+      </div>
+
       <div className="mb-6 rounded-2xl bg-navy-800 p-4 shadow-[var(--shadow-card)]">
         <div className="grid grid-cols-1 gap-3 md:grid-cols-[1fr_180px_180px_180px_auto]">
           <input
