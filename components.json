@@ -19,6 +19,11 @@
     "hooks": "@/hooks"
   },
   "registries": {
-    "@efferd": "https://efferd.com/r/{style}/{name}.json"
+    "@efferd": {
+      "url": "https://efferd.com/r/{style}/{name}.json",
+      "headers": {
+        "Authorization": "Bearer ${EFFERD_REGISTRY_TOKEN}"
+      }
+    }
   }
 }
