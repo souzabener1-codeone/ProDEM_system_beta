@@ -16,10 +16,10 @@ export const Route = createFileRoute("/relatorios")({
 });
 
 const donutData = [
-  { name: "Pendentes", value: 5, color: "#F59E0B", pct: 2 },
-  { name: "Em Progresso", value: 59, color: "#3B82F6", pct: 19 },
-  { name: "Concluídas", value: 171, color: "#22C55E", pct: 55 },
-  { name: "Atrasadas", value: 78, color: "#EF4444", pct: 25 },
+  { name: "Pendentes", value: 5, color: "#F59E0B" },
+  { name: "Em Progresso", value: 59, color: "#3B82F6" },
+  { name: "Concluídas", value: 171, color: "#22C55E" },
+  { name: "Atrasadas", value: 78, color: "#EF4444" },
 ];
 
 const categoryBars = [
@@ -88,7 +88,7 @@ function Relatorios() {
                   </div>
                   <div className="flex items-baseline gap-2">
                     <span className="text-sm font-bold text-foreground">{d.value}</span>
-                    <span className="text-xs text-muted-foreground">({d.pct}%)</span>
+                    <span className="text-xs text-muted-foreground">({Math.round((d.value / total) * 100)}%)</span>
                   </div>
                 </li>
               ))}

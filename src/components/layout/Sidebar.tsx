@@ -30,7 +30,7 @@ export function Sidebar() {
   const pathname = useRouterState({ select: (s) => s.location.pathname });
 
   return (
-    <aside className="fixed inset-y-0 left-0 z-40 flex w-60 flex-col bg-navy-800 text-white">
+    <aside className="fixed inset-y-0 left-0 z-40 hidden w-60 flex-col bg-navy-800 text-white lg:flex">
       {/* Logo */}
       <div className="px-4 pt-6 pb-4">
         <div className="flex w-full items-center justify-center rounded-xl bg-white px-3 py-4 shadow-sm">

@@ -1,5 +1,6 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { UserPlus, X, Save } from "lucide-react";
+import type { ReactNode } from "react";
 import { toast } from "sonner";
 import { AppLayout } from "@/components/layout/AppLayout";
 import { PageHeader } from "@/components/layout/PageHeader";
@@ -20,7 +21,7 @@ function Field({
   required,
 }: {
   label: string;
-  children: React.ReactNode;
+  children: ReactNode;
   required?: boolean;
 }) {
   return (
@@ -42,7 +43,7 @@ const textareaCls =
 function NovoContato() {
   const navigate = useNavigate();
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     toast.success("Contato salvo com sucesso!");
     navigate({ to: "/contatos" });

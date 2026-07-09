@@ -102,16 +102,18 @@ function Contatos() {
       <div className="mb-6 rounded-2xl bg-navy-800 p-4 shadow-[var(--shadow-card)]">
         <div className="grid grid-cols-1 gap-3 md:grid-cols-[1fr_200px_200px_auto]">
           <input
+            id="contatos-busca"
+            name="busca"
             type="text"
             placeholder="Buscar por nome, email ou telefone…"
             className="rounded-lg border-0 bg-white px-4 py-2.5 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-brand-blue"
           />
-          <select className="rounded-lg border-0 bg-white px-3 py-2.5 text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-brand-blue">
+          <select id="contatos-cidade" name="cidade" className="rounded-lg border-0 bg-white px-3 py-2.5 text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-brand-blue">
             <option>Todas as cidades</option>
             <option>São Paulo/SP</option>
             <option>Guarulhos/SP</option>
           </select>
-          <select className="rounded-lg border-0 bg-white px-3 py-2.5 text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-brand-blue">
+          <select id="contatos-categoria" name="categoria" className="rounded-lg border-0 bg-white px-3 py-2.5 text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-brand-blue">
             <option>Todas as categorias</option>
             <option>Emenda</option>
             <option>Ofício</option>
