@@ -127,7 +127,30 @@
   --border: #E5E7EB;
   --input: #E5E7EB;
   --ring: #3B82F6;
+
+  /* Shell dark defaults (used inside .shell-dark) */
+  --shell-bg: #0B0B0F;
+  --shell-surface: #141418;
+  --shell-elevated: #1B1B21;
+  --shell-border: #26262D;
+  --shell-muted: #8A8A94;
+  --shell-fg: #F4F4F6;
+  --shell-accent: #22C55E;
+
+  --sidebar: #0B0B0F;
+  --sidebar-foreground: #C7C7CE;
+  --sidebar-border: #1F1F25;
+  --sidebar-accent: #1F1F27;
+  --sidebar-accent-foreground: #FFFFFF;
+  --sidebar-ring: #3B82F6;
 }
+
+.shell-dark {
+  background-color: var(--shell-bg);
+  color: var(--shell-fg);
+  color-scheme: dark;
+}
+
 
 @layer base {
   * {
