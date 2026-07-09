@@ -89,7 +89,7 @@ function priorityVariant(p: "Alta" | "Média" | "Baixa") {
 
 function Dashboard() {
   return (
-    <AppLayout>
+    <AppShell>
       <PageHeader
         icon={LayoutDashboard}
         title="Dashboard"
@@ -185,6 +185,6 @@ function Dashboard() {
           </table>
         </div>
       </div>
-    </AppLayout>
+    </AppShell>
   );
 }
