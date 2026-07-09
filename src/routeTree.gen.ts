@@ -14,9 +14,9 @@ import { Route as SitemapDotxmlRouteImport } from './routes/sitemap[.]xml'
 import { Route as RelatoriosRouteImport } from './routes/relatorios'
 import { Route as DemandasRouteImport } from './routes/demandas'
 import { Route as ContatosRouteImport } from './routes/contatos'
-import { Route as ContatosIndexRouteImport } from './routes/contatos.index'
 import { Route as CategoriasRouteImport } from './routes/categorias'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as ContatosIndexRouteImport } from './routes/contatos.index'
 import { Route as ContatosNovoRouteImport } from './routes/contatos.novo'
 
 const StatusRoute = StatusRouteImport.update({
@@ -55,7 +55,7 @@ const IndexRoute = IndexRouteImport.update({
   getParentRoute: () => rootRouteImport,
 } as any)
 const ContatosIndexRoute = ContatosIndexRouteImport.update({
-  id: '/contatos/',
+  id: '/',
   path: '/',
   getParentRoute: () => ContatosRoute,
 } as any)
@@ -69,34 +69,34 @@ export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/categorias': typeof CategoriasRoute
   '/contatos': typeof ContatosRouteWithChildren
-  '/contatos/': typeof ContatosIndexRoute
   '/demandas': typeof DemandasRoute
   '/relatorios': typeof RelatoriosRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/status': typeof StatusRoute
   '/contatos/novo': typeof ContatosNovoRoute
+  '/contatos/': typeof ContatosIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/categorias': typeof CategoriasRoute
-  '/contatos': typeof ContatosIndexRoute
   '/demandas': typeof DemandasRoute
   '/relatorios': typeof RelatoriosRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/status': typeof StatusRoute
   '/contatos/novo': typeof ContatosNovoRoute
+  '/contatos': typeof ContatosIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/categorias': typeof CategoriasRoute
   '/contatos': typeof ContatosRouteWithChildren
-  '/contatos/': typeof ContatosIndexRoute
   '/demandas': typeof DemandasRoute
   '/relatorios': typeof RelatoriosRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/status': typeof StatusRoute
   '/contatos/novo': typeof ContatosNovoRoute
+  '/contatos/': typeof ContatosIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -104,33 +104,33 @@ export interface FileRouteTypes {
     | '/'
     | '/categorias'
     | '/contatos'
-    | '/contatos/'
     | '/demandas'
     | '/relatorios'
     | '/sitemap.xml'
     | '/status'
     | '/contatos/novo'
+    | '/contatos/'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
     | '/categorias'
-    | '/contatos'
     | '/demandas'
     | '/relatorios'
     | '/sitemap.xml'
     | '/status'
     | '/contatos/novo'
+    | '/contatos'
   id:
     | '__root__'
     | '/'
     | '/categorias'
     | '/contatos'
-    | '/contatos/'
     | '/demandas'
     | '/relatorios'
     | '/sitemap.xml'
     | '/status'
     | '/contatos/novo'
+    | '/contatos/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -194,13 +194,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/contatos/novo': {
-      id: '/contatos/novo'
-      path: '/novo'
-      fullPath: '/contatos/novo'
-      preLoaderRoute: typeof ContatosNovoRouteImport
-      parentRoute: typeof ContatosRoute
-    }
     '/contatos/': {
       id: '/contatos/'
       path: '/'
@@ -208,17 +201,24 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ContatosIndexRouteImport
       parentRoute: typeof ContatosRoute
     }
+    '/contatos/novo': {
+      id: '/contatos/novo'
+      path: '/novo'
+      fullPath: '/contatos/novo'
+      preLoaderRoute: typeof ContatosNovoRouteImport
+      parentRoute: typeof ContatosRoute
+    }
   }
 }
 
 interface ContatosRouteChildren {
-  ContatosIndexRoute: typeof ContatosIndexRoute
   ContatosNovoRoute: typeof ContatosNovoRoute
+  ContatosIndexRoute: typeof ContatosIndexRoute
 }
 
 const ContatosRouteChildren: ContatosRouteChildren = {
-  ContatosIndexRoute: ContatosIndexRoute,
   ContatosNovoRoute: ContatosNovoRoute,
+  ContatosIndexRoute: ContatosIndexRoute,
 }
 
 const ContatosRouteWithChildren = ContatosRoute._addFileChildren(
