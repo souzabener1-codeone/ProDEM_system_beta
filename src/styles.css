@@ -149,7 +149,27 @@
   background-color: var(--shell-bg);
   color: var(--shell-fg);
   color-scheme: dark;
+
+  /* Override semantic tokens so cards/tables render in dark surfaces */
+  --background: var(--shell-bg);
+  --foreground: var(--shell-fg);
+  --card: var(--shell-surface);
+  --card-foreground: var(--shell-fg);
+  --popover: var(--shell-elevated);
+  --popover-foreground: var(--shell-fg);
+  --muted: var(--shell-elevated);
+  --muted-foreground: var(--shell-muted);
+  --border: var(--shell-border);
+  --input: var(--shell-border);
+  --secondary: var(--shell-elevated);
+  --secondary-foreground: var(--shell-fg);
+  --accent: var(--shell-elevated);
+  --accent-foreground: var(--shell-fg);
 }
+
+.shell-dark .bg-slate-50 { background-color: var(--shell-elevated) !important; }
+.shell-dark .hover\:bg-slate-50:hover { background-color: color-mix(in oklab, var(--shell-elevated) 70%, transparent) !important; }
+
 
 
 @layer base {
