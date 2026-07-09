@@ -11,7 +11,7 @@ import {
   Eye,
   Pencil,
 } from "lucide-react";
-import { AppLayout } from "@/components/layout/AppLayout";
+import { AppShell } from "@/components/shell/AppShell";
 import { PageHeader } from "@/components/layout/PageHeader";
 import { SectionHeader } from "@/components/layout/SectionHeader";
 import { KPICard } from "@/components/ui/KPICard";
@@ -89,7 +89,7 @@ function priorityVariant(p: "Alta" | "Média" | "Baixa") {
 
 function Dashboard() {
   return (
-    <AppLayout>
+    <AppShell>
       <PageHeader
         icon={LayoutDashboard}
         title="Dashboard"
@@ -185,6 +185,6 @@ function Dashboard() {
           </table>
         </div>
       </div>
-    </AppLayout>
+    </AppShell>
   );
 }
