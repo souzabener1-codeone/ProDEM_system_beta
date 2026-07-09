@@ -1,5 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { ClipboardList, Plus, Search, Eye, Pencil, Clock, Loader2, AlertTriangle, CheckCircle2, Users } from "lucide-react";
+import { ClipboardList, Plus, Search, Eye, Pencil, Clock, Loader2, AlertTriangle, CheckCircle2 } from "lucide-react";
 import { KPICard } from "@/components/ui/KPICard";
 import { AppLayout } from "@/components/layout/AppLayout";
 import { PageHeader } from "@/components/layout/PageHeader";
@@ -46,13 +46,11 @@ function Demandas() {
       />
 
       {/* KPIs */}
-      <div className="mb-8 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6">
-        <KPICard icon={ClipboardList} value={7} label="Total de Demandas" tone="navy" />
+      <div className="mb-8 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
         <KPICard icon={Clock} value={1} label="Pendentes" tone="orange" />
         <KPICard icon={Loader2} value={2} label="Em Progresso" tone="blue" />
         <KPICard icon={AlertTriangle} value={1} label="Atrasadas" tone="red" />
         <KPICard icon={CheckCircle2} value={1} label="Concluídas" tone="green" />
-        <KPICard icon={Users} value={6} label="Total de Contatos" tone="purple" />
       </div>
 
       <div className="mb-6 rounded-2xl bg-navy-800 p-4 shadow-[var(--shadow-card)]">
