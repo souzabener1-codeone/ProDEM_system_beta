@@ -12,6 +12,7 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as StatusRouteImport } from './routes/status'
 import { Route as SitemapDotxmlRouteImport } from './routes/sitemap[.]xml'
 import { Route as RelatoriosRouteImport } from './routes/relatorios'
+import { Route as DemandasRouteImport } from './routes/demandas'
 import { Route as ContatosRouteImport } from './routes/contatos'
 import { Route as CategoriasRouteImport } from './routes/categorias'
 import { Route as IndexRouteImport } from './routes/index'
@@ -34,6 +35,11 @@ const RelatoriosRoute = RelatoriosRouteImport.update({
   path: '/relatorios',
   getParentRoute: () => rootRouteImport,
 } as any)
+const DemandasRoute = DemandasRouteImport.update({
+  id: '/demandas',
+  path: '/demandas',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ContatosRoute = ContatosRouteImport.update({
   id: '/contatos',
   path: '/contatos',
@@ -50,9 +56,9 @@ const IndexRoute = IndexRouteImport.update({
   getParentRoute: () => rootRouteImport,
 } as any)
 const DemandasIndexRoute = DemandasIndexRouteImport.update({
-  id: '/demandas/',
-  path: '/demandas/',
-  getParentRoute: () => rootRouteImport,
+  id: '/',
+  path: '/',
+  getParentRoute: () => DemandasRoute,
 } as any)
 const ContatosIndexRoute = ContatosIndexRouteImport.update({
   id: '/',
@@ -69,6 +75,7 @@ export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/categorias': typeof CategoriasRoute
   '/contatos': typeof ContatosRouteWithChildren
+  '/demandas': typeof DemandasRouteWithChildren
   '/relatorios': typeof RelatoriosRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/status': typeof StatusRoute
@@ -91,6 +98,7 @@ export interface FileRoutesById {
   '/': typeof IndexRoute
   '/categorias': typeof CategoriasRoute
   '/contatos': typeof ContatosRouteWithChildren
+  '/demandas': typeof DemandasRouteWithChildren
   '/relatorios': typeof RelatoriosRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/status': typeof StatusRoute
@@ -104,6 +112,7 @@ export interface FileRouteTypes {
     | '/'
     | '/categorias'
     | '/contatos'
+    | '/demandas'
     | '/relatorios'
     | '/sitemap.xml'
     | '/status'
@@ -125,6 +134,7 @@ export interface FileRouteTypes {
     | '/'
     | '/categorias'
     | '/contatos'
+    | '/demandas'
     | '/relatorios'
     | '/sitemap.xml'
     | '/status'
@@ -137,10 +147,10 @@ export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   CategoriasRoute: typeof CategoriasRoute
   ContatosRoute: typeof ContatosRouteWithChildren
+  DemandasRoute: typeof DemandasRouteWithChildren
   RelatoriosRoute: typeof RelatoriosRoute
   SitemapDotxmlRoute: typeof SitemapDotxmlRoute
   StatusRoute: typeof StatusRoute
-  DemandasIndexRoute: typeof DemandasIndexRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -166,6 +176,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof RelatoriosRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/demandas': {
+      id: '/demandas'
+      path: '/demandas'
+      fullPath: '/demandas'
+      preLoaderRoute: typeof DemandasRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/contatos': {
       id: '/contatos'
       path: '/contatos'
@@ -189,10 +206,10 @@ declare module '@tanstack/react-router' {
     }
     '/demandas/': {
       id: '/demandas/'
-      path: '/demandas'
+      path: '/'
       fullPath: '/demandas/'
       preLoaderRoute: typeof DemandasIndexRouteImport
-      parentRoute: typeof rootRouteImport
+      parentRoute: typeof DemandasRoute
     }
     '/contatos/': {
       id: '/contatos/'
@@ -225,14 +242,26 @@ const ContatosRouteWithChildren = ContatosRoute._addFileChildren(
   ContatosRouteChildren,
 )
 
+interface DemandasRouteChildren {
+  DemandasIndexRoute: typeof DemandasIndexRoute
+}
+
+const DemandasRouteChildren: DemandasRouteChildren = {
+  DemandasIndexRoute: DemandasIndexRoute,
+}
+
+const DemandasRouteWithChildren = DemandasRoute._addFileChildren(
+  DemandasRouteChildren,
+)
+
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   CategoriasRoute: CategoriasRoute,
   ContatosRoute: ContatosRouteWithChildren,
+  DemandasRoute: DemandasRouteWithChildren,
   RelatoriosRoute: RelatoriosRoute,
   SitemapDotxmlRoute: SitemapDotxmlRoute,
   StatusRoute: StatusRoute,
-  DemandasIndexRoute: DemandasIndexRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
