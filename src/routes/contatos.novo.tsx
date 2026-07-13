@@ -215,6 +215,85 @@ function NovoContato() {
               />
             </Field>
           </section>
+
+          {/* Anexos */}
+          <section>
+            <h2 className="text-[15px] font-medium text-slate-800">Anexos</h2>
+            <hr className="mb-6 mt-3 border-slate-100" />
+            <div
+              onClick={() => fileInputRef.current?.click()}
+              onDragOver={(e) => {
+                e.preventDefault();
+                setIsDragging(true);
+              }}
+              onDragLeave={() => setIsDragging(false)}
+              onDrop={(e) => {
+                e.preventDefault();
+                setIsDragging(false);
+                if (e.dataTransfer.files.length) addFiles(e.dataTransfer.files);
+              }}
+              role="button"
+              tabIndex={0}
+              aria-label="Selecionar arquivos para anexar"
+              className={`flex cursor-pointer flex-col items-center justify-center gap-3 rounded-[16px] border-2 border-dashed px-6 py-10 text-center transition-all ${
+                isDragging
+                  ? "border-brand-blue bg-brand-blue-soft"
+                  : "border-slate-200 bg-slate-50/50 hover:border-brand-blue hover:bg-brand-blue-soft/40"
+              }`}
+            >
+              <div className="flex h-11 w-11 items-center justify-center rounded-full bg-white shadow-sm">
+                <Upload className="h-5 w-5 text-slate-500" />
+              </div>
+              <p className="text-sm text-slate-600">
+                Clique para selecionar arquivos ou arraste aqui
+              </p>
+              <p className="text-xs text-brand-blue">
+                PDF, DOC, DOCX, XLS, XLSX, JPG, PNG (máx. 10MB)
+              </p>
+              <input
+                ref={fileInputRef}
+                type="file"
+                multiple
+                accept={ACCEPTED_TYPES}
+                className="hidden"
+                onChange={(e) => {
+                  if (e.target.files?.length) addFiles(e.target.files);
+                  e.target.value = "";
+                }}
+              />
+            </div>
+
+            {attachments.length > 0 && (
+              <ul className="mt-4 space-y-2">
+                {attachments.map((file, index) => (
+                  <li
+                    key={`${file.name}-${index}`}
+                    className="flex items-center justify-between gap-3 rounded-[16px] border border-slate-200 bg-white px-4 py-2.5"
+                  >
+                    <div className="flex min-w-0 items-center gap-3">
+                      <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-[12px] bg-brand-blue-soft">
+                        <FileText className="h-4 w-4 text-brand-blue" />
+                      </div>
+                      <div className="min-w-0">
+                        <p className="truncate text-sm font-medium text-slate-800">
+                          {file.name}
+                        </p>
+                        <p className="text-xs text-slate-500">{formatSize(file.size)}</p>
+                      </div>
+                    </div>
+                    <button
+                      type="button"
+                      onClick={() => removeFile(index)}
+                      aria-label={`Remover ${file.name}`}
+                      className="inline-flex h-8 w-8 items-center justify-center rounded-full text-slate-400 transition-colors hover:bg-danger-soft hover:text-danger"
+                    >
+                      <Trash2 className="h-4 w-4" />
+                    </button>
+                  </li>
+                ))}
+              </ul>
+            )}
+          </section>
         </div>
 
         {/* Footer Buttons */}
