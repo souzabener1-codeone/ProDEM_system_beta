@@ -44,6 +44,35 @@ const textareaCls =
 function NovoContato() {
   const navigate = useNavigate();
 
+  const fileInputRef = useRef<HTMLInputElement>(null);
+  const [attachments, setAttachments] = useState<File[]>([]);
+  const [isDragging, setIsDragging] = useState(false);
+
+  const ACCEPTED_TYPES = ".pdf,.doc,.docx,.xls,.xlsx,.jpg,.jpeg,.png";
+  const MAX_SIZE = 10 * 1024 * 1024; // 10MB
+
+  const addFiles = (files: FileList | File[]) => {
+    const valid: File[] = [];
+    Array.from(files).forEach((file) => {
+      if (file.size > MAX_SIZE) {
+        toast.error(`${file.name} excede o limite de 10MB.`);
+        return;
+      }
+      valid.push(file);
+    });
+    if (valid.length) setAttachments((prev) => [...prev, ...valid]);
+  };
+
+  const removeFile = (index: number) => {
+    setAttachments((prev) => prev.filter((_, i) => i !== index));
+  };
+
+  const formatSize = (bytes: number) => {
+    if (bytes < 1024) return `${bytes} B`;
+    if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(1)} KB`;
+    return `${(bytes / (1024 * 1024)).toFixed(1)} MB`;
+  };
+
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     toast.success("Contato salvo com sucesso!");
