@@ -6,7 +6,7 @@ import { PageHeader } from "@/components/layout/PageHeader";
 import { SectionHeader } from "@/components/layout/SectionHeader";
 import { StatusBadge } from "@/components/ui/StatusBadge";
 
-export const Route = createFileRoute("/demandas")({
+export const Route = createFileRoute("/demandas/")({
   head: () => ({
     meta: [
       { title: "Demandas — PRODEM" },
