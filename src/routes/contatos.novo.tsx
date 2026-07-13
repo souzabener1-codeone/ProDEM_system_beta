@@ -1,5 +1,6 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
-import { UserPlus, X, Save } from "lucide-react";
+import { UserPlus, X, Save, Upload, FileText, Trash2 } from "lucide-react";
+import { useRef, useState } from "react";
 import type { ReactNode } from "react";
 import { toast } from "sonner";
 import { AppLayout } from "@/components/layout/AppLayout";
