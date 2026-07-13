@@ -16,7 +16,9 @@ import { Route as DemandasRouteImport } from './routes/demandas'
 import { Route as ContatosRouteImport } from './routes/contatos'
 import { Route as CategoriasRouteImport } from './routes/categorias'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as DemandasIndexRouteImport } from './routes/demandas.index'
 import { Route as ContatosIndexRouteImport } from './routes/contatos.index'
+import { Route as DemandasNovoRouteImport } from './routes/demandas.novo'
 import { Route as ContatosNovoRouteImport } from './routes/contatos.novo'
 
 const StatusRoute = StatusRouteImport.update({
@@ -54,10 +56,20 @@ const IndexRoute = IndexRouteImport.update({
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const DemandasIndexRoute = DemandasIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => DemandasRoute,
+} as any)
 const ContatosIndexRoute = ContatosIndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => ContatosRoute,
+} as any)
+const DemandasNovoRoute = DemandasNovoRouteImport.update({
+  id: '/novo',
+  path: '/novo',
+  getParentRoute: () => DemandasRoute,
 } as any)
 const ContatosNovoRoute = ContatosNovoRouteImport.update({
   id: '/novo',
@@ -69,34 +81,39 @@ export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/categorias': typeof CategoriasRoute
   '/contatos': typeof ContatosRouteWithChildren
-  '/demandas': typeof DemandasRoute
+  '/demandas': typeof DemandasRouteWithChildren
   '/relatorios': typeof RelatoriosRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/status': typeof StatusRoute
   '/contatos/novo': typeof ContatosNovoRoute
+  '/demandas/novo': typeof DemandasNovoRoute
   '/contatos/': typeof ContatosIndexRoute
+  '/demandas/': typeof DemandasIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/categorias': typeof CategoriasRoute
-  '/demandas': typeof DemandasRoute
   '/relatorios': typeof RelatoriosRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/status': typeof StatusRoute
   '/contatos/novo': typeof ContatosNovoRoute
+  '/demandas/novo': typeof DemandasNovoRoute
   '/contatos': typeof ContatosIndexRoute
+  '/demandas': typeof DemandasIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/categorias': typeof CategoriasRoute
   '/contatos': typeof ContatosRouteWithChildren
-  '/demandas': typeof DemandasRoute
+  '/demandas': typeof DemandasRouteWithChildren
   '/relatorios': typeof RelatoriosRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/status': typeof StatusRoute
   '/contatos/novo': typeof ContatosNovoRoute
+  '/demandas/novo': typeof DemandasNovoRoute
   '/contatos/': typeof ContatosIndexRoute
+  '/demandas/': typeof DemandasIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -109,17 +126,20 @@ export interface FileRouteTypes {
     | '/sitemap.xml'
     | '/status'
     | '/contatos/novo'
+    | '/demandas/novo'
     | '/contatos/'
+    | '/demandas/'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
     | '/categorias'
-    | '/demandas'
     | '/relatorios'
     | '/sitemap.xml'
     | '/status'
     | '/contatos/novo'
+    | '/demandas/novo'
     | '/contatos'
+    | '/demandas'
   id:
     | '__root__'
     | '/'
@@ -130,14 +150,16 @@ export interface FileRouteTypes {
     | '/sitemap.xml'
     | '/status'
     | '/contatos/novo'
+    | '/demandas/novo'
     | '/contatos/'
+    | '/demandas/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   CategoriasRoute: typeof CategoriasRoute
   ContatosRoute: typeof ContatosRouteWithChildren
-  DemandasRoute: typeof DemandasRoute
+  DemandasRoute: typeof DemandasRouteWithChildren
   RelatoriosRoute: typeof RelatoriosRoute
   SitemapDotxmlRoute: typeof SitemapDotxmlRoute
   StatusRoute: typeof StatusRoute
@@ -194,12 +216,26 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/demandas/': {
+      id: '/demandas/'
+      path: '/'
+      fullPath: '/demandas/'
+      preLoaderRoute: typeof DemandasIndexRouteImport
+      parentRoute: typeof DemandasRoute
+    }
     '/contatos/': {
       id: '/contatos/'
       path: '/'
       fullPath: '/contatos/'
       preLoaderRoute: typeof ContatosIndexRouteImport
       parentRoute: typeof ContatosRoute
+    }
+    '/demandas/novo': {
+      id: '/demandas/novo'
+      path: '/novo'
+      fullPath: '/demandas/novo'
+      preLoaderRoute: typeof DemandasNovoRouteImport
+      parentRoute: typeof DemandasRoute
     }
     '/contatos/novo': {
       id: '/contatos/novo'
@@ -225,11 +261,25 @@ const ContatosRouteWithChildren = ContatosRoute._addFileChildren(
   ContatosRouteChildren,
 )
 
+interface DemandasRouteChildren {
+  DemandasNovoRoute: typeof DemandasNovoRoute
+  DemandasIndexRoute: typeof DemandasIndexRoute
+}
+
+const DemandasRouteChildren: DemandasRouteChildren = {
+  DemandasNovoRoute: DemandasNovoRoute,
+  DemandasIndexRoute: DemandasIndexRoute,
+}
+
+const DemandasRouteWithChildren = DemandasRoute._addFileChildren(
+  DemandasRouteChildren,
+)
+
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   CategoriasRoute: CategoriasRoute,
   ContatosRoute: ContatosRouteWithChildren,
-  DemandasRoute: DemandasRoute,
+  DemandasRoute: DemandasRouteWithChildren,
   RelatoriosRoute: RelatoriosRoute,
   SitemapDotxmlRoute: SitemapDotxmlRoute,
   StatusRoute: StatusRoute,
