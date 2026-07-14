@@ -70,8 +70,15 @@ function NovoContato() {
   const [tipoContato, setTipoContato] = useState("");
 
 
-  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+  const [confirmOpen, setConfirmOpen] = useState(false);
+
+  const handleFormSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+    setConfirmOpen(true);
+  };
+
+  const handleConfirmSave = () => {
+    setConfirmOpen(false);
     toast.success("Contato salvo com sucesso!");
     navigate({ to: "/contatos" });
   };
@@ -84,7 +91,7 @@ function NovoContato() {
         subtitle="Cadastre um novo contato"
       />
 
-      <form onSubmit={handleSubmit} className="rounded-[24px] border border-border bg-white p-8 shadow-sm">
+      <form onSubmit={handleFormSubmit} className="rounded-[24px] border border-border bg-white p-8 shadow-sm">
         <div className="space-y-10">
           {/* Dados Pessoais */}
           <section>
