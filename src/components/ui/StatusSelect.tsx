@@ -19,6 +19,7 @@ export const demandaStatuses: StatusOption[] = [
   { value: "Aguardando Retorno", label: "Aguardando Retorno", color: "text-violet-500 fill-violet-500" },
   { value: "Concluída", label: "Concluída", color: "text-teal-600 fill-teal-600" },
   { value: "Cancelada", label: "Cancelada", color: "text-red-500 fill-red-500" },
+  { value: "Não atendido", label: "Não atendido", color: "text-slate-700 fill-slate-700" },
 ];
 
 type Props = {
