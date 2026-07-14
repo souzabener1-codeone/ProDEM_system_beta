@@ -123,7 +123,7 @@ function NovaDemanda() {
               <SimpleSelect
                 value={lembrete}
                 onValueChange={setLembrete}
-                placeholder="Selecione um lembrete"
+                placeholder="Selecione o lembrete"
                 options={[
                   { value: "Sem lembrete", label: "Sem lembrete" },
                   { value: "1 dia antes", label: "1 dia antes" },
