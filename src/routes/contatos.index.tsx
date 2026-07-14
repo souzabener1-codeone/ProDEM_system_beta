@@ -119,15 +119,15 @@ function Contatos() {
       />
 
       {/* KPIs */}
-      <div className="mb-6 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
-        <KPICard icon={Users} value={contacts.length} label="Total" tone="blue" />
-        <KPICard icon={UserCheck} value={4} label="Cidadãos" tone="navy" />
-        <KPICard icon={Building2} value={0} label="Entidades" tone="green" />
-        <KPICard icon={Building2} value={1} label="Empresas" tone="orange" />
+      <div className="mb-4 grid grid-cols-2 gap-3 lg:grid-cols-4">
+        <KPICard icon={Users} value={contacts.length} label="Total" tone="blue" compact />
+        <KPICard icon={UserCheck} value={4} label="Cidadãos" tone="navy" compact />
+        <KPICard icon={Building2} value={0} label="Entidades" tone="green" compact />
+        <KPICard icon={Building2} value={1} label="Empresas" tone="orange" compact />
       </div>
 
       {/* Filter bar */}
-      <div className="mb-6 rounded-2xl bg-navy-800 p-4 shadow-[var(--shadow-card)]">
+      <div className="mb-3 rounded-2xl bg-navy-800 p-4 shadow-[var(--shadow-card)]">
         <div className="grid grid-cols-1 gap-3 md:grid-cols-[1fr_200px_200px_auto]">
           <ContactAutocomplete
             placeholder="Buscar por código, nome, email ou telefone…"
