@@ -43,6 +43,7 @@ const textareaCls =
 
 function NovaDemanda() {
   const navigate = useNavigate();
+  const [status, setStatus] = useState("Pendente");
 
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
