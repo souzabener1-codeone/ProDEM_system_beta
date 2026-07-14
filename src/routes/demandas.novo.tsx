@@ -5,6 +5,7 @@ import { toast } from "sonner";
 import { AppLayout } from "@/components/layout/AppLayout";
 import { PageHeader } from "@/components/layout/PageHeader";
 import { StatusSelect } from "@/components/ui/StatusSelect";
+import { CategorySelect } from "@/components/ui/CategorySelect";
 
 export const Route = createFileRoute("/demandas/novo")({
   head: () => ({
@@ -44,6 +45,7 @@ const textareaCls =
 function NovaDemanda() {
   const navigate = useNavigate();
   const [status, setStatus] = useState("");
+  const [categoria, setCategoria] = useState("");
 
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -78,18 +80,7 @@ function NovaDemanda() {
 
           <div className="grid gap-x-6 gap-y-5 md:grid-cols-2">
             <Field label="Categoria" required>
-              <select className={inputCls} defaultValue="">
-                <option value="" disabled>
-                  Selecione uma categoria
-                </option>
-                <option>Ofício</option>
-                <option>Indicação</option>
-                <option>Requerimento</option>
-                <option>Emenda</option>
-                <option>Projeto de Lei</option>
-                <option>Saúde/Exames</option>
-                <option>Mensagem</option>
-              </select>
+              <CategorySelect value={categoria} onValueChange={setCategoria} />
             </Field>
             <Field label="Prioridade" required>
               <select className={inputCls} defaultValue="Média">
