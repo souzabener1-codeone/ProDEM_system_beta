@@ -35,15 +35,6 @@ function FilterField({ label, children }: { label: string; children: React.React
   );
 }
 
-const _oldDemands = [
-  { id: 101, contact: "José Almeida", request: "Apoio financeiro para tratamento", category: "Ofício", priority: "Média" as const, status: "in-progress" as const, statusLabel: "Em Andamento", date: "07/07/2026" },
-  { id: 102, contact: "Ana Ribeiro", request: "Kit enxoval maternidade", category: "Indicação", priority: "Alta" as const, status: "pending" as const, statusLabel: "Pendente", date: "06/07/2026" },
-  { id: 103, contact: "Carlos Souza", request: "Iluminação pública Rua das Palmeiras", category: "Requerimento", priority: "Média" as const, status: "waiting" as const, statusLabel: "Aguardando Retorno", date: "05/07/2026" },
-  { id: 104, contact: "Fernanda Lima", request: "Agendamento exame cardiológico", category: "Saúde/Exames", priority: "Alta" as const, status: "done" as const, statusLabel: "Concluída", date: "04/07/2026" },
-  { id: 105, contact: "Roberto Nunes", request: "Emenda para reforma da escola", category: "Emenda", priority: "Média" as const, status: "in-progress" as const, statusLabel: "Em Andamento", date: "03/07/2026" },
-  { id: 106, contact: "Patrícia Gomes", request: "Projeto de lei — mobilidade urbana", category: "Projeto de Lei", priority: "Baixa" as const, status: "overdue" as const, statusLabel: "Atrasada", date: "01/07/2026" },
-  { id: 107, contact: "Luiz Henrique", request: "Mensagem de apoio institucional", category: "Mensagem", priority: "Baixa" as const, status: "cancelled" as const, statusLabel: "Cancelada", date: "28/06/2026" },
-];
 
 function priorityVariant(p: "Alta" | "Média" | "Baixa") {
   return p === "Alta" ? "priority-high" : p === "Média" ? "priority-medium" : "priority-low";
