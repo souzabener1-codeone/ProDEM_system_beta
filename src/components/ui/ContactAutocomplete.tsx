@@ -96,7 +96,7 @@ export function ContactAutocomplete({
           }}
           onFocus={() => setOpen(true)}
           onKeyDown={handleKey}
-          className="w-full rounded-full border-0 bg-white py-2.5 pl-11 pr-10 text-sm font-[Onest] text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-brand-blue"
+          className="w-full rounded-[16px] border-0 bg-white py-2.5 pl-11 pr-10 text-sm font-[Onest] text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-brand-blue"
         />
         {value && (
           <button
