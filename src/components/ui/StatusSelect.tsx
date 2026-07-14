@@ -39,15 +39,19 @@ export function StatusSelect({
   const selected = options.find((s) => s.value === value);
 
   return (
-    <Select value={value} onValueChange={(val) => val && onValueChange(val)}>
+    <Select value={value || undefined} onValueChange={(val) => val && onValueChange(val)}>
       <SelectTrigger
         id={id}
-        className="w-full !h-11 rounded-[16px] border-slate-200 bg-slate-50/50 px-4 text-sm text-foreground focus:border-brand-blue focus:bg-white focus:ring-2 focus:ring-brand-blue/20 [&>span]:flex [&>span]:items-center [&>span]:gap-2"
+        className="w-full !h-11 rounded-[16px] border-slate-200 bg-slate-50/50 px-4 text-sm text-foreground focus:border-brand-blue focus:bg-white focus:ring-2 focus:ring-brand-blue/20 [&>span]:flex [&>span]:items-center [&>span]:gap-2 [&>span]:text-left justify-start"
       >
-        {selected && (
-          <CircleIcon className={`size-2.5 shrink-0 ${selected.color}`} aria-hidden />
-        )}
-        <SelectValue placeholder={placeholder} />
+        <SelectValue placeholder={placeholder}>
+          {selected && (
+            <span className="flex items-center gap-2">
+              <CircleIcon className={`size-2.5 shrink-0 ${selected.color}`} aria-hidden />
+              {selected.label}
+            </span>
+          )}
+        </SelectValue>
       </SelectTrigger>
       <SelectContent className="rounded-[16px]">
         {options.map((status) => (
