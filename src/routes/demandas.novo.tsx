@@ -58,8 +58,8 @@ function NovaDemanda() {
   const navigate = useNavigate();
   const [status, setStatus] = useState("");
   const [categoria, setCategoria] = useState("");
-  const [prioridade, setPrioridade] = useState("Média");
-  const [lembrete, setLembrete] = useState("Sem lembrete");
+  const [prioridade, setPrioridade] = useState("");
+  const [lembrete, setLembrete] = useState("");
 
   const [confirmOpen, setConfirmOpen] = useState(false);
 
@@ -123,7 +123,7 @@ function NovaDemanda() {
               <SimpleSelect
                 value={lembrete}
                 onValueChange={setLembrete}
-                placeholder="Selecione um lembrete"
+                placeholder="Selecione o lembrete"
                 options={[
                   { value: "Sem lembrete", label: "Sem lembrete" },
                   { value: "1 dia antes", label: "1 dia antes" },
