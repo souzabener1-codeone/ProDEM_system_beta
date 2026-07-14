@@ -82,6 +82,15 @@ function initials(name: string) {
     .toUpperCase();
 }
 
+const contactExtras: Record<number, { code: string; tipo: string; tipoTone: string }> = {
+  1: { code: "213670", tipo: "Cidadão", tipoTone: "bg-brand-blue-soft text-brand-blue-strong" },
+  2: { code: "667907", tipo: "Mídia", tipoTone: "bg-brand-orange-soft text-brand-orange" },
+  3: { code: "577830", tipo: "Liderança", tipoTone: "bg-[#F5F3FF] text-waiting" },
+  4: { code: "495391", tipo: "Cidadão", tipoTone: "bg-brand-blue-soft text-brand-blue-strong" },
+  5: { code: "384762", tipo: "Parlamentar", tipoTone: "bg-success-soft text-success" },
+  6: { code: "295184", tipo: "Empresa", tipoTone: "bg-danger-soft text-danger" },
+};
+
 function Contatos() {
   return (
     <AppLayout>
