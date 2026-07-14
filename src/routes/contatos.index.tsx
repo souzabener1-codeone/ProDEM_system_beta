@@ -3,6 +3,7 @@ import { Users, Plus, Search, Eye, Pencil, Phone, Mail } from "lucide-react";
 import { AppLayout } from "@/components/layout/AppLayout";
 import { PageHeader } from "@/components/layout/PageHeader";
 import { SectionHeader } from "@/components/layout/SectionHeader";
+import { ContactAutocomplete } from "@/components/ui/ContactAutocomplete";
 
 export const Route = createFileRoute("/contatos/")({
   head: () => ({
@@ -101,12 +102,13 @@ function Contatos() {
       {/* Filter bar */}
       <div className="mb-6 rounded-2xl bg-navy-800 p-4 shadow-[var(--shadow-card)]">
         <div className="grid grid-cols-1 gap-3 md:grid-cols-[1fr_200px_200px_auto]">
-          <input
-            id="contatos-busca"
-            name="busca"
-            type="text"
+          <ContactAutocomplete
             placeholder="Buscar por nome, email ou telefone…"
-            className="rounded-lg border-0 bg-white px-4 py-2.5 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-brand-blue"
+            options={contacts.map((c) => ({
+              value: String(c.id),
+              label: c.name,
+              sublabel: `${c.email} • ${c.phone}`,
+            }))}
           />
           <select id="contatos-cidade" name="cidade" className="rounded-lg border-0 bg-white px-3 py-2.5 text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-brand-blue">
             <option>Todas as cidades</option>
