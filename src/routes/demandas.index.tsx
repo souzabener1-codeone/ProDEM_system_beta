@@ -1,5 +1,6 @@
+import { useState } from "react";
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { ClipboardList, Plus, Search, Eye, Pencil, Clock, Loader2, AlertTriangle, CheckCircle2, X, Filter } from "lucide-react";
+import { ClipboardList, Plus, Search, Eye, Pencil, Clock, Loader2, AlertTriangle, CheckCircle2, X, Filter, ChevronDown } from "lucide-react";
 import { KPICard } from "@/components/ui/KPICard";
 import { AppLayout } from "@/components/layout/AppLayout";
 import { PageHeader } from "@/components/layout/PageHeader";
@@ -41,6 +42,7 @@ function priorityVariant(p: "Alta" | "Média" | "Baixa") {
 }
 
 function Demandas() {
+  const [filtersOpen, setFiltersOpen] = useState(true);
   return (
     <AppLayout>
       <PageHeader
@@ -67,12 +69,22 @@ function Demandas() {
       </div>
 
       <div className="mb-3 rounded-2xl bg-navy-800 p-5 shadow-[var(--shadow-card)]">
-        <div className="mb-4 flex items-center gap-2 text-white">
-          <Filter className="h-4 w-4" />
-          <span className="text-sm font-semibold">Filtros</span>
-        </div>
+        <button
+          type="button"
+          onClick={() => setFiltersOpen((v) => !v)}
+          aria-expanded={filtersOpen}
+          aria-controls="filters-panel"
+          className={`flex w-full items-center justify-between gap-2 text-white transition-colors hover:text-brand-orange ${filtersOpen ? "mb-4" : ""}`}
+        >
+          <span className="flex items-center gap-2">
+            <Filter className="h-4 w-4" />
+            <span className="text-sm font-semibold">Filtros</span>
+          </span>
+          <ChevronDown className={`h-4 w-4 transition-transform ${filtersOpen ? "rotate-180" : ""}`} />
+        </button>
 
-        <div className="grid grid-cols-2 gap-3 md:grid-cols-4 lg:grid-cols-7">
+        {filtersOpen && (
+        <div id="filters-panel" className="grid grid-cols-2 gap-3 md:grid-cols-4 lg:grid-cols-7">
           <FilterField label="Pesquisar">
             <input
               type="text"
@@ -168,6 +180,7 @@ function Demandas() {
             </button>
           </div>
         </div>
+        )}
       </div>
 
       <div className="overflow-hidden rounded-2xl border border-border bg-card shadow-[var(--shadow-card)]">
