@@ -47,6 +47,8 @@ function NovaDemanda() {
   const navigate = useNavigate();
   const [status, setStatus] = useState("");
   const [categoria, setCategoria] = useState("");
+  const [prioridade, setPrioridade] = useState("Média");
+  const [lembrete, setLembrete] = useState("Sem lembrete");
 
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
