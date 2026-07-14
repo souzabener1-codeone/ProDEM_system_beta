@@ -86,11 +86,12 @@ function NovoContato() {
                 </Field>
               </div>
               <Field label="Tipo de Contato" required>
-                <select className={inputCls}>
-                  <option>Cidadão</option>
-                  <option>Empresa</option>
-                  <option>Servidor</option>
-                </select>
+                <SimpleSelect
+                  value={tipoContato}
+                  onValueChange={setTipoContato}
+                  placeholder="Selecione o tipo de contato"
+                  options={contactTypes}
+                />
               </Field>
               <Field label="CPF/CNPJ">
                 <input className={inputCls} placeholder="000.000.000-00" />
