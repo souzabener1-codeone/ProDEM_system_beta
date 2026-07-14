@@ -60,8 +60,15 @@ function NovaDemanda() {
   const [prioridade, setPrioridade] = useState("Média");
   const [lembrete, setLembrete] = useState("Sem lembrete");
 
-  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+  const [confirmOpen, setConfirmOpen] = useState(false);
+
+  const handleFormSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+    setConfirmOpen(true);
+  };
+
+  const handleConfirmSave = () => {
+    setConfirmOpen(false);
     toast.success("Demanda salva com sucesso!");
     navigate({ to: "/demandas" });
   };
@@ -75,7 +82,7 @@ function NovaDemanda() {
       />
 
       <form
-        onSubmit={handleSubmit}
+        onSubmit={handleFormSubmit}
         className="rounded-[24px] border border-border bg-white p-8 shadow-sm"
       >
         <div className="space-y-5">
