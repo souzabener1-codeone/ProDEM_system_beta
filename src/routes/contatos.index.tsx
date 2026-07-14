@@ -127,7 +127,7 @@ function Contatos() {
       </div>
 
       {/* Filter bar */}
-      <div className="mb-6 rounded-2xl bg-navy-800 p-4 shadow-[var(--shadow-card)]">
+      <div className="mb-3 rounded-2xl bg-navy-800 p-4 shadow-[var(--shadow-card)]">
         <div className="grid grid-cols-1 gap-3 md:grid-cols-[1fr_200px_200px_auto]">
           <ContactAutocomplete
             placeholder="Buscar por código, nome, email ou telefone…"
