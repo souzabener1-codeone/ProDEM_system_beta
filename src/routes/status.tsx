@@ -18,9 +18,9 @@ const statuses = [
   { n: 1, name: "Pendente", desc: "Aguardando triagem inicial", dot: "bg-brand-orange" },
   { n: 2, name: "Em Andamento", desc: "Em execução pela equipe", dot: "bg-brand-blue" },
   { n: 3, name: "Aguardando Retorno", desc: "Aguardando resposta externa", dot: "bg-waiting" },
-  { n: 4, name: "Concluída", desc: "Demanda resolvida com sucesso", dot: "bg-success" },
-  { n: 5, name: "Cancelada", desc: "Encerrada sem execução", dot: "bg-slate-400" },
-  { n: 6, name: "Não atendido", desc: "Contato inacessível ou fora do escopo", dot: "bg-danger" },
+  { n: 4, name: "Concluída", desc: "Demanda resolvida com sucesso", dot: "bg-teal-600" },
+  { n: 5, name: "Cancelada", desc: "Encerrada sem execução", dot: "bg-danger" },
+  { n: 6, name: "Não atendido", desc: "Contato inacessível ou fora do escopo", dot: "bg-slate-700" },
 ];
 
 function Status() {
