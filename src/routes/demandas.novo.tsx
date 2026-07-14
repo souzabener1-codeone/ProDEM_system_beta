@@ -58,8 +58,8 @@ function NovaDemanda() {
   const navigate = useNavigate();
   const [status, setStatus] = useState("");
   const [categoria, setCategoria] = useState("");
-  const [prioridade, setPrioridade] = useState("Média");
-  const [lembrete, setLembrete] = useState("Sem lembrete");
+  const [prioridade, setPrioridade] = useState("");
+  const [lembrete, setLembrete] = useState("");
 
   const [confirmOpen, setConfirmOpen] = useState(false);
 
