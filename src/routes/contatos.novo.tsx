@@ -56,6 +56,8 @@ const textareaCls =
 
 function NovoContato() {
   const navigate = useNavigate();
+  const [tipoContato, setTipoContato] = useState("");
+
 
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
