@@ -6,6 +6,7 @@ import { AppLayout } from "@/components/layout/AppLayout";
 import { PageHeader } from "@/components/layout/PageHeader";
 import { SectionHeader } from "@/components/layout/SectionHeader";
 import { StatusBadge } from "@/components/ui/StatusBadge";
+import { ContactAutocomplete } from "@/components/ui/ContactAutocomplete";
 
 export const Route = createFileRoute("/demandas/")({
   head: () => ({
@@ -84,14 +85,16 @@ function Demandas() {
         </button>
 
         {filtersOpen && (
-        <div id="filters-panel" className="grid grid-cols-2 gap-3 md:grid-cols-4 lg:grid-cols-7">
-          <FilterField label="Pesquisar">
-            <input
-              type="text"
-              placeholder="Título ou descrição..."
-              className="w-full rounded-[10px] border-0 bg-white px-3 py-2 text-sm text-foreground placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-brand-blue"
-            />
-          </FilterField>
+        <div id="filters-panel" className="space-y-3">
+        <ContactAutocomplete
+          placeholder="Buscar por código, nome, email ou telefone…"
+          options={demands.map((d) => ({
+            value: String(d.id),
+            label: d.request,
+            sublabel: `#${d.id} • ${d.contact}`,
+          }))}
+        />
+        <div className="grid grid-cols-2 gap-3 md:grid-cols-4 lg:grid-cols-6">
           <FilterField label="Data Inicial">
             <input
               type="date"
@@ -179,6 +182,7 @@ function Demandas() {
               <X className="h-4 w-4" />
             </button>
           </div>
+        </div>
         </div>
         )}
       </div>
