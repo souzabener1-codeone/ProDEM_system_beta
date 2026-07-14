@@ -68,9 +68,38 @@ const textareaCls =
 function NovoContato() {
   const navigate = useNavigate();
   const [tipoContato, setTipoContato] = useState("");
-
-
+  const [cep, setCep] = useState("");
+  const [endereco, setEndereco] = useState("");
+  const [bairro, setBairro] = useState("");
+  const [cidade, setCidade] = useState("");
+  const [estado, setEstado] = useState("");
+  const [complemento, setComplemento] = useState("");
+  const [cepLoading, setCepLoading] = useState(false);
   const [confirmOpen, setConfirmOpen] = useState(false);
+
+  const handleCepChange = (raw: string) => {
+    const digits = raw.replace(/\D/g, "").slice(0, 8);
+    const formatted = digits.length > 5 ? `${digits.slice(0, 5)}-${digits.slice(5)}` : digits;
+    setCep(formatted);
+    if (digits.length === 8) {
+      setCepLoading(true);
+      fetch(`https://viacep.com.br/ws/${digits}/json/`)
+        .then((r) => r.json())
+        .then((data: { erro?: boolean; logradouro?: string; bairro?: string; localidade?: string; uf?: string; complemento?: string }) => {
+          if (data.erro) {
+            toast.error("CEP não encontrado");
+            return;
+          }
+          setEndereco(data.logradouro ?? "");
+          setBairro(data.bairro ?? "");
+          setCidade(data.localidade ?? "");
+          setEstado(data.uf ?? "");
+          if (data.complemento) setComplemento(data.complemento);
+        })
+        .catch(() => toast.error("Erro ao buscar CEP"))
+        .finally(() => setCepLoading(false));
+    }
+  };
 
   const handleFormSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
