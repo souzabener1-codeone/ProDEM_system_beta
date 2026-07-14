@@ -56,37 +56,107 @@ function Demandas() {
         <KPICard icon={CheckCircle2} value={1} label="Concluídas" tone="green" compact />
       </div>
 
-      <div className="mb-3 rounded-2xl bg-navy-800 p-4 shadow-[var(--shadow-card)]">
+      <div className="mb-3 rounded-2xl bg-navy-800 p-5 shadow-[var(--shadow-card)]">
+        <div className="mb-4 flex items-center gap-2 text-white">
+          <Filter className="h-4 w-4" />
+          <span className="text-sm font-semibold">Filtros</span>
+        </div>
 
-        <div className="grid grid-cols-1 gap-3 md:grid-cols-[1fr_180px_180px_180px_auto]">
-          <input
-            type="text"
-            placeholder="Buscar demanda ou contato…"
-            className="rounded-lg border-0 bg-white px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-brand-blue"
-          />
-          <select className="rounded-lg border-0 bg-white px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-brand-blue">
-            <option>Todos os status</option>
-            <option>Pendente</option>
-            <option>Em Andamento</option>
-            <option>Concluída</option>
-          </select>
-          <select className="rounded-lg border-0 bg-white px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-brand-blue">
-            <option>Todas as categorias</option>
-            <option>Ofício</option>
-            <option>Emenda</option>
-          </select>
-          <select className="rounded-lg border-0 bg-white px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-brand-blue">
-            <option>Prioridade</option>
-            <option>Alta</option>
-            <option>Média</option>
-            <option>Baixa</option>
-          </select>
-          <button
-            aria-label="Buscar"
-            className="inline-flex h-10 w-10 items-center justify-center rounded-full bg-brand-orange text-white transition-transform hover:brightness-110 active:scale-95"
-          >
-            <Search className="h-4 w-4" />
-          </button>
+        <div className="grid grid-cols-2 gap-3 md:grid-cols-4 lg:grid-cols-7">
+          <FilterField label="Pesquisar">
+            <input
+              type="text"
+              placeholder="Título ou descrição..."
+              className="w-full rounded-[10px] border-0 bg-white px-3 py-2 text-sm text-foreground placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-brand-blue"
+            />
+          </FilterField>
+          <FilterField label="Data Inicial">
+            <input
+              type="date"
+              className="w-full rounded-[10px] border-0 bg-white px-3 py-2 text-sm text-slate-500 focus:outline-none focus:ring-2 focus:ring-brand-blue"
+            />
+          </FilterField>
+          <FilterField label="Data Final">
+            <input
+              type="date"
+              className="w-full rounded-[10px] border-0 bg-white px-3 py-2 text-sm text-slate-500 focus:outline-none focus:ring-2 focus:ring-brand-blue"
+            />
+          </FilterField>
+          <FilterField label="Categoria">
+            <select className="w-full rounded-[10px] border-0 bg-white px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand-blue">
+              <option>Todas</option>
+              <option>Ofício</option>
+              <option>Indicação</option>
+              <option>Requerimento</option>
+              <option>Emenda</option>
+              <option>Projeto de Lei</option>
+              <option>Mensagem</option>
+              <option>Saúde/Exames</option>
+            </select>
+          </FilterField>
+          <FilterField label="Prioridade">
+            <select className="w-full rounded-[10px] border-0 bg-white px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand-blue">
+              <option>Todas</option>
+              <option>Alta</option>
+              <option>Média</option>
+              <option>Baixa</option>
+            </select>
+          </FilterField>
+          <FilterField label="Status">
+            <select className="w-full rounded-[10px] border-0 bg-white px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand-blue">
+              <option>Todos</option>
+              <option>Pendente</option>
+              <option>Em Andamento</option>
+              <option>Aguardando Retorno</option>
+              <option>Concluída</option>
+              <option>Cancelada</option>
+              <option>Não atendido</option>
+            </select>
+          </FilterField>
+          <FilterField label="Ordenar por">
+            <select className="w-full rounded-[10px] border-0 bg-white px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand-blue">
+              <option>Vencimento</option>
+              <option>Data de criação</option>
+              <option>Prioridade</option>
+              <option>Status</option>
+            </select>
+          </FilterField>
+          <FilterField label="Tipo Contato">
+            <select className="w-full rounded-[10px] border-0 bg-white px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand-blue">
+              <option>Todos</option>
+              <option>Parlamentar</option>
+              <option>Autoridade</option>
+              <option>Cidadão</option>
+              <option>Entidade</option>
+              <option>Empresa</option>
+            </select>
+          </FilterField>
+          <FilterField label="Cidade">
+            <select className="w-full rounded-[10px] border-0 bg-white px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand-blue">
+              <option>Todas</option>
+            </select>
+          </FilterField>
+          <FilterField label="Bairro">
+            <select className="w-full rounded-[10px] border-0 bg-white px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand-blue">
+              <option>Todos</option>
+            </select>
+          </FilterField>
+          <div className="flex items-end gap-2">
+            <button
+              type="button"
+              aria-label="Aplicar filtros"
+              className="inline-flex h-10 w-10 items-center justify-center rounded-full bg-brand-orange text-white transition-transform hover:brightness-110 active:scale-95"
+            >
+              <Search className="h-4 w-4" />
+            </button>
+            <button
+              type="button"
+              aria-label="Limpar filtros"
+              className="inline-flex h-10 w-10 items-center justify-center rounded-full bg-slate-500 text-white transition-transform hover:brightness-110 active:scale-95"
+            >
+              <X className="h-4 w-4" />
+            </button>
+          </div>
         </div>
       </div>
 
