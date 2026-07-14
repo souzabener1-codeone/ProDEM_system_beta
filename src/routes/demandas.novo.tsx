@@ -1,10 +1,11 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
-import { ClipboardList, X, Save, Search, Upload } from "lucide-react";
+import { ClipboardList, X, Save, Search } from "lucide-react";
 import { useState, type ReactNode } from "react";
 import { toast } from "sonner";
 import { AppLayout } from "@/components/layout/AppLayout";
 import { PageHeader } from "@/components/layout/PageHeader";
 import { StatusSelect } from "@/components/ui/StatusSelect";
+import { FileUpload } from "@/components/ui/FileUpload";
 import { CategorySelect } from "@/components/ui/CategorySelect";
 import { SimpleSelect } from "@/components/ui/SimpleSelect";
 import {
@@ -169,16 +170,7 @@ function NovaDemanda() {
 
           <div>
             <span className="mb-2 block text-sm font-medium text-slate-800">Anexos</span>
-            <label className="flex cursor-pointer flex-col items-center justify-center gap-2 rounded-[16px] border-2 border-dashed border-slate-200 bg-slate-50/50 px-6 py-8 text-center transition-colors hover:border-brand-blue hover:bg-brand-blue-soft/40">
-              <Upload className="h-5 w-5 text-slate-400" />
-              <span className="text-sm text-slate-600">
-                Clique para selecionar arquivos ou arraste aqui
-              </span>
-              <span className="text-xs text-slate-400">
-                PDF, DOC, DOCX, XLS, XLSX, JPG, PNG (máx. 10MB)
-              </span>
-              <input type="file" multiple className="hidden" />
-            </label>
+            <FileUpload />
           </div>
         </div>
 
