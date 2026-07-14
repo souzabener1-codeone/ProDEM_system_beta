@@ -109,63 +109,70 @@ function Demandas() {
             />
           </FilterField>
           <FilterField label="Categoria">
-            <select className="w-full rounded-[10px] border-0 bg-white px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand-blue">
-              <option>Todas</option>
-              <option>Ofício</option>
-              <option>Indicação</option>
-              <option>Requerimento</option>
-              <option>Emenda</option>
-              <option>Projeto de Lei</option>
-              <option>Mensagem</option>
-              <option>Saúde/Exames</option>
-            </select>
+            <MultiSelect
+              placeholder="Todas"
+              options={[
+                { value: "oficio", label: "Ofício" },
+                { value: "indicacao", label: "Indicação" },
+                { value: "requerimento", label: "Requerimento" },
+                { value: "emenda", label: "Emenda" },
+                { value: "projeto_lei", label: "Projeto de Lei" },
+                { value: "mensagem", label: "Mensagem" },
+                { value: "saude_exames", label: "Saúde/Exames" },
+              ]}
+            />
           </FilterField>
           <FilterField label="Prioridade">
-            <select className="w-full rounded-[10px] border-0 bg-white px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand-blue">
-              <option>Todas</option>
-              <option>Alta</option>
-              <option>Média</option>
-              <option>Baixa</option>
-            </select>
+            <MultiSelect
+              placeholder="Todas"
+              options={[
+                { value: "alta", label: "Alta" },
+                { value: "media", label: "Média" },
+                { value: "baixa", label: "Baixa" },
+              ]}
+            />
           </FilterField>
           <FilterField label="Status">
-            <select className="w-full rounded-[10px] border-0 bg-white px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand-blue">
-              <option>Todos</option>
-              <option>Pendente</option>
-              <option>Em Andamento</option>
-              <option>Aguardando Retorno</option>
-              <option>Concluída</option>
-              <option>Cancelada</option>
-              <option>Não atendido</option>
-            </select>
+            <MultiSelect
+              placeholder="Todos"
+              options={[
+                { value: "pendente", label: "Pendente" },
+                { value: "em_andamento", label: "Em Andamento" },
+                { value: "aguardando", label: "Aguardando Retorno" },
+                { value: "concluida", label: "Concluída" },
+                { value: "cancelada", label: "Cancelada" },
+                { value: "nao_atendido", label: "Não atendido" },
+              ]}
+            />
           </FilterField>
           <FilterField label="Ordenar por">
-            <select className="w-full rounded-[10px] border-0 bg-white px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand-blue">
-              <option>Vencimento</option>
-              <option>Data de criação</option>
-              <option>Prioridade</option>
-              <option>Status</option>
-            </select>
+            <MultiSelect
+              placeholder="Vencimento"
+              options={[
+                { value: "vencimento", label: "Vencimento" },
+                { value: "criacao", label: "Data de criação" },
+                { value: "prioridade", label: "Prioridade" },
+                { value: "status", label: "Status" },
+              ]}
+            />
           </FilterField>
           <FilterField label="Tipo Contato">
-            <select className="w-full rounded-[10px] border-0 bg-white px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand-blue">
-              <option>Todos</option>
-              <option>Parlamentar</option>
-              <option>Autoridade</option>
-              <option>Cidadão</option>
-              <option>Entidade</option>
-              <option>Empresa</option>
-            </select>
+            <MultiSelect
+              placeholder="Todos"
+              options={[
+                { value: "parlamentar", label: "Parlamentar" },
+                { value: "autoridade", label: "Autoridade" },
+                { value: "cidadao", label: "Cidadão" },
+                { value: "entidade", label: "Entidade" },
+                { value: "empresa", label: "Empresa" },
+              ]}
+            />
           </FilterField>
           <FilterField label="Cidade">
-            <select className="w-full rounded-[10px] border-0 bg-white px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand-blue">
-              <option>Todas</option>
-            </select>
+            <MultiSelect placeholder="Todas" options={[]} />
           </FilterField>
           <FilterField label="Bairro">
-            <select className="w-full rounded-[10px] border-0 bg-white px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand-blue">
-              <option>Todos</option>
-            </select>
+            <MultiSelect placeholder="Todos" options={[]} />
           </FilterField>
           <div className="flex items-end gap-2">
             <button
