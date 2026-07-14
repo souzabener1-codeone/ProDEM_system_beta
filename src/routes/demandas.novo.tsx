@@ -6,6 +6,7 @@ import { AppLayout } from "@/components/layout/AppLayout";
 import { PageHeader } from "@/components/layout/PageHeader";
 import { StatusSelect } from "@/components/ui/StatusSelect";
 import { CategorySelect } from "@/components/ui/CategorySelect";
+import { SimpleSelect } from "@/components/ui/SimpleSelect";
 
 export const Route = createFileRoute("/demandas/novo")({
   head: () => ({
@@ -46,6 +47,8 @@ function NovaDemanda() {
   const navigate = useNavigate();
   const [status, setStatus] = useState("");
   const [categoria, setCategoria] = useState("");
+  const [prioridade, setPrioridade] = useState("Média");
+  const [lembrete, setLembrete] = useState("Sem lembrete");
 
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -83,23 +86,33 @@ function NovaDemanda() {
               <CategorySelect value={categoria} onValueChange={setCategoria} />
             </Field>
             <Field label="Prioridade" required>
-              <select className={inputCls} defaultValue="Média">
-                <option>Alta</option>
-                <option>Média</option>
-                <option>Baixa</option>
-              </select>
+              <SimpleSelect
+                value={prioridade}
+                onValueChange={setPrioridade}
+                placeholder="Selecione a prioridade"
+                options={[
+                  { value: "Alta", label: "Alta" },
+                  { value: "Média", label: "Média" },
+                  { value: "Baixa", label: "Baixa" },
+                ]}
+              />
             </Field>
 
             <Field label="Dias Estimados">
               <input type="number" min={0} className={inputCls} placeholder="Ex: 5" />
             </Field>
             <Field label="Lembrete">
-              <select className={inputCls} defaultValue="Sem lembrete">
-                <option>Sem lembrete</option>
-                <option>1 dia antes</option>
-                <option>3 dias antes</option>
-                <option>1 semana antes</option>
-              </select>
+              <SimpleSelect
+                value={lembrete}
+                onValueChange={setLembrete}
+                placeholder="Selecione um lembrete"
+                options={[
+                  { value: "Sem lembrete", label: "Sem lembrete" },
+                  { value: "1 dia antes", label: "1 dia antes" },
+                  { value: "3 dias antes", label: "3 dias antes" },
+                  { value: "1 semana antes", label: "1 semana antes" },
+                ]}
+              />
             </Field>
 
             <Field label="Status" required>
