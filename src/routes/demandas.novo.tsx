@@ -7,6 +7,16 @@ import { PageHeader } from "@/components/layout/PageHeader";
 import { StatusSelect } from "@/components/ui/StatusSelect";
 import { CategorySelect } from "@/components/ui/CategorySelect";
 import { SimpleSelect } from "@/components/ui/SimpleSelect";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 
 export const Route = createFileRoute("/demandas/novo")({
   head: () => ({
@@ -50,8 +60,15 @@ function NovaDemanda() {
   const [prioridade, setPrioridade] = useState("Média");
   const [lembrete, setLembrete] = useState("Sem lembrete");
 
-  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+  const [confirmOpen, setConfirmOpen] = useState(false);
+
+  const handleFormSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+    setConfirmOpen(true);
+  };
+
+  const handleConfirmSave = () => {
+    setConfirmOpen(false);
     toast.success("Demanda salva com sucesso!");
     navigate({ to: "/demandas" });
   };
@@ -65,7 +82,7 @@ function NovaDemanda() {
       />
 
       <form
-        onSubmit={handleSubmit}
+        onSubmit={handleFormSubmit}
         className="rounded-[24px] border border-border bg-white p-8 shadow-sm"
       >
         <div className="space-y-5">
@@ -182,6 +199,21 @@ function NovaDemanda() {
           </button>
         </div>
       </form>
+
+      <AlertDialog open={confirmOpen} onOpenChange={setConfirmOpen}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Salvar demanda?</AlertDialogTitle>
+            <AlertDialogDescription>
+              Deseja realmente salvar esta demanda? Verifique os dados informados antes de confirmar.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancelar</AlertDialogCancel>
+            <AlertDialogAction onClick={handleConfirmSave}>Confirmar</AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </AppLayout>
   );
 }

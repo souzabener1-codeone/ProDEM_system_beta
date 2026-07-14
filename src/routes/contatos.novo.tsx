@@ -5,6 +5,17 @@ import { toast } from "sonner";
 import { AppLayout } from "@/components/layout/AppLayout";
 import { PageHeader } from "@/components/layout/PageHeader";
 import { SimpleSelect } from "@/components/ui/SimpleSelect";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
 
 const contactTypes = [
   { value: "Parlamentar", label: "Parlamentar" },
@@ -59,8 +70,15 @@ function NovoContato() {
   const [tipoContato, setTipoContato] = useState("");
 
 
-  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+  const [confirmOpen, setConfirmOpen] = useState(false);
+
+  const handleFormSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+    setConfirmOpen(true);
+  };
+
+  const handleConfirmSave = () => {
+    setConfirmOpen(false);
     toast.success("Contato salvo com sucesso!");
     navigate({ to: "/contatos" });
   };
@@ -73,7 +91,7 @@ function NovoContato() {
         subtitle="Cadastre um novo contato"
       />
 
-      <form onSubmit={handleSubmit} className="rounded-[24px] border border-border bg-white p-8 shadow-sm">
+      <form onSubmit={handleFormSubmit} className="rounded-[24px] border border-border bg-white p-8 shadow-sm">
         <div className="space-y-10">
           {/* Dados Pessoais */}
           <section>
@@ -222,6 +240,21 @@ function NovoContato() {
           </button>
         </div>
       </form>
+
+      <AlertDialog open={confirmOpen} onOpenChange={setConfirmOpen}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Salvar contato?</AlertDialogTitle>
+            <AlertDialogDescription>
+              Deseja realmente salvar este contato? Verifique os dados informados antes de confirmar.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancelar</AlertDialogCancel>
+            <AlertDialogAction onClick={handleConfirmSave}>Confirmar</AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </AppLayout>
   );
 }
