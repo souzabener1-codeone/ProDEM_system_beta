@@ -112,13 +112,7 @@ function NovaDemanda() {
             </Field>
 
             <Field label="Status" required>
-              <select className={inputCls} defaultValue="Pendente">
-                <option>Pendente</option>
-                <option>Em Andamento</option>
-                <option>Aguardando Retorno</option>
-                <option>Concluída</option>
-                <option>Cancelada</option>
-              </select>
+              <StatusSelect value={status} onValueChange={setStatus} />
             </Field>
             <Field label="Data Solicitação" required>
               <input type="date" className={inputCls} defaultValue="2026-07-13" />
