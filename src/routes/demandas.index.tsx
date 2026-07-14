@@ -7,6 +7,7 @@ import { PageHeader } from "@/components/layout/PageHeader";
 import { SectionHeader } from "@/components/layout/SectionHeader";
 import { StatusBadge } from "@/components/ui/StatusBadge";
 import { ContactAutocomplete } from "@/components/ui/ContactAutocomplete";
+import { MultiSelect } from "@/components/ui/MultiSelect";
 
 export const Route = createFileRoute("/demandas/")({
   head: () => ({
