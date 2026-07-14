@@ -125,6 +125,13 @@ function Contatos() {
         <KPICard icon={Building2} value={0} label="Entidades" tone="green" />
         <KPICard icon={Building2} value={1} label="Empresas" tone="orange" />
       </div>
+
+      {/* Filter bar */}
+      <div className="mb-6 rounded-2xl bg-navy-800 p-4 shadow-[var(--shadow-card)]">
+        <div className="grid grid-cols-1 gap-3 md:grid-cols-[1fr_200px_200px_auto]">
+          <ContactAutocomplete
+            placeholder="Buscar por código, nome, email ou telefone…"
+            options={contacts.map((c) => ({
               value: String(c.id),
               label: c.name,
               sublabel: `${c.email} • ${c.phone}`,
