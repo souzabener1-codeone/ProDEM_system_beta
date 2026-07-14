@@ -1,8 +1,9 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { Users, Plus, Search, Eye, Pencil, Phone, Mail } from "lucide-react";
+import { Users, Plus, Search, Eye, Pencil, Phone, Mail, Hash, Building2, UserCheck, FileDown, FileSpreadsheet } from "lucide-react";
 import { AppLayout } from "@/components/layout/AppLayout";
 import { PageHeader } from "@/components/layout/PageHeader";
 import { SectionHeader } from "@/components/layout/SectionHeader";
+import { KPICard } from "@/components/ui/KPICard";
 import { ContactAutocomplete } from "@/components/ui/ContactAutocomplete";
 
 export const Route = createFileRoute("/contatos/")({
@@ -81,6 +82,15 @@ function initials(name: string) {
     .toUpperCase();
 }
 
+const contactExtras: Record<number, { code: string; tipo: string; tipoTone: string }> = {
+  1: { code: "213670", tipo: "Cidadão", tipoTone: "bg-brand-blue-soft text-brand-blue-strong" },
+  2: { code: "667907", tipo: "Mídia", tipoTone: "bg-brand-orange-soft text-brand-orange" },
+  3: { code: "577830", tipo: "Liderança", tipoTone: "bg-[#F5F3FF] text-waiting" },
+  4: { code: "495391", tipo: "Cidadão", tipoTone: "bg-brand-blue-soft text-brand-blue-strong" },
+  5: { code: "384762", tipo: "Parlamentar", tipoTone: "bg-success-soft text-success" },
+  6: { code: "295184", tipo: "Empresa", tipoTone: "bg-danger-soft text-danger" },
+};
+
 function Contatos() {
   return (
     <AppLayout>
@@ -89,21 +99,38 @@ function Contatos() {
         title="Contatos"
         subtitle="Cadastro e gestão de cidadãos atendidos pelo gabinete"
         action={
-          <Link
-            to="/contatos/novo"
-            className="inline-flex items-center gap-2 rounded-full bg-brand-blue px-5 py-2.5 text-sm font-semibold text-white shadow-sm transition-all hover:bg-brand-blue-strong active:scale-[0.98]"
-          >
-            <Plus className="h-4 w-4" />
-            Novo Contato
-          </Link>
+          <>
+            <button
+              type="button"
+              className="inline-flex items-center gap-2 rounded-full border border-border bg-white px-4 py-2.5 text-sm font-semibold text-foreground shadow-sm transition-colors hover:bg-slate-50"
+            >
+              <Hash className="h-4 w-4" />
+              Gerar Códigos
+            </button>
+            <Link
+              to="/contatos/novo"
+              className="inline-flex items-center gap-2 rounded-full bg-brand-blue px-5 py-2.5 text-sm font-semibold text-white shadow-sm transition-all hover:bg-brand-blue-strong active:scale-[0.98]"
+            >
+              <Plus className="h-4 w-4" />
+              Novo Contato
+            </Link>
+          </>
         }
       />
+
+      {/* KPIs */}
+      <div className="mb-6 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
+        <KPICard icon={Users} value={contacts.length} label="Total" tone="blue" />
+        <KPICard icon={UserCheck} value={4} label="Cidadãos" tone="navy" />
+        <KPICard icon={Building2} value={0} label="Entidades" tone="green" />
+        <KPICard icon={Building2} value={1} label="Empresas" tone="orange" />
+      </div>
 
       {/* Filter bar */}
       <div className="mb-6 rounded-2xl bg-navy-800 p-4 shadow-[var(--shadow-card)]">
         <div className="grid grid-cols-1 gap-3 md:grid-cols-[1fr_200px_200px_auto]">
           <ContactAutocomplete
-            placeholder="Buscar por nome, email ou telefone…"
+            placeholder="Buscar por código, nome, email ou telefone…"
             options={contacts.map((c) => ({
               value: String(c.id),
               label: c.name,
@@ -130,24 +157,50 @@ function Contatos() {
       </div>
 
       <div className="overflow-hidden rounded-2xl border border-border bg-card shadow-[var(--shadow-card)]">
-        <SectionHeader title="Lista de Contatos" count={266} />
+        <SectionHeader
+          title="Lista de Contatos"
+          count={contacts.length}
+          action={
+            <div className="flex items-center gap-2">
+              <button
+                type="button"
+                className="inline-flex items-center gap-1.5 rounded-full bg-white/10 px-3 py-1.5 text-xs font-semibold text-white transition-colors hover:bg-white/20"
+              >
+                <FileDown className="h-3.5 w-3.5" />
+                PDF
+              </button>
+              <button
+                type="button"
+                className="inline-flex items-center gap-1.5 rounded-full bg-white/10 px-3 py-1.5 text-xs font-semibold text-white transition-colors hover:bg-white/20"
+              >
+                <FileSpreadsheet className="h-3.5 w-3.5" />
+                Excel
+              </button>
+            </div>
+          }
+        />
         <div className="overflow-x-auto">
           <table className="w-full text-sm">
             <thead className="bg-slate-50 text-xs uppercase tracking-wide text-muted-foreground">
               <tr>
+                <th className="px-5 py-3 text-left font-semibold">Código</th>
                 <th className="px-5 py-3 text-left font-semibold">Contato</th>
+                <th className="px-5 py-3 text-left font-semibold">Tipo</th>
                 <th className="px-5 py-3 text-left font-semibold">Telefone</th>
-                <th className="px-5 py-3 text-left font-semibold">Cidade</th>
+                <th className="px-5 py-3 text-left font-semibold">Localização</th>
                 <th className="px-5 py-3 text-left font-semibold">Demandas</th>
                 <th className="px-5 py-3 text-right font-semibold">Ações</th>
               </tr>
             </thead>
             <tbody>
-              {contacts.map((c) => (
+              {contacts.map((c) => {
+                const extra = contactExtras[c.id];
+                return (
                 <tr
                   key={c.id}
                   className="border-t border-border transition-colors hover:bg-slate-50"
                 >
+                  <td className="px-5 py-3.5 font-semibold text-brand-blue-strong">{extra?.code}</td>
                   <td className="px-5 py-3.5">
                     <div className="flex items-center gap-3">
                       <div
@@ -163,6 +216,11 @@ function Contatos() {
                         </div>
                       </div>
                     </div>
+                  </td>
+                  <td className="px-5 py-3.5">
+                    <span className={`inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-semibold ${extra?.tipoTone}`}>
+                      {extra?.tipo}
+                    </span>
                   </td>
                   <td className="px-5 py-3.5">
                     <span className="inline-flex items-center gap-1.5 text-muted-foreground">
@@ -193,7 +251,8 @@ function Contatos() {
                     </div>
                   </td>
                 </tr>
-              ))}
+                );
+              })}
             </tbody>
           </table>
         </div>
