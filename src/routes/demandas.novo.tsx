@@ -5,6 +5,7 @@ import { toast } from "sonner";
 import { AppLayout } from "@/components/layout/AppLayout";
 import { PageHeader } from "@/components/layout/PageHeader";
 import { StatusSelect } from "@/components/ui/StatusSelect";
+import { FileUpload } from "@/components/ui/FileUpload";
 import { CategorySelect } from "@/components/ui/CategorySelect";
 import { SimpleSelect } from "@/components/ui/SimpleSelect";
 import {
