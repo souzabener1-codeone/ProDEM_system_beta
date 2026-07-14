@@ -68,9 +68,38 @@ const textareaCls =
 function NovoContato() {
   const navigate = useNavigate();
   const [tipoContato, setTipoContato] = useState("");
-
-
+  const [cep, setCep] = useState("");
+  const [endereco, setEndereco] = useState("");
+  const [bairro, setBairro] = useState("");
+  const [cidade, setCidade] = useState("");
+  const [estado, setEstado] = useState("");
+  const [complemento, setComplemento] = useState("");
+  const [cepLoading, setCepLoading] = useState(false);
   const [confirmOpen, setConfirmOpen] = useState(false);
+
+  const handleCepChange = (raw: string) => {
+    const digits = raw.replace(/\D/g, "").slice(0, 8);
+    const formatted = digits.length > 5 ? `${digits.slice(0, 5)}-${digits.slice(5)}` : digits;
+    setCep(formatted);
+    if (digits.length === 8) {
+      setCepLoading(true);
+      fetch(`https://viacep.com.br/ws/${digits}/json/`)
+        .then((r) => r.json())
+        .then((data: { erro?: boolean; logradouro?: string; bairro?: string; localidade?: string; uf?: string; complemento?: string }) => {
+          if (data.erro) {
+            toast.error("CEP não encontrado");
+            return;
+          }
+          setEndereco(data.logradouro ?? "");
+          setBairro(data.bairro ?? "");
+          setCidade(data.localidade ?? "");
+          setEstado(data.uf ?? "");
+          if (data.complemento) setComplemento(data.complemento);
+        })
+        .catch(() => toast.error("Erro ao buscar CEP"))
+        .finally(() => setCepLoading(false));
+    }
+  };
 
   const handleFormSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -138,15 +167,26 @@ function NovoContato() {
             <div className="grid gap-x-6 gap-y-5 md:grid-cols-12">
               <div className="md:col-span-3">
                 <Field label="CEP">
-                  <input className={inputCls} placeholder="00000-000" />
+                  <input
+                    className={inputCls}
+                    placeholder="00000-000"
+                    value={cep}
+                    onChange={(e) => handleCepChange(e.target.value)}
+                    maxLength={9}
+                  />
                 </Field>
                 <p className="mt-2 text-xs text-slate-500">
-                  Digite o CEP para preencher o endereço automaticamente
+                  {cepLoading ? "Buscando endereço..." : "Digite o CEP para preencher o endereço automaticamente"}
                 </p>
               </div>
               <div className="md:col-span-7">
                 <Field label="Endereço">
-                  <input className={inputCls} placeholder="Rua, Avenida..." />
+                  <input
+                    className={inputCls}
+                    placeholder="Rua, Avenida..."
+                    value={endereco}
+                    onChange={(e) => setEndereco(e.target.value)}
+                  />
                 </Field>
               </div>
               <div className="md:col-span-2">
@@ -154,54 +194,49 @@ function NovoContato() {
                   <input className={inputCls} placeholder="Nº" />
                 </Field>
               </div>
-              
+
               <div className="md:col-span-4">
                 <Field label="Complemento">
-                  <input className={inputCls} placeholder="Apto, Bloco, Sala..." />
+                  <input
+                    className={inputCls}
+                    placeholder="Apto, Bloco, Sala..."
+                    value={complemento}
+                    onChange={(e) => setComplemento(e.target.value)}
+                  />
                 </Field>
               </div>
               <div className="md:col-span-4">
                 <Field label="Bairro">
-                  <input className={inputCls} placeholder="Bairro" />
+                  <input
+                    className={inputCls}
+                    placeholder="Bairro"
+                    value={bairro}
+                    onChange={(e) => setBairro(e.target.value)}
+                  />
                 </Field>
               </div>
               <div className="md:col-span-4">
                 <Field label="Cidade">
-                  <input className={inputCls} placeholder="Cidade" />
+                  <input
+                    className={inputCls}
+                    placeholder="Cidade"
+                    value={cidade}
+                    onChange={(e) => setCidade(e.target.value)}
+                  />
                 </Field>
               </div>
 
               <div className="md:col-span-4">
                 <Field label="Estado">
-                  <select className={inputCls}>
-                    <option>-</option>
-                    <option>AC</option>
-                    <option>AL</option>
-                    <option>AP</option>
-                    <option>AM</option>
-                    <option>BA</option>
-                    <option>CE</option>
-                    <option>DF</option>
-                    <option>ES</option>
-                    <option>GO</option>
-                    <option>MA</option>
-                    <option>MT</option>
-                    <option>MS</option>
-                    <option>MG</option>
-                    <option>PA</option>
-                    <option>PB</option>
-                    <option>PR</option>
-                    <option>PE</option>
-                    <option>PI</option>
-                    <option>RJ</option>
-                    <option>RN</option>
-                    <option>RS</option>
-                    <option>RO</option>
-                    <option>RR</option>
-                    <option>SC</option>
-                    <option>SP</option>
-                    <option>SE</option>
-                    <option>TO</option>
+                  <select
+                    className={inputCls}
+                    value={estado}
+                    onChange={(e) => setEstado(e.target.value)}
+                  >
+                    <option value="">-</option>
+                    {["AC","AL","AP","AM","BA","CE","DF","ES","GO","MA","MT","MS","MG","PA","PB","PR","PE","PI","RJ","RN","RS","RO","RR","SC","SP","SE","TO"].map((uf) => (
+                      <option key={uf} value={uf}>{uf}</option>
+                    ))}
                   </select>
                 </Field>
               </div>
