@@ -1,5 +1,5 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
-import { ClipboardList, X, Save, Search, Upload } from "lucide-react";
+import { ClipboardList, X, Save, Search } from "lucide-react";
 import { useState, type ReactNode } from "react";
 import { toast } from "sonner";
 import { AppLayout } from "@/components/layout/AppLayout";
