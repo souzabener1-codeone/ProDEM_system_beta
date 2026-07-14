@@ -7,6 +7,7 @@ interface KPICardProps {
   value: number | string;
   label: string;
   tone?: Tone;
+  compact?: boolean;
 }
 
 const toneMap: Record<Tone, { card: string; icon: string; number: string }> = {
@@ -42,17 +43,23 @@ const toneMap: Record<Tone, { card: string; icon: string; number: string }> = {
   },
 };
 
-export function KPICard({ icon: Icon, value, label, tone = "blue" }: KPICardProps) {
+export function KPICard({ icon: Icon, value, label, tone = "blue", compact = false }: KPICardProps) {
   const t = toneMap[tone];
   return (
     <div
-      className={`rounded-2xl border p-5 shadow-[0_1px_3px_rgba(15,30,61,0.05)] transition-shadow hover:shadow-[0_4px_12px_rgba(15,30,61,0.08)] ${t.card}`}
+      className={`rounded-2xl border shadow-[0_1px_3px_rgba(15,30,61,0.05)] transition-shadow hover:shadow-[0_4px_12px_rgba(15,30,61,0.08)] ${
+        compact ? "p-3.5" : "p-5"
+      } ${t.card}`}
     >
-      <div className={`mb-4 flex h-10 w-10 items-center justify-center rounded-full ${t.icon}`}>
-        <Icon className="h-5 w-5" strokeWidth={2.2} />
+      <div
+        className={`flex items-center justify-center rounded-full ${t.icon} ${
+          compact ? "mb-2 h-8 w-8" : "mb-4 h-10 w-10"
+        }`}
+      >
+        <Icon className={compact ? "h-4 w-4" : "h-5 w-5"} strokeWidth={2.2} />
       </div>
-      <div className={`text-3xl font-bold leading-none ${t.number}`}>{value}</div>
-      <div className="mt-2 text-sm font-medium text-muted-foreground">{label}</div>
+      <div className={`font-bold leading-none ${t.number} ${compact ? "text-2xl" : "text-3xl"}`}>{value}</div>
+      <div className={`mt-1.5 font-medium text-muted-foreground ${compact ? "text-xs" : "text-sm"}`}>{label}</div>
     </div>
   );
 }
