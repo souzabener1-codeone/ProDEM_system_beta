@@ -6,6 +6,7 @@ import { AppLayout } from "@/components/layout/AppLayout";
 import { PageHeader } from "@/components/layout/PageHeader";
 import { SectionHeader } from "@/components/layout/SectionHeader";
 import { StatusBadge } from "@/components/ui/StatusBadge";
+import { ContactAutocomplete } from "@/components/ui/ContactAutocomplete";
 
 export const Route = createFileRoute("/demandas/")({
   head: () => ({
