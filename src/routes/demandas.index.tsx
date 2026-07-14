@@ -49,14 +49,15 @@ function Demandas() {
       />
 
       {/* KPIs */}
-      <div className="mb-8 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
-        <KPICard icon={Clock} value={1} label="Pendentes" tone="orange" />
-        <KPICard icon={Loader2} value={2} label="Em Progresso" tone="blue" />
-        <KPICard icon={AlertTriangle} value={1} label="Atrasadas" tone="red" />
-        <KPICard icon={CheckCircle2} value={1} label="Concluídas" tone="green" />
+      <div className="mb-4 grid grid-cols-2 gap-3 lg:grid-cols-4">
+        <KPICard icon={Clock} value={1} label="Pendentes" tone="orange" compact />
+        <KPICard icon={Loader2} value={2} label="Em Progresso" tone="blue" compact />
+        <KPICard icon={AlertTriangle} value={1} label="Atrasadas" tone="red" compact />
+        <KPICard icon={CheckCircle2} value={1} label="Concluídas" tone="green" compact />
       </div>
 
-      <div className="mb-6 rounded-2xl bg-navy-800 p-4 shadow-[var(--shadow-card)]">
+      <div className="mb-3 rounded-2xl bg-navy-800 p-4 shadow-[var(--shadow-card)]">
+
         <div className="grid grid-cols-1 gap-3 md:grid-cols-[1fr_180px_180px_180px_auto]">
           <input
             type="text"
