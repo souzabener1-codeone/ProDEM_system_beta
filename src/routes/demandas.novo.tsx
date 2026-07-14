@@ -1,9 +1,10 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { ClipboardList, X, Save, Search, Upload } from "lucide-react";
-import type { ReactNode } from "react";
+import { useState, type ReactNode } from "react";
 import { toast } from "sonner";
 import { AppLayout } from "@/components/layout/AppLayout";
 import { PageHeader } from "@/components/layout/PageHeader";
+import { StatusSelect } from "@/components/ui/StatusSelect";
 
 export const Route = createFileRoute("/demandas/novo")({
   head: () => ({
@@ -42,6 +43,7 @@ const textareaCls =
 
 function NovaDemanda() {
   const navigate = useNavigate();
+  const [status, setStatus] = useState("Pendente");
 
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -110,13 +112,7 @@ function NovaDemanda() {
             </Field>
 
             <Field label="Status" required>
-              <select className={inputCls} defaultValue="Pendente">
-                <option>Pendente</option>
-                <option>Em Andamento</option>
-                <option>Aguardando Retorno</option>
-                <option>Concluída</option>
-                <option>Cancelada</option>
-              </select>
+              <StatusSelect value={status} onValueChange={setStatus} />
             </Field>
             <Field label="Data Solicitação" required>
               <input type="date" className={inputCls} defaultValue="2026-07-13" />
