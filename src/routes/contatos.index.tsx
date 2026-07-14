@@ -1,8 +1,9 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { Users, Plus, Search, Eye, Pencil, Phone, Mail } from "lucide-react";
+import { Users, Plus, Search, Eye, Pencil, Phone, Mail, Hash, Building2, UserCheck, FileDown, FileSpreadsheet } from "lucide-react";
 import { AppLayout } from "@/components/layout/AppLayout";
 import { PageHeader } from "@/components/layout/PageHeader";
 import { SectionHeader } from "@/components/layout/SectionHeader";
+import { KPICard } from "@/components/ui/KPICard";
 import { ContactAutocomplete } from "@/components/ui/ContactAutocomplete";
 
 export const Route = createFileRoute("/contatos/")({
