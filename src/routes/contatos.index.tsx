@@ -99,22 +99,32 @@ function Contatos() {
         title="Contatos"
         subtitle="Cadastro e gestão de cidadãos atendidos pelo gabinete"
         action={
-          <Link
-            to="/contatos/novo"
-            className="inline-flex items-center gap-2 rounded-full bg-brand-blue px-5 py-2.5 text-sm font-semibold text-white shadow-sm transition-all hover:bg-brand-blue-strong active:scale-[0.98]"
-          >
-            <Plus className="h-4 w-4" />
-            Novo Contato
-          </Link>
+          <>
+            <button
+              type="button"
+              className="inline-flex items-center gap-2 rounded-full border border-border bg-white px-4 py-2.5 text-sm font-semibold text-foreground shadow-sm transition-colors hover:bg-slate-50"
+            >
+              <Hash className="h-4 w-4" />
+              Gerar Códigos
+            </button>
+            <Link
+              to="/contatos/novo"
+              className="inline-flex items-center gap-2 rounded-full bg-brand-blue px-5 py-2.5 text-sm font-semibold text-white shadow-sm transition-all hover:bg-brand-blue-strong active:scale-[0.98]"
+            >
+              <Plus className="h-4 w-4" />
+              Novo Contato
+            </Link>
+          </>
         }
       />
 
-      {/* Filter bar */}
-      <div className="mb-6 rounded-2xl bg-navy-800 p-4 shadow-[var(--shadow-card)]">
-        <div className="grid grid-cols-1 gap-3 md:grid-cols-[1fr_200px_200px_auto]">
-          <ContactAutocomplete
-            placeholder="Buscar por nome, email ou telefone…"
-            options={contacts.map((c) => ({
+      {/* KPIs */}
+      <div className="mb-6 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
+        <KPICard icon={Users} value={contacts.length} label="Total" tone="blue" />
+        <KPICard icon={UserCheck} value={4} label="Cidadãos" tone="navy" />
+        <KPICard icon={Building2} value={0} label="Entidades" tone="green" />
+        <KPICard icon={Building2} value={1} label="Empresas" tone="orange" />
+      </div>
               value: String(c.id),
               label: c.name,
               sublabel: `${c.email} • ${c.phone}`,
