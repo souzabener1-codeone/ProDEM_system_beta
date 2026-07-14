@@ -1,9 +1,23 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { UserPlus, X, Save } from "lucide-react";
-import type { ReactNode } from "react";
+import { useState, type ReactNode } from "react";
 import { toast } from "sonner";
 import { AppLayout } from "@/components/layout/AppLayout";
 import { PageHeader } from "@/components/layout/PageHeader";
+import { SimpleSelect } from "@/components/ui/SimpleSelect";
+
+const contactTypes = [
+  { value: "Parlamentar", label: "Parlamentar" },
+  { value: "Autoridade", label: "Autoridade" },
+  { value: "Assessor", label: "Assessor" },
+  { value: "Funcionário", label: "Funcionário" },
+  { value: "Jornalista", label: "Jornalista" },
+  { value: "Mídia", label: "Mídia" },
+  { value: "Empresário", label: "Empresário" },
+  { value: "Empresa", label: "Empresa" },
+  { value: "Cidadão", label: "Cidadão" },
+  { value: "Liderança", label: "Liderança" },
+];
 
 export const Route = createFileRoute("/contatos/novo")({
   head: () => ({
@@ -42,6 +56,8 @@ const textareaCls =
 
 function NovoContato() {
   const navigate = useNavigate();
+  const [tipoContato, setTipoContato] = useState("");
+
 
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -70,11 +86,12 @@ function NovoContato() {
                 </Field>
               </div>
               <Field label="Tipo de Contato" required>
-                <select className={inputCls}>
-                  <option>Cidadão</option>
-                  <option>Empresa</option>
-                  <option>Servidor</option>
-                </select>
+                <SimpleSelect
+                  value={tipoContato}
+                  onValueChange={setTipoContato}
+                  placeholder="Selecione o tipo de contato"
+                  options={contactTypes}
+                />
               </Field>
               <Field label="CPF/CNPJ">
                 <input className={inputCls} placeholder="000.000.000-00" />
