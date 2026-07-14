@@ -42,6 +42,7 @@ function priorityVariant(p: "Alta" | "Média" | "Baixa") {
 }
 
 function Demandas() {
+  const [filtersOpen, setFiltersOpen] = useState(true);
   return (
     <AppLayout>
       <PageHeader
