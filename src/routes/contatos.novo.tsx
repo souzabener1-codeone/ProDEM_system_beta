@@ -1,9 +1,34 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { UserPlus, X, Save } from "lucide-react";
-import type { ReactNode } from "react";
+import { useState, type ReactNode } from "react";
 import { toast } from "sonner";
 import { AppLayout } from "@/components/layout/AppLayout";
 import { PageHeader } from "@/components/layout/PageHeader";
+import { SimpleSelect } from "@/components/ui/SimpleSelect";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
+
+const contactTypes = [
+  { value: "Parlamentar", label: "Parlamentar" },
+  { value: "Autoridade", label: "Autoridade" },
+  { value: "Assessor", label: "Assessor" },
+  { value: "Funcionário", label: "Funcionário" },
+  { value: "Jornalista", label: "Jornalista" },
+  { value: "Mídia", label: "Mídia" },
+  { value: "Empresário", label: "Empresário" },
+  { value: "Empresa", label: "Empresa" },
+  { value: "Cidadão", label: "Cidadão" },
+  { value: "Liderança", label: "Liderança" },
+];
 
 export const Route = createFileRoute("/contatos/novo")({
   head: () => ({
@@ -35,16 +60,54 @@ function Field({
 }
 
 const inputCls =
-  "w-full rounded-full border border-slate-200 bg-slate-50/50 px-4 py-2.5 text-sm text-foreground placeholder:text-slate-400 focus:border-brand-blue focus:bg-white focus:outline-none focus:ring-2 focus:ring-brand-blue/20 transition-all";
+  "w-full rounded-[16px] border border-slate-200 bg-slate-50/50 px-4 py-2.5 text-sm text-foreground placeholder:text-slate-400 focus:border-brand-blue focus:bg-white focus:outline-none focus:ring-2 focus:ring-brand-blue/20 transition-all";
 
 const textareaCls =
-  "w-full rounded-2xl border border-slate-200 bg-slate-50/50 px-4 py-3 text-sm text-foreground placeholder:text-slate-400 focus:border-brand-blue focus:bg-white focus:outline-none focus:ring-2 focus:ring-brand-blue/20 transition-all";
+  "w-full rounded-[16px] border border-slate-200 bg-slate-50/50 px-4 py-3 text-sm text-foreground placeholder:text-slate-400 focus:border-brand-blue focus:bg-white focus:outline-none focus:ring-2 focus:ring-brand-blue/20 transition-all";
 
 function NovoContato() {
   const navigate = useNavigate();
+  const [tipoContato, setTipoContato] = useState("");
+  const [cep, setCep] = useState("");
+  const [endereco, setEndereco] = useState("");
+  const [bairro, setBairro] = useState("");
+  const [cidade, setCidade] = useState("");
+  const [estado, setEstado] = useState("");
+  const [complemento, setComplemento] = useState("");
+  const [cepLoading, setCepLoading] = useState(false);
+  const [confirmOpen, setConfirmOpen] = useState(false);
 
-  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+  const handleCepChange = (raw: string) => {
+    const digits = raw.replace(/\D/g, "").slice(0, 8);
+    const formatted = digits.length > 5 ? `${digits.slice(0, 5)}-${digits.slice(5)}` : digits;
+    setCep(formatted);
+    if (digits.length === 8) {
+      setCepLoading(true);
+      fetch(`https://viacep.com.br/ws/${digits}/json/`)
+        .then((r) => r.json())
+        .then((data: { erro?: boolean; logradouro?: string; bairro?: string; localidade?: string; uf?: string; complemento?: string }) => {
+          if (data.erro) {
+            toast.error("CEP não encontrado");
+            return;
+          }
+          setEndereco(data.logradouro ?? "");
+          setBairro(data.bairro ?? "");
+          setCidade(data.localidade ?? "");
+          setEstado(data.uf ?? "");
+          if (data.complemento) setComplemento(data.complemento);
+        })
+        .catch(() => toast.error("Erro ao buscar CEP"))
+        .finally(() => setCepLoading(false));
+    }
+  };
+
+  const handleFormSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+    setConfirmOpen(true);
+  };
+
+  const handleConfirmSave = () => {
+    setConfirmOpen(false);
     toast.success("Contato salvo com sucesso!");
     navigate({ to: "/contatos" });
   };
@@ -57,7 +120,7 @@ function NovoContato() {
         subtitle="Cadastre um novo contato"
       />
 
-      <form onSubmit={handleSubmit} className="rounded-[24px] border border-border bg-white p-8 shadow-sm">
+      <form onSubmit={handleFormSubmit} className="rounded-[24px] border border-border bg-white p-8 shadow-sm">
         <div className="space-y-10">
           {/* Dados Pessoais */}
           <section>
@@ -70,11 +133,12 @@ function NovoContato() {
                 </Field>
               </div>
               <Field label="Tipo de Contato" required>
-                <select className={inputCls}>
-                  <option>Cidadão</option>
-                  <option>Empresa</option>
-                  <option>Servidor</option>
-                </select>
+                <SimpleSelect
+                  value={tipoContato}
+                  onValueChange={setTipoContato}
+                  placeholder="Selecione o tipo de contato"
+                  options={contactTypes}
+                />
               </Field>
               <Field label="CPF/CNPJ">
                 <input className={inputCls} placeholder="000.000.000-00" />
@@ -103,15 +167,26 @@ function NovoContato() {
             <div className="grid gap-x-6 gap-y-5 md:grid-cols-12">
               <div className="md:col-span-3">
                 <Field label="CEP">
-                  <input className={inputCls} placeholder="00000-000" />
+                  <input
+                    className={inputCls}
+                    placeholder="00000-000"
+                    value={cep}
+                    onChange={(e) => handleCepChange(e.target.value)}
+                    maxLength={9}
+                  />
                 </Field>
                 <p className="mt-2 text-xs text-slate-500">
-                  Digite o CEP para preencher o endereço automaticamente
+                  {cepLoading ? "Buscando endereço..." : "Digite o CEP para preencher o endereço automaticamente"}
                 </p>
               </div>
               <div className="md:col-span-7">
                 <Field label="Endereço">
-                  <input className={inputCls} placeholder="Rua, Avenida..." />
+                  <input
+                    className={inputCls}
+                    placeholder="Rua, Avenida..."
+                    value={endereco}
+                    onChange={(e) => setEndereco(e.target.value)}
+                  />
                 </Field>
               </div>
               <div className="md:col-span-2">
@@ -119,54 +194,49 @@ function NovoContato() {
                   <input className={inputCls} placeholder="Nº" />
                 </Field>
               </div>
-              
+
               <div className="md:col-span-4">
                 <Field label="Complemento">
-                  <input className={inputCls} placeholder="Apto, Bloco, Sala..." />
+                  <input
+                    className={inputCls}
+                    placeholder="Apto, Bloco, Sala..."
+                    value={complemento}
+                    onChange={(e) => setComplemento(e.target.value)}
+                  />
                 </Field>
               </div>
               <div className="md:col-span-4">
                 <Field label="Bairro">
-                  <input className={inputCls} placeholder="Bairro" />
+                  <input
+                    className={inputCls}
+                    placeholder="Bairro"
+                    value={bairro}
+                    onChange={(e) => setBairro(e.target.value)}
+                  />
                 </Field>
               </div>
               <div className="md:col-span-4">
                 <Field label="Cidade">
-                  <input className={inputCls} placeholder="Cidade" />
+                  <input
+                    className={inputCls}
+                    placeholder="Cidade"
+                    value={cidade}
+                    onChange={(e) => setCidade(e.target.value)}
+                  />
                 </Field>
               </div>
 
               <div className="md:col-span-4">
                 <Field label="Estado">
-                  <select className={inputCls}>
-                    <option>-</option>
-                    <option>AC</option>
-                    <option>AL</option>
-                    <option>AP</option>
-                    <option>AM</option>
-                    <option>BA</option>
-                    <option>CE</option>
-                    <option>DF</option>
-                    <option>ES</option>
-                    <option>GO</option>
-                    <option>MA</option>
-                    <option>MT</option>
-                    <option>MS</option>
-                    <option>MG</option>
-                    <option>PA</option>
-                    <option>PB</option>
-                    <option>PR</option>
-                    <option>PE</option>
-                    <option>PI</option>
-                    <option>RJ</option>
-                    <option>RN</option>
-                    <option>RS</option>
-                    <option>RO</option>
-                    <option>RR</option>
-                    <option>SC</option>
-                    <option>SP</option>
-                    <option>SE</option>
-                    <option>TO</option>
+                  <select
+                    className={inputCls}
+                    value={estado}
+                    onChange={(e) => setEstado(e.target.value)}
+                  >
+                    <option value="">-</option>
+                    {["AC","AL","AP","AM","BA","CE","DF","ES","GO","MA","MT","MS","MG","PA","PB","PR","PE","PI","RJ","RN","RS","RO","RR","SC","SP","SE","TO"].map((uf) => (
+                      <option key={uf} value={uf}>{uf}</option>
+                    ))}
                   </select>
                 </Field>
               </div>
@@ -205,6 +275,21 @@ function NovoContato() {
           </button>
         </div>
       </form>
+
+      <AlertDialog open={confirmOpen} onOpenChange={setConfirmOpen}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Salvar contato?</AlertDialogTitle>
+            <AlertDialogDescription>
+              Deseja realmente salvar este contato? Verifique os dados informados antes de confirmar.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancelar</AlertDialogCancel>
+            <AlertDialogAction onClick={handleConfirmSave}>Confirmar</AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </AppLayout>
   );
 }
