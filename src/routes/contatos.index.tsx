@@ -143,9 +143,17 @@ function Contatos() {
             <option>Guarulhos/SP</option>
           </select>
           <select id="contatos-categoria" name="categoria" className="rounded-lg border-0 bg-white px-3 py-2.5 text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-brand-blue">
-            <option>Todas as categorias</option>
-            <option>Emenda</option>
-            <option>Ofício</option>
+            <option>Todos</option>
+            <option>Parlamentar</option>
+            <option>Autoridade</option>
+            <option>Assessor</option>
+            <option>Funcionário</option>
+            <option>Jornalista</option>
+            <option>Mídia</option>
+            <option>Empresário</option>
+            <option>Empresa</option>
+            <option>Cidadão</option>
+            <option>Liderança</option>
           </select>
           <button
             aria-label="Buscar"
