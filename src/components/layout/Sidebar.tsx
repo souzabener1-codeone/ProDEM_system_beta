@@ -40,9 +40,6 @@ export function Sidebar() {
             className="h-auto w-full max-w-[180px] object-contain"
           />
         </div>
-        <div className="mt-3 text-center text-[11px] font-semibold uppercase tracking-widest text-white/50">
-          Gabinete
-        </div>
       </div>
 
       {/* Nav */}
