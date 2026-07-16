@@ -9,6 +9,14 @@ import { FileUpload } from "@/components/ui/FileUpload";
 import { CategorySelect } from "@/components/ui/CategorySelect";
 import { SimpleSelect } from "@/components/ui/SimpleSelect";
 import {
+  NumberField,
+  NumberFieldDecrement,
+  NumberFieldGroup,
+  NumberFieldIncrement,
+  NumberFieldInput,
+  NumberFieldScrubArea,
+} from "@/components/reui/number-field";
+import {
   AlertDialog,
   AlertDialogAction,
   AlertDialogCancel,
@@ -117,7 +125,14 @@ function NovaDemanda() {
             </Field>
 
             <Field label="Dias Estimados">
-              <input type="number" min={0} className={inputCls} placeholder="Ex: 5" />
+              <NumberField defaultValue={5} min={0} max={100} className="w-full">
+                <NumberFieldScrubArea label="Amount" />
+                <NumberFieldGroup>
+                  <NumberFieldDecrement />
+                  <NumberFieldInput placeholder="Ex: 5" />
+                  <NumberFieldIncrement />
+                </NumberFieldGroup>
+              </NumberField>
             </Field>
             <Field label="Lembrete">
               <SimpleSelect
