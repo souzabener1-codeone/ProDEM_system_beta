@@ -94,15 +94,6 @@ function Dashboard() {
         icon={LayoutDashboard}
         title="Dashboard"
         subtitle="Visão geral das atividades e indicadores do gabinete"
-        action={
-          <Link
-            to="/demandas"
-            className="inline-flex items-center gap-2 rounded-full bg-brand-blue px-5 py-2.5 text-sm font-semibold text-white shadow-sm transition-all hover:bg-brand-blue-strong active:scale-[0.98]"
-          >
-            <Plus className="h-4 w-4" />
-            Nova Demanda
-          </Link>
-        }
       />
 
       {/* KPIs */}
