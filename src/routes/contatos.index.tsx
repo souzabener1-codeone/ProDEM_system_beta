@@ -1,4 +1,5 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
+import { useState } from "react";
 import { Users, Plus, Search, Eye, Pencil, Phone, Mail, Hash, Building2, UserCheck, FileDown, FileSpreadsheet } from "lucide-react";
 import { AppLayout } from "@/components/layout/AppLayout";
 import { PageHeader } from "@/components/layout/PageHeader";
@@ -92,6 +93,40 @@ const contactExtras: Record<number, { code: string; tipo: string; tipoTone: stri
 };
 
 function Contatos() {
+  const [searchQuery, setSearchQuery] = useState("");
+  const [cidade, setCidade] = useState("Todas as cidades");
+  const [categoria, setCategoria] = useState("Todos");
+
+  const [appliedFilters, setAppliedFilters] = useState({
+    searchQuery: "",
+    cidade: "Todas as cidades",
+    categoria: "Todos",
+  });
+
+  const handleSearch = () => {
+    setAppliedFilters({
+      searchQuery,
+      cidade,
+      categoria,
+    });
+  };
+
+  const filteredContacts = contacts.filter((c) => {
+    const extra = contactExtras[c.id];
+    const query = appliedFilters.searchQuery.toLowerCase();
+    
+    const matchQuery = !query || 
+      c.name.toLowerCase().includes(query) || 
+      c.email.toLowerCase().includes(query) || 
+      c.phone.toLowerCase().includes(query) || 
+      (extra?.code && extra.code.toLowerCase().includes(query));
+      
+    const matchCidade = appliedFilters.cidade === "Todas as cidades" || c.city === appliedFilters.cidade;
+    const matchCategoria = appliedFilters.categoria === "Todos" || extra?.tipo === appliedFilters.categoria;
+    
+    return matchQuery && matchCidade && matchCategoria;
+  });
+
   return (
     <AppLayout>
       <PageHeader
@@ -131,18 +166,32 @@ function Contatos() {
         <div className="grid grid-cols-1 gap-3 md:grid-cols-[1fr_200px_200px_auto]">
           <ContactAutocomplete
             placeholder="Buscar por código, nome, email ou telefone…"
+            value={searchQuery}
+            onChange={setSearchQuery}
             options={contacts.map((c) => ({
               value: String(c.id),
               label: c.name,
               sublabel: `${c.email} • ${c.phone}`,
             }))}
           />
-          <select id="contatos-cidade" name="cidade" className="rounded-lg border-0 bg-white px-3 py-2.5 text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-brand-blue">
+          <select 
+            id="contatos-cidade" 
+            name="cidade" 
+            value={cidade}
+            onChange={(e) => setCidade(e.target.value)}
+            className="rounded-lg border-0 bg-white px-3 py-2.5 text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-brand-blue"
+          >
             <option>Todas as cidades</option>
             <option>São Paulo/SP</option>
             <option>Guarulhos/SP</option>
           </select>
-          <select id="contatos-categoria" name="categoria" className="rounded-lg border-0 bg-white px-3 py-2.5 text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-brand-blue">
+          <select 
+            id="contatos-categoria" 
+            name="categoria" 
+            value={categoria}
+            onChange={(e) => setCategoria(e.target.value)}
+            className="rounded-lg border-0 bg-white px-3 py-2.5 text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-brand-blue"
+          >
             <option>Todos</option>
             <option>Parlamentar</option>
             <option>Autoridade</option>
@@ -156,7 +205,9 @@ function Contatos() {
             <option>Liderança</option>
           </select>
           <button
+            type="button"
             aria-label="Buscar"
+            onClick={handleSearch}
             className="inline-flex h-10 w-10 items-center justify-center rounded-full bg-brand-orange text-white transition-transform hover:brightness-110 active:scale-95"
           >
             <Search className="h-4 w-4" />
@@ -167,7 +218,7 @@ function Contatos() {
       <div className="overflow-hidden rounded-2xl border border-border bg-card shadow-[var(--shadow-card)]">
         <SectionHeader
           title="Lista de Contatos"
-          count={contacts.length}
+          count={filteredContacts.length}
           action={
             <div className="flex items-center gap-2">
               <button
@@ -201,7 +252,7 @@ function Contatos() {
               </tr>
             </thead>
             <tbody>
-              {contacts.map((c) => {
+              {filteredContacts.map((c) => {
                 const extra = contactExtras[c.id];
                 return (
                 <tr
