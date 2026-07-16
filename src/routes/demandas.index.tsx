@@ -238,9 +238,9 @@ function Demandas() {
                       <button onClick={() => setSelectedDemand(d)} aria-label="Visualizar" className="rounded-md p-1.5 text-muted-foreground hover:bg-brand-blue-soft hover:text-brand-blue-strong">
                         <Eye className="h-4 w-4" />
                       </button>
-                      <button aria-label="Editar" className="rounded-md p-1.5 text-muted-foreground hover:bg-brand-blue-soft hover:text-brand-blue-strong">
+                      <Link to={`/demandas/${d.id}/editar`} aria-label="Editar" className="rounded-md p-1.5 text-muted-foreground hover:bg-brand-blue-soft hover:text-brand-blue-strong">
                         <Pencil className="h-4 w-4" />
-                      </button>
+                      </Link>
                     </div>
                   </td>
                 </tr>
