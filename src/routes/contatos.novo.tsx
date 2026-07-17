@@ -218,7 +218,7 @@ function NovoContato() {
               </div>
               <div className="md:col-span-2">
                 <Field label="Número">
-                  <input className={inputCls} placeholder="Nº" />
+                  <input className={inputCls} placeholder="Nº" value={numero} onChange={(e) => setNumero(e.target.value)} />
                 </Field>
               </div>
 
