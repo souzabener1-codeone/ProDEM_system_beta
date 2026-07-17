@@ -69,6 +69,15 @@ const textareaCls =
 
 function NovoContato() {
   const navigate = useNavigate();
+  const queryClient = useQueryClient();
+  const createFn = useServerFn(createContato);
+
+  const [nome, setNome] = useState("");
+  const [cpfCnpj, setCpfCnpj] = useState("");
+  const [telefone, setTelefone] = useState("");
+  const [email, setEmail] = useState("");
+  const [numero, setNumero] = useState("");
+  const [observacoes, setObservacoes] = useState("");
   const [tipoContato, setTipoContato] = useState("");
   const [cep, setCep] = useState("");
   const [endereco, setEndereco] = useState("");
@@ -78,6 +87,16 @@ function NovoContato() {
   const [complemento, setComplemento] = useState("");
   const [cepLoading, setCepLoading] = useState(false);
   const [confirmOpen, setConfirmOpen] = useState(false);
+
+  const mutation = useMutation({
+    mutationFn: createFn,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["contatos"] });
+      toast.success("Contato salvo com sucesso!");
+      navigate({ to: "/contatos" });
+    },
+    onError: (err: Error) => toast.error(err.message || "Erro ao salvar"),
+  });
 
   const handleCepChange = (raw: string) => {
     const digits = raw.replace(/\D/g, "").slice(0, 8);
@@ -105,13 +124,19 @@ function NovoContato() {
 
   const handleFormSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+    if (!nome.trim()) {
+      toast.error("Informe o nome completo");
+      return;
+    }
     setConfirmOpen(true);
   };
 
   const handleConfirmSave = () => {
     setConfirmOpen(false);
-    toast.success("Contato salvo com sucesso!");
-    navigate({ to: "/contatos" });
+    const codigo = Math.floor(100000 + Math.random() * 900000).toString();
+    const contatoData = JSON.stringify({ email, telefone, cpf_cnpj: cpfCnpj, cep, endereco, numero, complemento, observacoes });
+    const localizacao = JSON.stringify({ bairro, cidade, estado });
+    mutation.mutate({ data: { codigo, nome, tipo: tipoContato, contato: contatoData, localizacao } });
   };
 
   return (
