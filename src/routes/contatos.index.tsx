@@ -89,8 +89,15 @@ function initials(name: string) {
 
 
 function Contatos() {
+  const listFn = useServerFn(listContatos);
+  const { data: raw = [] } = useQuery({
+    queryKey: ["contatos"],
+    queryFn: () => listFn(),
+  });
+  const contacts = useMemo(() => raw.map(mapContato), [raw]);
+
   const [searchQuery, setSearchQuery] = useState("");
-  const [selectedContact, setSelectedContact] = useState<typeof contacts[0] | null>(null);
+  const [selectedContact, setSelectedContact] = useState<UIContact | null>(null);
   const [cidade, setCidade] = useState("Todas as cidades");
   const [categoria, setCategoria] = useState("Todos");
 
@@ -101,26 +108,18 @@ function Contatos() {
   });
 
   const handleSearch = () => {
-    setAppliedFilters({
-      searchQuery,
-      cidade,
-      categoria,
-    });
+    setAppliedFilters({ searchQuery, cidade, categoria });
   };
 
   const filteredContacts = contacts.filter((c) => {
-    const extra = contactExtras[c.id];
     const query = appliedFilters.searchQuery.toLowerCase();
-    
-    const matchQuery = !query || 
-      c.name.toLowerCase().includes(query) || 
-      c.email.toLowerCase().includes(query) || 
-      c.phone.toLowerCase().includes(query) || 
-      (extra?.code && extra.code.toLowerCase().includes(query));
-      
+    const matchQuery = !query ||
+      c.name.toLowerCase().includes(query) ||
+      c.email.toLowerCase().includes(query) ||
+      c.phone.toLowerCase().includes(query) ||
+      (c.code && c.code.toLowerCase().includes(query));
     const matchCidade = appliedFilters.cidade === "Todas as cidades" || c.city === appliedFilters.cidade;
-    const matchCategoria = appliedFilters.categoria === "Todos" || extra?.tipo === appliedFilters.categoria;
-    
+    const matchCategoria = appliedFilters.categoria === "Todos" || c.tipo === appliedFilters.categoria;
     return matchQuery && matchCidade && matchCategoria;
   });
 
