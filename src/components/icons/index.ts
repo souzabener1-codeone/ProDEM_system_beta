@@ -18,7 +18,7 @@ import {
   ChatBubbleEmpty,
   Check,
   CheckCircle,
-  CircleSolid,
+  Circle as IconoirCircle,
   Clock,
   CloudUpload,
   Community,
