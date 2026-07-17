@@ -228,10 +228,11 @@ function NovaDemanda() {
           </Link>
           <button
             type="submit"
-            className="inline-flex items-center gap-2 rounded-full bg-brand-blue px-6 py-2.5 text-sm font-semibold text-white shadow-sm transition-all hover:bg-brand-blue-strong active:scale-[0.98]"
+            disabled={mutation.isPending}
+            className="inline-flex items-center gap-2 rounded-full bg-brand-blue px-6 py-2.5 text-sm font-semibold text-white shadow-sm transition-all hover:bg-brand-blue-strong active:scale-[0.98] disabled:opacity-60"
           >
             <Save className="h-4 w-4" />
-            Salvar Demanda
+            {mutation.isPending ? "Salvando..." : "Salvar Demanda"}
           </button>
         </div>
       </form>
