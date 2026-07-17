@@ -369,7 +369,7 @@ function Contatos() {
                   </div>
                   <div className="col-span-3 rounded-xl border border-slate-200 bg-white p-4 shadow-sm">
                     <p className="text-xs font-semibold uppercase text-blue-400">Tipo</p>
-                    <p className="mt-1 text-sm text-slate-800">{contactExtras[selectedContact.id]?.tipo || "-"}</p>
+                    <p className="mt-1 text-sm text-slate-800">{selectedContact.tipo || "-"}</p>
                   </div>
                 </div>
 
