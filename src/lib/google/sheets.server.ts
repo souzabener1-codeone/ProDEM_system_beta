@@ -126,6 +126,27 @@ export async function deleteRow(sheetName: string, rowNumber: number) {
   });
 }
 
+/** Clear the whole sheet and write header + rows in one shot. */
+export async function overwriteSheet(
+  sheetName: string,
+  header: string[],
+  rows: Record<string, string>[],
+) {
+  const clearRange = `${sheetName}!A1:ZZ`;
+  await gfetch(
+    `${SHEETS_BASE}/${sheetId()}/values/${encodeURIComponent(clearRange)}:clear`,
+    { method: "POST", body: "{}" },
+  );
+  const values = [header, ...rows.map((r) => header.map((h) => r[h] ?? ""))];
+  const writeRange = `${sheetName}!A1:${columnLetter(header.length)}${values.length}`;
+  await gfetch(
+    `${SHEETS_BASE}/${sheetId()}/values/${encodeURIComponent(writeRange)}?valueInputOption=RAW`,
+    { method: "PUT", body: JSON.stringify({ values }) },
+  );
+  ensuredHeaders.add(`${sheetName}:${header.join("|")}`);
+}
+
+
 function columnLetter(n: number): string {
   let s = "";
   while (n > 0) {
