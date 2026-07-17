@@ -83,6 +83,7 @@ export { Activity, LogOut, Menu };
 
 // Actions
 export { Plus, Search, Filter, Download, Trash };
+export const Trash2 = Trash;
 export const X = Xmark;
 export const Save = FloppyDisk;
 export const Pencil = EditPencil;
