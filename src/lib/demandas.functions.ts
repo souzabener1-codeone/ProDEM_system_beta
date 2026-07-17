@@ -49,21 +49,6 @@ function toDemanda(row: DemandaRow): Demanda {
   };
 }
 
-function toRow(d: Demanda): DemandaRow {
-  return {
-    "Título": d.titulo,
-    "Categoria": d.categoria,
-    "Contato": d.contato,
-    "Cidade": d.cidade,
-    "Descrição": d.descricao,
-    "Data Solicitação": d.dataSolicitacao,
-    "Vencimento": d.vencimento,
-    "Observações": d.observacoes,
-    "Prioridade": d.prioridade,
-    "Status": d.status,
-    "Responsável": d.status === undefined ? "" : "",
-  } as unknown as DemandaRow;
-}
 
 const demandaInput = z.object({
   titulo: z.string().min(1),
