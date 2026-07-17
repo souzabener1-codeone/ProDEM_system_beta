@@ -279,6 +279,8 @@ function NovoContato() {
                 rows={4}
                 className={textareaCls}
                 placeholder="Observações adicionais sobre o contato..."
+                value={observacoes}
+                onChange={(e) => setObservacoes(e.target.value)}
               />
             </Field>
           </section>
