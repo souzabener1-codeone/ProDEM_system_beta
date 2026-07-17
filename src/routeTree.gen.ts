@@ -21,6 +21,7 @@ import { Route as ContatosIndexRouteImport } from './routes/contatos.index'
 import { Route as DemandasNovoRouteImport } from './routes/demandas.novo'
 import { Route as ContatosNovoRouteImport } from './routes/contatos.novo'
 import { Route as DemandasIdEditarRouteImport } from './routes/demandas.$id.editar'
+import { Route as ContatosIdEditarRouteImport } from './routes/contatos.$id.editar'
 
 const StatusRoute = StatusRouteImport.update({
   id: '/status',
@@ -82,6 +83,11 @@ const DemandasIdEditarRoute = DemandasIdEditarRouteImport.update({
   path: '/$id/editar',
   getParentRoute: () => DemandasRoute,
 } as any)
+const ContatosIdEditarRoute = ContatosIdEditarRouteImport.update({
+  id: '/$id/editar',
+  path: '/$id/editar',
+  getParentRoute: () => ContatosRoute,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -95,6 +101,7 @@ export interface FileRoutesByFullPath {
   '/demandas/novo': typeof DemandasNovoRoute
   '/contatos/': typeof ContatosIndexRoute
   '/demandas/': typeof DemandasIndexRoute
+  '/contatos/$id/editar': typeof ContatosIdEditarRoute
   '/demandas/$id/editar': typeof DemandasIdEditarRoute
 }
 export interface FileRoutesByTo {
@@ -107,6 +114,7 @@ export interface FileRoutesByTo {
   '/demandas/novo': typeof DemandasNovoRoute
   '/contatos': typeof ContatosIndexRoute
   '/demandas': typeof DemandasIndexRoute
+  '/contatos/$id/editar': typeof ContatosIdEditarRoute
   '/demandas/$id/editar': typeof DemandasIdEditarRoute
 }
 export interface FileRoutesById {
@@ -122,6 +130,7 @@ export interface FileRoutesById {
   '/demandas/novo': typeof DemandasNovoRoute
   '/contatos/': typeof ContatosIndexRoute
   '/demandas/': typeof DemandasIndexRoute
+  '/contatos/$id/editar': typeof ContatosIdEditarRoute
   '/demandas/$id/editar': typeof DemandasIdEditarRoute
 }
 export interface FileRouteTypes {
@@ -138,6 +147,7 @@ export interface FileRouteTypes {
     | '/demandas/novo'
     | '/contatos/'
     | '/demandas/'
+    | '/contatos/$id/editar'
     | '/demandas/$id/editar'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -150,6 +160,7 @@ export interface FileRouteTypes {
     | '/demandas/novo'
     | '/contatos'
     | '/demandas'
+    | '/contatos/$id/editar'
     | '/demandas/$id/editar'
   id:
     | '__root__'
@@ -164,6 +175,7 @@ export interface FileRouteTypes {
     | '/demandas/novo'
     | '/contatos/'
     | '/demandas/'
+    | '/contatos/$id/editar'
     | '/demandas/$id/editar'
   fileRoutesById: FileRoutesById
 }
@@ -263,17 +275,26 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof DemandasIdEditarRouteImport
       parentRoute: typeof DemandasRoute
     }
+    '/contatos/$id/editar': {
+      id: '/contatos/$id/editar'
+      path: '/$id/editar'
+      fullPath: '/contatos/$id/editar'
+      preLoaderRoute: typeof ContatosIdEditarRouteImport
+      parentRoute: typeof ContatosRoute
+    }
   }
 }
 
 interface ContatosRouteChildren {
   ContatosNovoRoute: typeof ContatosNovoRoute
   ContatosIndexRoute: typeof ContatosIndexRoute
+  ContatosIdEditarRoute: typeof ContatosIdEditarRoute
 }
 
 const ContatosRouteChildren: ContatosRouteChildren = {
   ContatosNovoRoute: ContatosNovoRoute,
   ContatosIndexRoute: ContatosIndexRoute,
+  ContatosIdEditarRoute: ContatosIdEditarRoute,
 }
 
 const ContatosRouteWithChildren = ContatosRoute._addFileChildren(
