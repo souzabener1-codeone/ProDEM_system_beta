@@ -51,32 +51,21 @@ type UIContact = {
   color: string;
 };
 
-function safeParse<T>(raw: string, fallback: T): T {
-  try {
-    if (!raw) return fallback;
-    return JSON.parse(raw) as T;
-  } catch {
-    return fallback;
-  }
-}
-
 function mapContato(c: Contato, idx: number): UIContact {
-  const contatoData = safeParse<{ email?: string; telefone?: string }>(c.contato, {});
-  const loc = safeParse<{ cidade?: string; estado?: string }>(c.localizacao, {});
-  const city = [loc.cidade, loc.estado].filter(Boolean).join("/");
   return {
     id: c.id,
     code: c.codigo,
     name: c.nome,
-    email: contatoData.email ?? "",
-    phone: contatoData.telefone ?? "",
-    city,
+    email: "",
+    phone: c.telefone,
+    city: c.localizacao,
     tipo: c.tipo,
     tipoTone: TIPO_TONES[c.tipo] ?? "bg-slate-100 text-slate-700",
     demands: 0,
     color: CAT_COLORS[idx % CAT_COLORS.length],
   };
 }
+
 
 function initials(name: string) {
   return name
