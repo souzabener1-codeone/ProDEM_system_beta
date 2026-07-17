@@ -1,57 +1,40 @@
 ## Objetivo
-Instalar o bloco `@efferd/app-shell-8` do registry privado Efferd e aplicá-lo como shell da tela principal (`/`), preservando o conteúdo atual do Dashboard (KPIs + Demandas Recentes).
+Substituir o "Histórico de Movimentação" atual (timeline vertical) em `src/routes/demandas.$id.editar.tsx` por um **Stepper** shadcn (variante `stepper-05`) que mostre as etapas de movimentação da demanda, preservando o restante da UI/UX.
 
-## Pré-requisitos (bloqueante)
-O registry `@efferd` é pago e exige o secret `EFFERD_REGISTRY_TOKEN`. Sem ele, o `shadcn add` falha com 401.
+## Etapas
 
-Passos que dependem do usuário:
-1. Comprar Efferd Pro em `efferd.com`.
-2. Copiar o token em `efferd.com/account?tab=registry-token`.
-3. Salvar como secret do projeto com o nome `EFFERD_REGISTRY_TOKEN` (fluxo `add_secret`).
+1. **Instalar dependência**
+   - `bun add @stepperize/react`
 
-Se o token não estiver disponível na hora do build, eu paro antes de rodar o CLI e aviso.
+2. **Criar o componente base do Stepper**
+   - Arquivo: `src/components/ui/stepper.tsx` — copiar exatamente o código fornecido no prompt, ajustando apenas:
+     - Remover `'use client'` (não é Next.js).
+     - Import `cn` de `@/lib/utils` (já existe no projeto — confirmado em `components.json`).
+   - Sem alterações no `globals.css` (nenhuma variável CSS extra é exigida pelo snippet).
 
-## Etapas de implementação
+3. **Criar o componente de histórico com Stepper**
+   - Novo arquivo: `src/components/demandas/MovimentacaoStepper.tsx`
+   - Usa `Stepper`, `StepperNav`, `StepperItem`, `StepperTrigger`, `StepperIndicator`, `StepperTitle`, `StepperDescription`, `StepperSeparator`.
+   - Orientação `vertical` + `responsive`, seguindo o estilo do card atual.
+   - Define as etapas de movimentação de uma demanda:
+     1. Criação
+     2. Em Progresso
+     3. Aguardando Retorno
+     4. Concluída
+   - Recebe `currentStepId` via prop (com valor default derivado do `status` da demanda) para marcar automaticamente as etapas concluídas / ativa.
+   - Mantém título "Histórico de Movimentação", subtítulo e o ícone `Clock` já usados no card.
+   - Cada `StepperDescription` mostra autor + data (ex.: `jhiovana alcantara · 28/04/2026, 13:41`) para preservar as informações do histórico atual.
 
-1. **components.json** — já tem `registries["@efferd"]` apontando para `https://efferd.com/r/{style}/{name}.json`. Vou adicionar o header de Authorization:
-   ```json
-   "@efferd": {
-     "url": "https://efferd.com/r/{style}/{name}.json",
-     "headers": { "Authorization": "Bearer ${EFFERD_REGISTRY_TOKEN}" }
-   }
-   ```
+4. **Integrar na página**
+   - Em `src/routes/demandas.$id.editar.tsx`, substituir o bloco da timeline vertical dentro do card "Histórico de Movimentação" pelo `<MovimentacaoStepper currentStepId="concluida" />` (mapeado a partir do `status` local).
+   - Manter o container `rounded-[24px] border border-border bg-white p-8 shadow-sm` e o cabeçalho com o ícone `Clock` intactos.
+   - Nenhuma outra alteração de UI/UX no formulário, cores, radius, botões ou demais seções.
 
-2. **Instalar o bloco** via `bunx shadcn@latest add @efferd/app-shell-8` (com o env exportado). Isso deve criar arquivos sob `src/components/` (provavelmente `app-shell`, `app-sidebar`, `app-header`, `nav-user`, etc.), possivelmente re-adicionar componentes shadcn base que já existem (sidebar, sheet, tooltip) — vou revisar diffs e evitar sobrescrever tokens do design system atual (`bg-navy-800`, `brand-blue`).
-
-3. **Adaptar à identidade PRODEM**:
-   - Substituir logo padrão pelo `prodem-logo.png.asset.json` já em uso no `Sidebar` atual.
-   - Reaproveitar os itens de navegação do `Sidebar.tsx` atual (Dashboard, Contatos, Demandas, Categorias, Status, Relatórios).
-   - Manter usuário "Maria Andrade" no rodapé.
-   - Aplicar cores via tokens semânticos existentes em `src/styles.css`; não hardcodar cores.
-
-4. **Integrar no Root** — trocar o `AppLayout` (usado hoje em `/` e demais rotas) pelo novo `AppShell`. Duas opções:
-   - (Preferida) Mover o `AppShell` para dentro de `RootComponent` em `src/routes/__root.tsx`, envolvendo o `<Outlet />`, para todas as rotas herdarem o shell. Remover o `AppLayout` das páginas.
-   - Alternativa: manter `AppLayout` como wrapper por página e apenas substituir seu conteúdo interno pelo `AppShell`. (Menos limpo — descartar.)
-
-5. **Limpeza** — remover `src/components/layout/Sidebar.tsx` e `AppLayout.tsx` após migração, e as importações órfãs em cada rota (`index.tsx`, `demandas.tsx`, `contatos.*`, `categorias.tsx`, `status.tsx`, `relatorios.tsx`).
-
-6. **Validação**:
+5. **Validação**
    - `bun run build` limpo.
-   - Playwright screenshot de `/` e `/demandas` confirmando shell novo com sidebar PRODEM, header, e conteúdo (KPIs + tabela) intactos.
-   - Verificar responsividade (mobile: sidebar colapsa em Sheet).
+   - Verificar via Playwright que `/demandas/101/editar` renderiza o stepper com etapas marcadas corretamente e permanece responsivo.
 
-## Arquivos afetados (previsão)
-- `components.json` (headers do registry)
-- **Novos** em `src/components/` gerados pelo CLI (app-shell + subcomponentes)
-- `src/routes/__root.tsx` (envolver `<Outlet />` no `AppShell`)
-- Cada `src/routes/*.tsx` (remover `<AppLayout>` wrapper)
-- **Removidos**: `src/components/layout/Sidebar.tsx`, `src/components/layout/AppLayout.tsx`
-
-## Riscos
-- **Token ausente** → instalação falha; preciso do secret antes de rodar o CLI.
-- **Conflito de tokens Tailwind** — o bloco pode assumir variáveis que não temos. Mitigar mapeando para os tokens PRODEM existentes.
-- **Sobrescrita de componentes shadcn base** — revisar cada arquivo proposto pelo CLI antes de aceitar.
-- **Regressão visual** nas rotas — validar todas as 6 páginas após migração.
-
-## Próximo passo para você
-Confirme e adicione o `EFFERD_REGISTRY_TOKEN` como secret do projeto. Assim que estiver disponível, executo a instalação.
+## Fora do escopo
+- Não mexer em `demandas.novo.tsx`, sidebar, filtros, KPIs, ou qualquer outra tela.
+- Não adicionar tokens de cor novos nem alterar `styles.css`.
+- Não trocar o mock atual do histórico por dados reais (apenas transportar as mesmas informações para o novo formato).
