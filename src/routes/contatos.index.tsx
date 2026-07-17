@@ -1,6 +1,7 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useState } from "react";
-import { Users, Plus, Search, Eye, Pencil, Phone, Mail, Hash, Building2, UserCheck, FileDown, FileSpreadsheet } from "lucide-react";
+import { Users, Plus, Search, Eye, Pencil, Phone, Mail, Hash, Building2, UserCheck, FileDown, FileSpreadsheet, MoreHorizontal, Trash2 } from "lucide-react";
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { AppLayout } from "@/components/layout/AppLayout";
 import { PageHeader } from "@/components/layout/PageHeader";
 import { SectionHeader } from "@/components/layout/SectionHeader";
@@ -295,18 +296,36 @@ function Contatos() {
                   </td>
                   <td className="px-5 py-3.5">
                     <div className="flex items-center justify-end gap-1">
-                      <button
-                        aria-label="Visualizar"
-                        className="rounded-md p-1.5 text-muted-foreground transition-colors hover:bg-brand-blue-soft hover:text-brand-blue-strong"
-                      >
-                        <Eye className="h-4 w-4" />
-                      </button>
-                      <button
-                        aria-label="Editar"
-                        className="rounded-md p-1.5 text-muted-foreground transition-colors hover:bg-brand-blue-soft hover:text-brand-blue-strong"
-                      >
-                        <Pencil className="h-4 w-4" />
-                      </button>
+                      <DropdownMenu>
+                        <DropdownMenuTrigger asChild>
+                          <button
+                            aria-label="Ações"
+                            className="rounded-md p-1.5 text-muted-foreground transition-colors hover:bg-brand-blue-soft hover:text-brand-blue-strong outline-none"
+                          >
+                            <MoreHorizontal className="h-4 w-4" />
+                          </button>
+                        </DropdownMenuTrigger>
+                        <DropdownMenuContent align="end" className="w-36">
+                          <DropdownMenuItem asChild>
+                            <button className="flex w-full items-center gap-2 cursor-pointer">
+                              <Eye className="h-4 w-4 text-slate-500" />
+                              <span className="text-slate-700">Visualizar</span>
+                            </button>
+                          </DropdownMenuItem>
+                          <DropdownMenuItem asChild>
+                            <Link to={`/contatos/${c.id}/editar`} className="flex w-full items-center gap-2 cursor-pointer">
+                              <Pencil className="h-4 w-4 text-slate-500" />
+                              <span className="text-slate-700">Editar</span>
+                            </Link>
+                          </DropdownMenuItem>
+                          <DropdownMenuItem asChild>
+                            <button className="flex w-full items-center gap-2 cursor-pointer text-red-600 focus:text-red-600 focus:bg-red-50">
+                              <Trash2 className="h-4 w-4" />
+                              <span>Excluir</span>
+                            </button>
+                          </DropdownMenuItem>
+                        </DropdownMenuContent>
+                      </DropdownMenu>
                     </div>
                   </td>
                 </tr>
