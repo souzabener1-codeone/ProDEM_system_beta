@@ -380,7 +380,7 @@ function Contatos() {
 
                 <div className="rounded-xl border border-slate-200 bg-white p-4 text-center shadow-sm">
                   <p className="text-xs font-semibold uppercase text-blue-400">Código do Contato</p>
-                  <p className="mt-1 text-base font-bold text-slate-800">{contactExtras[selectedContact.id]?.code || "---"}</p>
+                  <p className="mt-1 text-base font-bold text-slate-800">{selectedContact.code || "---"}</p>
                 </div>
 
                 <div className="grid grid-cols-3 gap-4">
