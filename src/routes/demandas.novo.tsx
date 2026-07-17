@@ -95,20 +95,23 @@ function NovaDemanda() {
 
   const handleConfirmSave = () => {
     setConfirmOpen(false);
-    const descricaoFull = [descricao, observacoes && `\n\nObservações: ${observacoes}`, lembrete && `\nLembrete: ${lembrete}`].filter(Boolean).join("");
     mutation.mutate({
       data: {
         titulo,
-        descricao: descricaoFull,
-        tipo: categoria,
-        contato_id: contatoVinculado,
-        responsavel,
-        prazo,
+        categoria,
+        contato: contatoVinculado,
+        cidade: "",
+        descricao,
+        dataSolicitacao: prazo,
+        vencimento: prazo,
+        observacoes,
         prioridade,
         status,
+        responsavel,
       },
     });
   };
+
 
   return (
     <AppLayout>
