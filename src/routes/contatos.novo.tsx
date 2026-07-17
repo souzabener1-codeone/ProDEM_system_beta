@@ -156,7 +156,7 @@ function NovoContato() {
             <div className="grid gap-x-6 gap-y-5 md:grid-cols-2">
               <div className="md:col-span-2">
                 <Field label="Nome Completo" required>
-                  <input className={inputCls} placeholder="Digite o nome completo" />
+                  <input className={inputCls} placeholder="Digite o nome completo" value={nome} onChange={(e) => setNome(e.target.value)} />
                 </Field>
               </div>
               <Field label="Tipo de Contato" required>
@@ -168,7 +168,7 @@ function NovoContato() {
                 />
               </Field>
               <Field label="CPF/CNPJ">
-                <input className={inputCls} placeholder="000.000.000-00" />
+                <input className={inputCls} placeholder="000.000.000-00" value={cpfCnpj} onChange={(e) => setCpfCnpj(e.target.value)} />
               </Field>
             </div>
           </section>
