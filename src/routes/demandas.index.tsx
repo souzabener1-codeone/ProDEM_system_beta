@@ -262,7 +262,7 @@ function Demandas() {
       </div>
 
       <div className="overflow-hidden rounded-2xl border border-border bg-card shadow-[var(--shadow-card)]">
-        <SectionHeader title="Todas as Demandas" count={7} />
+        <SectionHeader title="Todas as Demandas" count={demands.length} />
         <div className="overflow-x-auto">
           <table className="w-full text-sm">
             <thead className="bg-slate-50 text-xs uppercase tracking-wide text-muted-foreground">
