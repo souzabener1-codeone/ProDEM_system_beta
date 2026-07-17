@@ -175,7 +175,7 @@ function NovaDemanda() {
               <StatusSelect value={status} onValueChange={setStatus} />
             </Field>
             <Field label="Data Solicitação" required>
-              <input type="date" className={inputCls} defaultValue="2026-07-13" />
+              <input type="date" className={inputCls} value={prazo} onChange={(e) => setPrazo(e.target.value)} />
             </Field>
 
             <Field label="Contato Vinculado">
@@ -184,6 +184,8 @@ function NovaDemanda() {
                 <input
                   className={`${inputCls} pl-9`}
                   placeholder="Digite para buscar contato..."
+                  value={contatoVinculado}
+                  onChange={(e) => setContatoVinculado(e.target.value)}
                 />
               </div>
             </Field>
@@ -193,6 +195,8 @@ function NovaDemanda() {
                 <input
                   className={`${inputCls} pl-9`}
                   placeholder="Digite para buscar responsável..."
+                  value={responsavel}
+                  onChange={(e) => setResponsavel(e.target.value)}
                 />
               </div>
             </Field>
