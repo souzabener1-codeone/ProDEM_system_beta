@@ -45,12 +45,56 @@ function toContato(row: Record<string, string>, idx: number): Contato {
   };
 }
 
+function safeParse<T>(raw: string, fallback: T): T {
+  try {
+    if (!raw) return fallback;
+    return JSON.parse(raw) as T;
+  } catch {
+    return fallback;
+  }
+}
+
+/**
+ * Detects the legacy header (id, codigo, nome, tipo, contato, localizacao, ...)
+ * and rewrites the sheet in the new 5-column format. Idempotent: no-op when
+ * the header already matches HEADER.
+ */
+async function migrateLegacyContatos(): Promise<void> {
+  const { readSheet, overwriteSheet } = await import("./google/sheets.server");
+  const { header, rows } = await readSheet(SHEET);
+  const isLegacy =
+    header.length > 0 &&
+    header[0]?.toLowerCase() === "id" &&
+    header.some((h) => h?.toLowerCase() === "codigo");
+  if (!isLegacy) return;
+
+  const migrated: Record<string, string>[] = rows.map((r) => {
+    const contatoJson = safeParse<{ telefone?: string }>(r["contato"] ?? "", {});
+    const locJson = safeParse<{ cidade?: string; estado?: string }>(
+      r["localizacao"] ?? "",
+      {},
+    );
+    const localizacao = [locJson.cidade, locJson.estado].filter(Boolean).join("/");
+    return {
+      "Código": r["codigo"] ?? "",
+      "Contato": r["nome"] ?? "",
+      "Tipo": r["tipo"] ?? "",
+      "Telefone": contatoJson.telefone ?? "",
+      "Localização": localizacao,
+    };
+  });
+
+  await overwriteSheet(SHEET, HEADER, migrated);
+}
+
 export const listContatos = createServerFn({ method: "GET" }).handler(async () => {
   const { readSheet, ensureHeader } = await import("./google/sheets.server");
+  await migrateLegacyContatos();
   await ensureHeader(SHEET, HEADER);
   const { rows } = await readSheet(SHEET);
   return rows.map(toContato);
 });
+
 
 export const createContato = createServerFn({ method: "POST" })
   .inputValidator((d: unknown) => contatoInput.parse(d))
