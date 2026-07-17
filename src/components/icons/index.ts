@@ -10,7 +10,7 @@
 import type { ComponentType, SVGProps } from "react";
 import {
   Activity,
-  AddUser as IconoirAddUser,
+  UserPlus as IconoirAddUser,
   Archive,
   Attachment,
   Bookmark,
