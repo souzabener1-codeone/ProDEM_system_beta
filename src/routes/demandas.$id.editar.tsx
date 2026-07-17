@@ -1,5 +1,5 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
-import { X, Save, Search, Edit, Clock, History } from "lucide-react";
+import { X, Save, Search, Edit, Clock } from "lucide-react";
 import { useState, type ReactNode } from "react";
 import { toast } from "sonner";
 import { AppLayout } from "@/components/layout/AppLayout";
@@ -8,6 +8,7 @@ import { StatusSelect } from "@/components/ui/StatusSelect";
 import { FileUpload } from "@/components/ui/FileUpload";
 import { CategorySelect } from "@/components/ui/CategorySelect";
 import { SimpleSelect } from "@/components/ui/SimpleSelect";
+import { MovimentacaoStepper } from "@/components/demandas/MovimentacaoStepper";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -214,35 +215,7 @@ function EditarDemanda() {
             </div>
           </div>
 
-          <div className="relative ml-6 border-l-2 border-slate-100 pb-4">
-            <div className="mb-8 relative pl-8">
-              <div className="absolute -left-[5px] top-1.5 h-2 w-2 rounded-full bg-brand-blue" />
-              <div className="rounded-xl border border-slate-100 bg-slate-50/50 p-4">
-                <div className="mb-2 flex items-center justify-between">
-                  <div className="flex items-center gap-2">
-                    <span className="font-semibold text-slate-800">jhiovana alcantara</span>
-                    <span className="rounded-full bg-blue-100 px-2 py-0.5 text-xs font-medium text-blue-600">Criação</span>
-                  </div>
-                  <span className="text-sm text-slate-500">28/04/2026, 13:41</span>
-                </div>
-                <p className="text-slate-600">Demanda criada com status "Em Progresso"</p>
-              </div>
-            </div>
-
-            <div className="relative pl-8">
-              <div className="absolute -left-[5px] top-1.5 h-2 w-2 rounded-full bg-brand-blue" />
-              <div className="rounded-xl border border-slate-100 bg-slate-50/50 p-4">
-                <div className="mb-2 flex items-center justify-between">
-                  <div className="flex items-center gap-2">
-                    <span className="font-semibold text-slate-800">jhiovana alcantara</span>
-                    <span className="rounded-full bg-blue-100 px-2 py-0.5 text-xs font-medium text-blue-600">Atualização</span>
-                  </div>
-                  <span className="text-sm text-slate-500">05/05/2026, 12:33</span>
-                </div>
-                <p className="text-slate-600">Título alterado</p>
-              </div>
-            </div>
-          </div>
+          <MovimentacaoStepper currentStepId={status === "concluida" ? "concluida" : "em-progresso"} />
         </div>
       </div>
 
