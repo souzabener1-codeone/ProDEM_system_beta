@@ -179,10 +179,10 @@ function NovoContato() {
             <hr className="mb-6 mt-3 border-slate-100" />
             <div className="grid gap-x-6 gap-y-5 md:grid-cols-2">
               <Field label="Telefone">
-                <input className={inputCls} placeholder="(00) 00000-0000" />
+                <input className={inputCls} placeholder="(00) 00000-0000" value={telefone} onChange={(e) => setTelefone(e.target.value)} />
               </Field>
               <Field label="Email">
-                <input type="email" className={inputCls} placeholder="email@exemplo.com" />
+                <input type="email" className={inputCls} placeholder="email@exemplo.com" value={email} onChange={(e) => setEmail(e.target.value)} />
               </Field>
             </div>
           </section>
