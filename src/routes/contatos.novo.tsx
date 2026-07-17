@@ -134,10 +134,10 @@ function NovoContato() {
   const handleConfirmSave = () => {
     setConfirmOpen(false);
     const codigo = Math.floor(100000 + Math.random() * 900000).toString();
-    const contatoData = JSON.stringify({ email, telefone, cpf_cnpj: cpfCnpj, cep, endereco, numero, complemento, observacoes });
-    const localizacao = JSON.stringify({ bairro, cidade, estado });
-    mutation.mutate({ data: { codigo, nome, tipo: tipoContato, contato: contatoData, localizacao } });
+    const localizacao = [cidade, estado].filter(Boolean).join("/");
+    mutation.mutate({ data: { codigo, nome, tipo: tipoContato, telefone, localizacao } });
   };
+
 
   return (
     <AppLayout>
