@@ -91,9 +91,9 @@ function Stepper({
 }: StepperProps) {
   const stepperDefRef = useRef<ReturnType<typeof Stepperize.defineStepper> | null>(null)
   if (stepperDefRef.current === null) {
-    stepperDefRef.current = Stepperize.defineStepper(...steps)
+    stepperDefRef.current = Stepperize.defineStepper(steps as never)
   }
-  const stepper = stepperDefRef.current.useStepper({ initialStep: defaultValue || steps[0]?.id })
+  const stepper = stepperDefRef.current.useStepper({ defaultStep: (defaultValue || steps[0]?.id) as never }) as any
 
   const [triggerNodes, setTriggerNodes] = useState<HTMLButtonElement[]>([])
 
