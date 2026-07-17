@@ -1,4 +1,4 @@
-import type { LucideIcon } from "lucide-react";
+import type { LucideIcon } from "@/components/icons";
 
 type Tone = "blue" | "orange" | "green" | "red" | "purple" | "navy";
 

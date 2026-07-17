@@ -7,8 +7,8 @@ import {
   Activity,
   BarChart3,
   LogOut,
-} from "lucide-react";
-import type { LucideIcon } from "lucide-react";
+} from "@/components/icons";
+import type { LucideIcon } from "@/components/icons";
 import prodemLogo from "@/assets/prodem-logo.png.asset.json";
 
 interface NavItem {

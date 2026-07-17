@@ -1,40 +1,35 @@
-## Objetivo
-Substituir o "Histórico de Movimentação" atual (timeline vertical) em `src/routes/demandas.$id.editar.tsx` por um **Stepper** shadcn (variante `stepper-05`) que mostre as etapas de movimentação da demanda, preservando o restante da UI/UX.
+# Plano: Substituir ícones Lucide por Iconoir
+
+Como o Flaticon UIcons (Regular Straight) exige licença paga e webfont hospedada, adotaremos **Iconoir React** — biblioteca gratuita (MIT), open source, com estilo de traço uniforme e cantos retos, visualmente muito próxima dos UIcons Regular Straight.
 
 ## Etapas
 
 1. **Instalar dependência**
-   - `bun add @stepperize/react`
+   - `bun add iconoir-react`
 
-2. **Criar o componente base do Stepper**
-   - Arquivo: `src/components/ui/stepper.tsx` — copiar exatamente o código fornecido no prompt, ajustando apenas:
-     - Remover `'use client'` (não é Next.js).
-     - Import `cn` de `@/lib/utils` (já existe no projeto — confirmado em `components.json`).
-   - Sem alterações no `globals.css` (nenhuma variável CSS extra é exigida pelo snippet).
+2. **Criar camada de compatibilidade** em `src/components/icons/index.ts`
+   - Reexporta um mapa dos ícones usados no projeto com os mesmos nomes atuais (LayoutDashboard, Users, ClipboardList, Tags, Activity, BarChart3, LogOut, Plus, Pencil, Search, X, Save, ChevronDown, Filter, Upload, FileText, etc.) apontando para os equivalentes da Iconoir (ex.: `HomeSimple`, `Group`, `Task`, `PriceTags`, `Activity`, `StatsReport`, `LogOut`, `Plus`, `EditPencil`, `Search`, `Xmark`, `FloppyDisk`, `NavArrowDown`, `Filter`, `CloudUpload`, `Page`).
+   - Mantém a API `{ className, strokeWidth, size }` para minimizar alterações nos consumidores.
 
-3. **Criar o componente de histórico com Stepper**
-   - Novo arquivo: `src/components/demandas/MovimentacaoStepper.tsx`
-   - Usa `Stepper`, `StepperNav`, `StepperItem`, `StepperTrigger`, `StepperIndicator`, `StepperTitle`, `StepperDescription`, `StepperSeparator`.
-   - Orientação `vertical` + `responsive`, seguindo o estilo do card atual.
-   - Define as etapas de movimentação de uma demanda:
-     1. Criação
-     2. Em Progresso
-     3. Aguardando Retorno
-     4. Concluída
-   - Recebe `currentStepId` via prop (com valor default derivado do `status` da demanda) para marcar automaticamente as etapas concluídas / ativa.
-   - Mantém título "Histórico de Movimentação", subtítulo e o ícone `Clock` já usados no card.
-   - Cada `StepperDescription` mostra autor + data (ex.: `jhiovana alcantara · 28/04/2026, 13:41`) para preservar as informações do histórico atual.
+3. **Substituir imports** em todo o projeto
+   - Trocar `from "lucide-react"` por `from "@/components/icons"` em:
+     - `src/components/layout/Sidebar.tsx`, `PageHeader.tsx`, `SectionHeader.tsx`
+     - `src/components/ui/KPICard.tsx`, `StatusSelect.tsx`, `CategorySelect.tsx`, `SimpleSelect.tsx`, `MultiSelect.tsx`, `ContactAutocomplete.tsx`, `FileUpload.tsx`
+     - `src/components/demandas/MovimentacaoStepper.tsx`
+     - Rotas: `index.tsx`, `contatos.*`, `demandas.*`, `categorias.tsx`, `status.tsx`, `relatorios.tsx`
 
-4. **Integrar na página**
-   - Em `src/routes/demandas.$id.editar.tsx`, substituir o bloco da timeline vertical dentro do card "Histórico de Movimentação" pelo `<MovimentacaoStepper currentStepId="concluida" />` (mapeado a partir do `status` local).
-   - Manter o container `rounded-[24px] border border-border bg-white p-8 shadow-sm` e o cabeçalho com o ícone `Clock` intactos.
-   - Nenhuma outra alteração de UI/UX no formulário, cores, radius, botões ou demais seções.
+4. **Ajustes visuais**
+   - Padronizar tamanho (`h-5 w-5` sidebar, `h-4 w-4` botões) e `strokeWidth={1.75}` para casar com o traço fino dos UIcons Straight.
+   - Verificar contraste nos KPICards e nos badges de Status/Categoria.
 
-5. **Validação**
-   - `bun run build` limpo.
-   - Verificar via Playwright que `/demandas/101/editar` renderiza o stepper com etapas marcadas corretamente e permanece responsivo.
+5. **Remover Lucide** (opcional, após validação)
+   - `bun remove lucide-react` se nenhum import remanescente.
 
-## Fora do escopo
-- Não mexer em `demandas.novo.tsx`, sidebar, filtros, KPIs, ou qualquer outra tela.
-- Não adicionar tokens de cor novos nem alterar `styles.css`.
-- Não trocar o mock atual do histórico por dados reais (apenas transportar as mesmas informações para o novo formato).
+6. **Verificação**
+   - Build + inspeção visual das telas: Dashboard, Contatos, Demandas (lista, novo, editar), Categorias, Status, Relatórios.
+
+## Detalhes técnicos
+
+- **Por que Iconoir e não Phosphor?** Iconoir usa traço 1.5px com terminações retas — resultado quase idêntico ao Flaticon UIcons Regular Straight. Phosphor Regular tem cantos levemente arredondados.
+- A camada `@/components/icons` isola a troca: se no futuro quiser migrar para outra biblioteca (ex.: kit UIcons self-hosted), altera-se apenas 1 arquivo.
+- Nenhuma alteração em lógica de negócio, rotas, dados mockados ou tokens de cor.
