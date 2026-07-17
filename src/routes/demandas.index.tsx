@@ -130,10 +130,10 @@ function Demandas() {
 
       {/* KPIs */}
       <div className="mb-4 grid grid-cols-2 gap-3 lg:grid-cols-4">
-        <KPICard icon={Clock} value={1} label="Pendentes" tone="orange" compact />
-        <KPICard icon={Loader2} value={2} label="Em Progresso" tone="blue" compact />
-        <KPICard icon={AlertTriangle} value={1} label="Atrasadas" tone="red" compact />
-        <KPICard icon={CheckCircle2} value={1} label="Concluídas" tone="green" compact />
+        <KPICard icon={Clock} value={counts.pending} label="Pendentes" tone="orange" compact />
+        <KPICard icon={Loader2} value={counts.inProgress} label="Em Progresso" tone="blue" compact />
+        <KPICard icon={AlertTriangle} value={counts.overdue} label="Atrasadas" tone="red" compact />
+        <KPICard icon={CheckCircle2} value={counts.done} label="Concluídas" tone="green" compact />
       </div>
 
       <div className="mb-3 rounded-2xl bg-navy-800 p-5 shadow-[var(--shadow-card)]">
