@@ -1,5 +1,7 @@
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { createFileRoute, Link } from "@tanstack/react-router";
+import { useQuery } from "@tanstack/react-query";
+import { useServerFn } from "@tanstack/react-start";
 import { ClipboardList, Plus, Search, Eye, Pencil, Clock, Loader2, AlertTriangle, CheckCircle2, X, Filter, ChevronDown, FileText, Download } from "@/components/icons";
 import { KPICard } from "@/components/ui/KPICard";
 import { AppLayout } from "@/components/layout/AppLayout";
@@ -10,6 +12,8 @@ import { ContactAutocomplete } from "@/components/ui/ContactAutocomplete";
 import { MultiSelect } from "@/components/ui/MultiSelect";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
+import { listDemandas, type Demanda } from "@/lib/demandas.functions";
+import { listContatos } from "@/lib/contatos.functions";
 
 export const Route = createFileRoute("/demandas/")({
   head: () => ({
@@ -21,15 +25,50 @@ export const Route = createFileRoute("/demandas/")({
   component: Demandas,
 });
 
-const demands = [
-  { id: 101, contact: "José Almeida", request: "Apoio financeiro para tratamento", category: "Ofício", priority: "Média" as const, status: "in-progress" as const, statusLabel: "Em Andamento", date: "07/07/2026" },
-  { id: 102, contact: "Ana Ribeiro", request: "Kit enxoval maternidade", category: "Indicação", priority: "Alta" as const, status: "pending" as const, statusLabel: "Pendente", date: "06/07/2026" },
-  { id: 103, contact: "Carlos Souza", request: "Iluminação pública Rua das Palmeiras", category: "Requerimento", priority: "Média" as const, status: "waiting" as const, statusLabel: "Aguardando Retorno", date: "05/07/2026" },
-  { id: 104, contact: "Fernanda Lima", request: "Agendamento exame cardiológico", category: "Saúde/Exames", priority: "Alta" as const, status: "done" as const, statusLabel: "Concluída", date: "04/07/2026" },
-  { id: 105, contact: "Roberto Nunes", request: "Emenda para reforma da escola", category: "Emenda", priority: "Média" as const, status: "in-progress" as const, statusLabel: "Em Andamento", date: "03/07/2026" },
-  { id: 106, contact: "Patrícia Gomes", request: "Projeto de lei — mobilidade urbana", category: "Projeto de Lei", priority: "Baixa" as const, status: "overdue" as const, statusLabel: "Atrasada", date: "01/07/2026" },
-  { id: 107, contact: "Luiz Henrique", request: "Mensagem de apoio institucional", category: "Mensagem", priority: "Baixa" as const, status: "cancelled" as const, statusLabel: "Cancelada", date: "28/06/2026" },
-];
+type UIDemand = {
+  id: string;
+  contact: string;
+  request: string;
+  category: string;
+  priority: "Alta" | "Média" | "Baixa";
+  status: "pending" | "in-progress" | "waiting" | "done" | "overdue" | "cancelled";
+  statusLabel: string;
+  date: string;
+  raw: Demanda;
+};
+
+const STATUS_MAP: Record<string, { variant: UIDemand["status"]; label: string }> = {
+  "Pendente": { variant: "pending", label: "Pendente" },
+  "Em Andamento": { variant: "in-progress", label: "Em Andamento" },
+  "Aguardando Retorno": { variant: "waiting", label: "Aguardando Retorno" },
+  "Concluída": { variant: "done", label: "Concluída" },
+  "Cancelada": { variant: "cancelled", label: "Cancelada" },
+  "Não atendido": { variant: "cancelled", label: "Não atendido" },
+};
+
+function formatDate(iso: string): string {
+  if (!iso) return "-";
+  const d = new Date(iso);
+  if (isNaN(d.getTime())) return iso;
+  return d.toLocaleDateString("pt-BR");
+}
+
+function mapDemand(d: Demanda, contactName: string): UIDemand {
+  const s = STATUS_MAP[d.status] ?? { variant: "pending" as const, label: d.status || "Pendente" };
+  const priority = (["Alta", "Média", "Baixa"].includes(d.prioridade) ? d.prioridade : "Média") as UIDemand["priority"];
+  const isOverdue = d.prazo && new Date(d.prazo) < new Date() && s.variant !== "done" && s.variant !== "cancelled";
+  return {
+    id: d.id,
+    contact: contactName || d.contato_id || "-",
+    request: d.titulo,
+    category: d.tipo || "-",
+    priority,
+    status: isOverdue ? "overdue" : s.variant,
+    statusLabel: isOverdue ? "Atrasada" : s.label,
+    date: formatDate(d.data_criacao || d.prazo),
+    raw: d,
+  };
+}
 
 function FilterField({ label, children }: { label: string; children: React.ReactNode }) {
   return (
@@ -46,8 +85,32 @@ function priorityVariant(p: "Alta" | "Média" | "Baixa") {
 }
 
 function Demandas() {
+  const listDemFn = useServerFn(listDemandas);
+  const listContFn = useServerFn(listContatos);
+  const { data: rawDemandas = [] } = useQuery({ queryKey: ["demandas"], queryFn: () => listDemFn() });
+  const { data: rawContatos = [] } = useQuery({ queryKey: ["contatos"], queryFn: () => listContFn() });
+
+  const contactById = useMemo(() => {
+    const m = new Map<string, string>();
+    rawContatos.forEach((c: any) => m.set(c.id, c.nome));
+    return m;
+  }, [rawContatos]);
+
+  const demands = useMemo(
+    () => rawDemandas.map((d) => mapDemand(d, contactById.get(d.contato_id) ?? "")),
+    [rawDemandas, contactById],
+  );
+
   const [filtersOpen, setFiltersOpen] = useState(false);
-  const [selectedDemand, setSelectedDemand] = useState<typeof demands[0] | null>(null);
+  const [selectedDemand, setSelectedDemand] = useState<UIDemand | null>(null);
+
+  const counts = useMemo(() => ({
+    pending: demands.filter((d) => d.status === "pending").length,
+    inProgress: demands.filter((d) => d.status === "in-progress").length,
+    overdue: demands.filter((d) => d.status === "overdue").length,
+    done: demands.filter((d) => d.status === "done").length,
+  }), [demands]);
+
   return (
     <AppLayout>
       <PageHeader
