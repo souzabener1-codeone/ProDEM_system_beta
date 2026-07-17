@@ -1,7 +1,9 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useState } from "react";
-import { Users, Plus, Search, Eye, Pencil, Phone, Mail, Hash, Building2, UserCheck, FileDown, FileSpreadsheet, MoreHorizontal, Trash2 } from "lucide-react";
+import { Users, Plus, Search, Eye, Pencil, Phone, Mail, Hash, Building2, UserCheck, FileDown, FileSpreadsheet, MoreHorizontal, Trash2, FileText, Download } from "lucide-react";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
+import { Button } from "@/components/ui/button";
 import { AppLayout } from "@/components/layout/AppLayout";
 import { PageHeader } from "@/components/layout/PageHeader";
 import { SectionHeader } from "@/components/layout/SectionHeader";
@@ -95,6 +97,7 @@ const contactExtras: Record<number, { code: string; tipo: string; tipoTone: stri
 
 function Contatos() {
   const [searchQuery, setSearchQuery] = useState("");
+  const [selectedContact, setSelectedContact] = useState<typeof contacts[0] | null>(null);
   const [cidade, setCidade] = useState("Todas as cidades");
   const [categoria, setCategoria] = useState("Todos");
 
@@ -307,7 +310,7 @@ function Contatos() {
                         </DropdownMenuTrigger>
                         <DropdownMenuContent align="end" className="w-36">
                           <DropdownMenuItem asChild>
-                            <button className="flex w-full items-center gap-2 cursor-pointer">
+                            <button onClick={() => setSelectedContact(c)} className="flex w-full items-center gap-2 cursor-pointer">
                               <Eye className="h-4 w-4 text-slate-500" />
                               <span className="text-slate-700">Visualizar</span>
                             </button>
@@ -335,6 +338,87 @@ function Contatos() {
           </table>
         </div>
       </div>
+
+      <Dialog open={!!selectedContact} onOpenChange={(open) => !open && setSelectedContact(null)}>
+        <DialogContent className="max-w-3xl border-slate-200 bg-slate-50 p-0 sm:rounded-2xl">
+          {selectedContact && (
+            <>
+              <DialogHeader className="border-b border-slate-200 bg-white px-6 py-4 rounded-t-2xl">
+                <DialogTitle className="flex items-center gap-2 text-brand-blue">
+                  <FileText className="h-5 w-5 text-blue-400" />
+                  <span className="text-blue-400 font-normal">Visualização do Relatório</span>
+                </DialogTitle>
+              </DialogHeader>
+
+              <div className="px-6 py-6 space-y-4">
+                <div className="text-center mb-6">
+                  <h2 className="text-2xl font-bold text-blue-500">ProDEM - Relatório de Contato</h2>
+                  <p className="text-sm text-slate-500 mt-1">Gerado em: {new Date().toLocaleDateString('pt-BR')} às {new Date().toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' })}</p>
+                </div>
+
+                <div className="grid grid-cols-2 gap-4">
+                  <div className="rounded-xl border border-slate-200 bg-white p-4 shadow-sm">
+                    <p className="text-xs font-semibold uppercase text-blue-400">Contato</p>
+                    <p className="mt-1 text-lg font-bold text-slate-800">{selectedContact.name}</p>
+                  </div>
+                  <div className="rounded-xl border border-slate-200 bg-white p-4 shadow-sm">
+                    <p className="text-xs font-semibold uppercase text-blue-400">Cidade</p>
+                    <p className="mt-1 text-lg font-bold text-slate-800">{selectedContact.city}</p>
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-12 gap-4">
+                  <div className="col-span-6 rounded-xl border border-slate-200 bg-white p-4 shadow-sm">
+                    <p className="text-xs font-semibold uppercase text-blue-400">Email</p>
+                    <p className="mt-1 text-base font-bold text-slate-800">{selectedContact.email}</p>
+                  </div>
+                  <div className="col-span-3 rounded-xl border border-slate-200 bg-white p-4 shadow-sm">
+                    <p className="text-xs font-semibold uppercase text-blue-400">Telefone</p>
+                    <p className="mt-1 text-base text-slate-800">{selectedContact.phone}</p>
+                  </div>
+                  <div className="col-span-3 rounded-xl border border-slate-200 bg-white p-4 shadow-sm">
+                    <p className="text-xs font-semibold uppercase text-blue-400">Tipo</p>
+                    <p className="mt-1 text-sm text-slate-800">{contactExtras[selectedContact.id]?.tipo || "-"}</p>
+                  </div>
+                </div>
+
+                <div className="rounded-xl border border-slate-200 bg-white p-4 shadow-sm">
+                  <p className="text-xs font-semibold uppercase text-blue-400">Observação</p>
+                  <p className="mt-1 text-base text-slate-800">Nenhuma observação registrada para este contato.</p>
+                </div>
+
+                <div className="rounded-xl border border-slate-200 bg-white p-4 text-center shadow-sm">
+                  <p className="text-xs font-semibold uppercase text-blue-400">Código do Contato</p>
+                  <p className="mt-1 text-base font-bold text-slate-800">{contactExtras[selectedContact.id]?.code || "---"}</p>
+                </div>
+
+                <div className="grid grid-cols-3 gap-4">
+                  <div className="rounded-xl border border-slate-200 bg-white p-4 text-center shadow-sm">
+                    <p className="text-xs font-semibold uppercase text-blue-400">Demandas Vinculadas</p>
+                    <p className="mt-1 text-base font-bold text-slate-800">{selectedContact.demands}</p>
+                  </div>
+                  <div className="rounded-xl border border-slate-200 bg-white p-4 text-center shadow-sm">
+                    <p className="text-xs font-semibold uppercase text-blue-400">Status</p>
+                    <p className="mt-1 font-bold text-green-500">Ativo</p>
+                  </div>
+                  <div className="rounded-xl border border-slate-200 bg-white p-4 text-center shadow-sm">
+                    <p className="text-xs font-semibold uppercase text-blue-400">Data de Cadastro</p>
+                    <p className="mt-1 font-bold text-slate-800">01/01/2026</p>
+                  </div>
+                </div>
+              </div>
+
+              <DialogFooter className="border-t border-slate-200 bg-slate-50/50 px-6 py-4 rounded-b-2xl flex justify-end gap-2">
+                <Button variant="outline" className="rounded-full bg-white text-slate-700 font-normal px-6" onClick={() => setSelectedContact(null)}>Fechar</Button>
+                <Button className="rounded-full bg-[#3b82f6] hover:bg-blue-600 text-white font-normal px-6">
+                  <Download className="mr-2 h-4 w-4" />
+                  Baixar PDF
+                </Button>
+              </DialogFooter>
+            </>
+          )}
+        </DialogContent>
+      </Dialog>
     </AppLayout>
   );
 }
