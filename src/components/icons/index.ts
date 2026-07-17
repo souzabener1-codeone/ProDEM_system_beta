@@ -109,8 +109,8 @@ export const AlertTriangle = WarningTriangle;
 export const CircleAlert = WarningTriangle;
 export const CheckCircle2 = CheckCircle;
 export { Check, Clock, Eye };
-export const Circle = CircleSolid;
-export const CircleIcon = CircleSolid;
+export const Circle = IconoirCircle;
+export const CircleIcon = IconoirCircle;
 export const Minus = NavArrowDown; // rarely used
 
 // Users / contacts
