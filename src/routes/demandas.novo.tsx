@@ -59,22 +59,55 @@ const textareaCls =
 
 function NovaDemanda() {
   const navigate = useNavigate();
+  const queryClient = useQueryClient();
+  const createFn = useServerFn(createDemanda);
+
+  const [titulo, setTitulo] = useState("");
+  const [descricao, setDescricao] = useState("");
+  const [observacoes, setObservacoes] = useState("");
+  const [prazo, setPrazo] = useState("");
+  const [contatoVinculado, setContatoVinculado] = useState("");
+  const [responsavel, setResponsavel] = useState("");
   const [status, setStatus] = useState("");
   const [categoria, setCategoria] = useState("");
   const [prioridade, setPrioridade] = useState("");
   const [lembrete, setLembrete] = useState("");
-
   const [confirmOpen, setConfirmOpen] = useState(false);
+
+  const mutation = useMutation({
+    mutationFn: createFn,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["demandas"] });
+      toast.success("Demanda salva com sucesso!");
+      navigate({ to: "/demandas" });
+    },
+    onError: (err: Error) => toast.error(err.message || "Erro ao salvar"),
+  });
 
   const handleFormSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+    if (!titulo.trim()) {
+      toast.error("Informe o título da demanda");
+      return;
+    }
     setConfirmOpen(true);
   };
 
   const handleConfirmSave = () => {
     setConfirmOpen(false);
-    toast.success("Demanda salva com sucesso!");
-    navigate({ to: "/demandas" });
+    const descricaoFull = [descricao, observacoes && `\n\nObservações: ${observacoes}`, lembrete && `\nLembrete: ${lembrete}`].filter(Boolean).join("");
+    mutation.mutate({
+      data: {
+        titulo,
+        descricao: descricaoFull,
+        tipo: categoria,
+        contato_id: contatoVinculado,
+        responsavel,
+        prazo,
+        prioridade,
+        status,
+      },
+    });
   };
 
   return (
