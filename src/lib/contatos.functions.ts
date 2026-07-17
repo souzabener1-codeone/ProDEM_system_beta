@@ -84,12 +84,17 @@ export const deleteContato = createServerFn({ method: "POST" })
   .handler(async ({ data }) => {
     const { readSheet, deleteRow, findRowById } = await import("./google/sheets.server");
 
-    // Guard: check for related demandas.
-    const demandas = await readSheet("Demandas");
-    const linked = demandas.rows.some((r) => r["contato_id"] === data.id);
-    if (linked) {
-      throw new Error("Existem demandas vinculadas a este contato. Exclua-as antes.");
+    // Guard: check for related demandas (matching by contact name in the sheet).
+    const { rows: contatoRows } = await readSheet(SHEET);
+    const target = contatoRows.find((r) => r["id"] === data.id);
+    if (target) {
+      const demandas = await readSheet("Demandas");
+      const linked = demandas.rows.some((r) => r["Contato"] === target["nome"]);
+      if (linked) {
+        throw new Error("Existem demandas vinculadas a este contato. Exclua-as antes.");
+      }
     }
+
 
     const { rows, rowNumbers } = await readSheet(SHEET);
     const found = findRowById(rows, rowNumbers, data.id);

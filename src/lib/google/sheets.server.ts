@@ -48,6 +48,7 @@ export async function readSheet(sheetName: string): Promise<{
 }
 
 export async function appendRow(sheetName: string, header: string[], row: Record<string, string>) {
+  await ensureHeader(sheetName, header);
   const values = [header.map((h) => row[h] ?? "")];
   const range = `${sheetName}!A1`;
   await gfetch(
@@ -55,6 +56,29 @@ export async function appendRow(sheetName: string, header: string[], row: Record
     { method: "POST", body: JSON.stringify({ values }) },
   );
 }
+
+/** Ensure row 1 of the sheet has exactly the given header labels. */
+const ensuredHeaders = new Set<string>();
+export async function ensureHeader(sheetName: string, header: string[]): Promise<void> {
+  const cacheKey = `${sheetName}:${header.join("|")}`;
+  if (ensuredHeaders.has(cacheKey)) return;
+  const range = `${sheetName}!A1:${columnLetter(header.length)}1`;
+  const res = await gfetch(
+    `${SHEETS_BASE}/${sheetId()}/values/${encodeURIComponent(range)}`,
+  );
+  const data = (await res.json()) as { values?: string[][] };
+  const current = data.values?.[0] ?? [];
+  const matches =
+    current.length === header.length && header.every((h, i) => current[i] === h);
+  if (!matches) {
+    await gfetch(
+      `${SHEETS_BASE}/${sheetId()}/values/${encodeURIComponent(range)}?valueInputOption=RAW`,
+      { method: "PUT", body: JSON.stringify({ values: [header] }) },
+    );
+  }
+  ensuredHeaders.add(cacheKey);
+}
+
 
 export async function updateRow(
   sheetName: string,

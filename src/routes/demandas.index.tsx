@@ -53,22 +53,24 @@ function formatDate(iso: string): string {
   return d.toLocaleDateString("pt-BR");
 }
 
-function mapDemand(d: Demanda, contactName: string): UIDemand {
+function mapDemand(d: Demanda, index: number): UIDemand {
   const s = STATUS_MAP[d.status] ?? { variant: "pending" as const, label: d.status || "Pendente" };
   const priority = (["Alta", "Média", "Baixa"].includes(d.prioridade) ? d.prioridade : "Média") as UIDemand["priority"];
-  const isOverdue = d.prazo && new Date(d.prazo) < new Date() && s.variant !== "done" && s.variant !== "cancelled";
+  const dueDate = d.vencimento || d.dataSolicitacao;
+  const isOverdue = !!dueDate && new Date(dueDate) < new Date() && s.variant !== "done" && s.variant !== "cancelled";
   return {
-    id: d.id,
-    contact: contactName || d.contato_id || "-",
+    id: `${index}`,
+    contact: d.contato || "-",
     request: d.titulo,
-    category: d.tipo || "-",
+    category: d.categoria || "-",
     priority,
     status: isOverdue ? "overdue" : s.variant,
     statusLabel: isOverdue ? "Atrasada" : s.label,
-    date: formatDate(d.data_criacao || d.prazo),
+    date: formatDate(d.dataSolicitacao || d.vencimento),
     raw: d,
   };
 }
+
 
 function FilterField({ label, children }: { label: string; children: React.ReactNode }) {
   return (
@@ -97,9 +99,10 @@ function Demandas() {
   }, [rawContatos]);
 
   const demands = useMemo(
-    () => rawDemandas.map((d) => mapDemand(d, contactById.get(d.contato_id) ?? "")),
-    [rawDemandas, contactById],
+    () => rawDemandas.map((d, i) => mapDemand(d, i)),
+    [rawDemandas],
   );
+
 
   const [filtersOpen, setFiltersOpen] = useState(false);
   const [selectedDemand, setSelectedDemand] = useState<UIDemand | null>(null);
