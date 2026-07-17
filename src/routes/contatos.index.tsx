@@ -254,7 +254,7 @@ function Contatos() {
                   key={c.id}
                   className="border-t border-border transition-colors hover:bg-slate-50"
                 >
-                  <td className="px-5 py-3.5 font-semibold text-brand-blue-strong">{extra?.code}</td>
+                  <td className="px-5 py-3.5 font-semibold text-brand-blue-strong">{c.code}</td>
                   <td className="px-5 py-3.5">
                     <div className="flex items-center gap-3">
                       <div
@@ -272,8 +272,8 @@ function Contatos() {
                     </div>
                   </td>
                   <td className="px-5 py-3.5">
-                    <span className={`inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-semibold ${extra?.tipoTone}`}>
-                      {extra?.tipo}
+                    <span className={`inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-semibold ${c.tipoTone}`}>
+                      {c.tipo}
                     </span>
                   </td>
                   <td className="px-5 py-3.5">
