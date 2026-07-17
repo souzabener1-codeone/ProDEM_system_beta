@@ -2,6 +2,9 @@ import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { UserPlus, X, Save } from "@/components/icons";
 import { useState, type ReactNode } from "react";
 import { toast } from "sonner";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { useServerFn } from "@tanstack/react-start";
+import { createContato } from "@/lib/contatos.functions";
 import { AppLayout } from "@/components/layout/AppLayout";
 import { PageHeader } from "@/components/layout/PageHeader";
 import { SimpleSelect } from "@/components/ui/SimpleSelect";
@@ -14,7 +17,6 @@ import {
   AlertDialogFooter,
   AlertDialogHeader,
   AlertDialogTitle,
-  AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
 
 const contactTypes = [
@@ -67,6 +69,15 @@ const textareaCls =
 
 function NovoContato() {
   const navigate = useNavigate();
+  const queryClient = useQueryClient();
+  const createFn = useServerFn(createContato);
+
+  const [nome, setNome] = useState("");
+  const [cpfCnpj, setCpfCnpj] = useState("");
+  const [telefone, setTelefone] = useState("");
+  const [email, setEmail] = useState("");
+  const [numero, setNumero] = useState("");
+  const [observacoes, setObservacoes] = useState("");
   const [tipoContato, setTipoContato] = useState("");
   const [cep, setCep] = useState("");
   const [endereco, setEndereco] = useState("");
@@ -76,6 +87,16 @@ function NovoContato() {
   const [complemento, setComplemento] = useState("");
   const [cepLoading, setCepLoading] = useState(false);
   const [confirmOpen, setConfirmOpen] = useState(false);
+
+  const mutation = useMutation({
+    mutationFn: createFn,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["contatos"] });
+      toast.success("Contato salvo com sucesso!");
+      navigate({ to: "/contatos" });
+    },
+    onError: (err: Error) => toast.error(err.message || "Erro ao salvar"),
+  });
 
   const handleCepChange = (raw: string) => {
     const digits = raw.replace(/\D/g, "").slice(0, 8);
@@ -103,13 +124,19 @@ function NovoContato() {
 
   const handleFormSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+    if (!nome.trim()) {
+      toast.error("Informe o nome completo");
+      return;
+    }
     setConfirmOpen(true);
   };
 
   const handleConfirmSave = () => {
     setConfirmOpen(false);
-    toast.success("Contato salvo com sucesso!");
-    navigate({ to: "/contatos" });
+    const codigo = Math.floor(100000 + Math.random() * 900000).toString();
+    const contatoData = JSON.stringify({ email, telefone, cpf_cnpj: cpfCnpj, cep, endereco, numero, complemento, observacoes });
+    const localizacao = JSON.stringify({ bairro, cidade, estado });
+    mutation.mutate({ data: { codigo, nome, tipo: tipoContato, contato: contatoData, localizacao } });
   };
 
   return (
@@ -129,7 +156,7 @@ function NovoContato() {
             <div className="grid gap-x-6 gap-y-5 md:grid-cols-2">
               <div className="md:col-span-2">
                 <Field label="Nome Completo" required>
-                  <input className={inputCls} placeholder="Digite o nome completo" />
+                  <input className={inputCls} placeholder="Digite o nome completo" value={nome} onChange={(e) => setNome(e.target.value)} />
                 </Field>
               </div>
               <Field label="Tipo de Contato" required>
@@ -141,7 +168,7 @@ function NovoContato() {
                 />
               </Field>
               <Field label="CPF/CNPJ">
-                <input className={inputCls} placeholder="000.000.000-00" />
+                <input className={inputCls} placeholder="000.000.000-00" value={cpfCnpj} onChange={(e) => setCpfCnpj(e.target.value)} />
               </Field>
             </div>
           </section>
@@ -152,10 +179,10 @@ function NovoContato() {
             <hr className="mb-6 mt-3 border-slate-100" />
             <div className="grid gap-x-6 gap-y-5 md:grid-cols-2">
               <Field label="Telefone">
-                <input className={inputCls} placeholder="(00) 00000-0000" />
+                <input className={inputCls} placeholder="(00) 00000-0000" value={telefone} onChange={(e) => setTelefone(e.target.value)} />
               </Field>
               <Field label="Email">
-                <input type="email" className={inputCls} placeholder="email@exemplo.com" />
+                <input type="email" className={inputCls} placeholder="email@exemplo.com" value={email} onChange={(e) => setEmail(e.target.value)} />
               </Field>
             </div>
           </section>
@@ -191,7 +218,7 @@ function NovoContato() {
               </div>
               <div className="md:col-span-2">
                 <Field label="Número">
-                  <input className={inputCls} placeholder="Nº" />
+                  <input className={inputCls} placeholder="Nº" value={numero} onChange={(e) => setNumero(e.target.value)} />
                 </Field>
               </div>
 
@@ -252,6 +279,8 @@ function NovoContato() {
                 rows={4}
                 className={textareaCls}
                 placeholder="Observações adicionais sobre o contato..."
+                value={observacoes}
+                onChange={(e) => setObservacoes(e.target.value)}
               />
             </Field>
           </section>
@@ -268,10 +297,11 @@ function NovoContato() {
           </Link>
           <button
             type="submit"
-            className="inline-flex items-center gap-2 rounded-full bg-brand-blue px-6 py-2.5 text-sm font-semibold text-white shadow-sm transition-all hover:bg-brand-blue-strong active:scale-[0.98]"
+            disabled={mutation.isPending}
+            className="inline-flex items-center gap-2 rounded-full bg-brand-blue px-6 py-2.5 text-sm font-semibold text-white shadow-sm transition-all hover:bg-brand-blue-strong active:scale-[0.98] disabled:opacity-60"
           >
             <Save className="h-4 w-4" />
-            Salvar Contato
+            {mutation.isPending ? "Salvando..." : "Salvar Contato"}
           </button>
         </div>
       </form>

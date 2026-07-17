@@ -1,5 +1,8 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { useState } from "react";
+import { useMemo, useState } from "react";
+import { useQuery } from "@tanstack/react-query";
+import { useServerFn } from "@tanstack/react-start";
+import { listContatos, type Contato } from "@/lib/contatos.functions";
 import { Users, Plus, Search, Eye, Pencil, Phone, Mail, Hash, Building2, UserCheck, FileDown, FileSpreadsheet, MoreHorizontal, Trash2, FileText, Download } from "@/components/icons";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
@@ -20,62 +23,60 @@ export const Route = createFileRoute("/contatos/")({
   component: Contatos,
 });
 
-const contacts = [
-  {
-    id: 1,
-    name: "José Almeida",
-    email: "jose.almeida@email.com",
-    phone: "(11) 98765-4321",
-    city: "São Paulo/SP",
-    demands: 4,
-    color: "bg-cat-1",
-  },
-  {
-    id: 2,
-    name: "Ana Ribeiro",
-    email: "ana.ribeiro@email.com",
-    phone: "(11) 97654-3210",
-    city: "Guarulhos/SP",
-    demands: 2,
-    color: "bg-cat-2",
-  },
-  {
-    id: 3,
-    name: "Carlos Souza",
-    email: "carlos.souza@email.com",
-    phone: "(11) 96543-2109",
-    city: "Osasco/SP",
-    demands: 7,
-    color: "bg-cat-3",
-  },
-  {
-    id: 4,
-    name: "Fernanda Lima",
-    email: "fernanda.lima@email.com",
-    phone: "(11) 95432-1098",
-    city: "Santo André/SP",
-    demands: 1,
-    color: "bg-cat-4",
-  },
-  {
-    id: 5,
-    name: "Roberto Nunes",
-    email: "roberto.nunes@email.com",
-    phone: "(11) 94321-0987",
-    city: "São Bernardo/SP",
-    demands: 3,
-    color: "bg-cat-5",
-  },
-  {
-    id: 6,
-    name: "Patrícia Gomes",
-    email: "patricia.gomes@email.com",
-    phone: "(11) 93210-9876",
-    city: "Diadema/SP",
-    demands: 5,
-    color: "bg-cat-6",
-  },
-];
+const CAT_COLORS = ["bg-cat-1", "bg-cat-2", "bg-cat-3", "bg-cat-4", "bg-cat-5", "bg-cat-6"];
+
+const TIPO_TONES: Record<string, string> = {
+  Cidadão: "bg-brand-blue-soft text-brand-blue-strong",
+  Liderança: "bg-[#F5F3FF] text-waiting",
+  Parlamentar: "bg-success-soft text-success",
+  Autoridade: "bg-success-soft text-success",
+  Empresa: "bg-danger-soft text-danger",
+  Empresário: "bg-danger-soft text-danger",
+  Mídia: "bg-brand-orange-soft text-brand-orange",
+  Jornalista: "bg-brand-orange-soft text-brand-orange",
+  Assessor: "bg-slate-100 text-slate-700",
+  Funcionário: "bg-slate-100 text-slate-700",
+};
+
+type UIContact = {
+  id: string;
+  code: string;
+  name: string;
+  email: string;
+  phone: string;
+  city: string;
+  tipo: string;
+  tipoTone: string;
+  demands: number;
+  color: string;
+};
+
+function safeParse<T>(raw: string, fallback: T): T {
+  try {
+    if (!raw) return fallback;
+    return JSON.parse(raw) as T;
+  } catch {
+    return fallback;
+  }
+}
+
+function mapContato(c: Contato, idx: number): UIContact {
+  const contatoData = safeParse<{ email?: string; telefone?: string }>(c.contato, {});
+  const loc = safeParse<{ cidade?: string; estado?: string }>(c.localizacao, {});
+  const city = [loc.cidade, loc.estado].filter(Boolean).join("/");
+  return {
+    id: c.id,
+    code: c.codigo,
+    name: c.nome,
+    email: contatoData.email ?? "",
+    phone: contatoData.telefone ?? "",
+    city,
+    tipo: c.tipo,
+    tipoTone: TIPO_TONES[c.tipo] ?? "bg-slate-100 text-slate-700",
+    demands: 0,
+    color: CAT_COLORS[idx % CAT_COLORS.length],
+  };
+}
 
 function initials(name: string) {
   return name
@@ -86,18 +87,17 @@ function initials(name: string) {
     .toUpperCase();
 }
 
-const contactExtras: Record<number, { code: string; tipo: string; tipoTone: string }> = {
-  1: { code: "213670", tipo: "Cidadão", tipoTone: "bg-brand-blue-soft text-brand-blue-strong" },
-  2: { code: "667907", tipo: "Mídia", tipoTone: "bg-brand-orange-soft text-brand-orange" },
-  3: { code: "577830", tipo: "Liderança", tipoTone: "bg-[#F5F3FF] text-waiting" },
-  4: { code: "495391", tipo: "Cidadão", tipoTone: "bg-brand-blue-soft text-brand-blue-strong" },
-  5: { code: "384762", tipo: "Parlamentar", tipoTone: "bg-success-soft text-success" },
-  6: { code: "295184", tipo: "Empresa", tipoTone: "bg-danger-soft text-danger" },
-};
 
 function Contatos() {
+  const listFn = useServerFn(listContatos);
+  const { data: raw = [] } = useQuery({
+    queryKey: ["contatos"],
+    queryFn: () => listFn(),
+  });
+  const contacts = useMemo(() => raw.map(mapContato), [raw]);
+
   const [searchQuery, setSearchQuery] = useState("");
-  const [selectedContact, setSelectedContact] = useState<typeof contacts[0] | null>(null);
+  const [selectedContact, setSelectedContact] = useState<UIContact | null>(null);
   const [cidade, setCidade] = useState("Todas as cidades");
   const [categoria, setCategoria] = useState("Todos");
 
@@ -108,26 +108,18 @@ function Contatos() {
   });
 
   const handleSearch = () => {
-    setAppliedFilters({
-      searchQuery,
-      cidade,
-      categoria,
-    });
+    setAppliedFilters({ searchQuery, cidade, categoria });
   };
 
   const filteredContacts = contacts.filter((c) => {
-    const extra = contactExtras[c.id];
     const query = appliedFilters.searchQuery.toLowerCase();
-    
-    const matchQuery = !query || 
-      c.name.toLowerCase().includes(query) || 
-      c.email.toLowerCase().includes(query) || 
-      c.phone.toLowerCase().includes(query) || 
-      (extra?.code && extra.code.toLowerCase().includes(query));
-      
+    const matchQuery = !query ||
+      c.name.toLowerCase().includes(query) ||
+      c.email.toLowerCase().includes(query) ||
+      c.phone.toLowerCase().includes(query) ||
+      (c.code && c.code.toLowerCase().includes(query));
     const matchCidade = appliedFilters.cidade === "Todas as cidades" || c.city === appliedFilters.cidade;
-    const matchCategoria = appliedFilters.categoria === "Todos" || extra?.tipo === appliedFilters.categoria;
-    
+    const matchCategoria = appliedFilters.categoria === "Todos" || c.tipo === appliedFilters.categoria;
     return matchQuery && matchCidade && matchCategoria;
   });
 
@@ -160,9 +152,9 @@ function Contatos() {
       {/* KPIs */}
       <div className="mb-4 grid grid-cols-2 gap-3 lg:grid-cols-4">
         <KPICard icon={Users} value={contacts.length} label="Total" tone="blue" compact />
-        <KPICard icon={UserCheck} value={4} label="Cidadãos" tone="navy" compact />
-        <KPICard icon={Building2} value={0} label="Entidades" tone="green" compact />
-        <KPICard icon={Building2} value={1} label="Empresas" tone="orange" compact />
+        <KPICard icon={UserCheck} value={contacts.filter((c) => c.tipo === "Cidadão").length} label="Cidadãos" tone="navy" compact />
+        <KPICard icon={Building2} value={contacts.filter((c) => c.tipo === "Entidade").length} label="Entidades" tone="green" compact />
+        <KPICard icon={Building2} value={contacts.filter((c) => c.tipo === "Empresa").length} label="Empresas" tone="orange" compact />
       </div>
 
       {/* Filter bar */}
@@ -257,13 +249,12 @@ function Contatos() {
             </thead>
             <tbody>
               {filteredContacts.map((c) => {
-                const extra = contactExtras[c.id];
                 return (
                 <tr
                   key={c.id}
                   className="border-t border-border transition-colors hover:bg-slate-50"
                 >
-                  <td className="px-5 py-3.5 font-semibold text-brand-blue-strong">{extra?.code}</td>
+                  <td className="px-5 py-3.5 font-semibold text-brand-blue-strong">{c.code}</td>
                   <td className="px-5 py-3.5">
                     <div className="flex items-center gap-3">
                       <div
@@ -281,8 +272,8 @@ function Contatos() {
                     </div>
                   </td>
                   <td className="px-5 py-3.5">
-                    <span className={`inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-semibold ${extra?.tipoTone}`}>
-                      {extra?.tipo}
+                    <span className={`inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-semibold ${c.tipoTone}`}>
+                      {c.tipo}
                     </span>
                   </td>
                   <td className="px-5 py-3.5">
@@ -378,7 +369,7 @@ function Contatos() {
                   </div>
                   <div className="col-span-3 rounded-xl border border-slate-200 bg-white p-4 shadow-sm">
                     <p className="text-xs font-semibold uppercase text-blue-400">Tipo</p>
-                    <p className="mt-1 text-sm text-slate-800">{contactExtras[selectedContact.id]?.tipo || "-"}</p>
+                    <p className="mt-1 text-sm text-slate-800">{selectedContact.tipo || "-"}</p>
                   </div>
                 </div>
 
@@ -389,7 +380,7 @@ function Contatos() {
 
                 <div className="rounded-xl border border-slate-200 bg-white p-4 text-center shadow-sm">
                   <p className="text-xs font-semibold uppercase text-blue-400">Código do Contato</p>
-                  <p className="mt-1 text-base font-bold text-slate-800">{contactExtras[selectedContact.id]?.code || "---"}</p>
+                  <p className="mt-1 text-base font-bold text-slate-800">{selectedContact.code || "---"}</p>
                 </div>
 
                 <div className="grid grid-cols-3 gap-4">

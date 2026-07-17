@@ -16,33 +16,29 @@ const HEADER = [
   "google_event_id",
 ];
 
-const tipoEnum = z.enum(["Atendimento", "Ofício"]);
-const prioridadeEnum = z.enum(["Baixa", "Média", "Alta"]);
-const statusEnum = z.enum(["Não atendido", "Em andamento", "Em progresso", "Concluída"]);
-
 export type Demanda = {
   id: string;
   titulo: string;
   descricao: string;
-  tipo: "Atendimento" | "Ofício";
+  tipo: string;
   contato_id: string;
   responsavel: string;
   data_criacao: string;
   prazo: string;
-  prioridade: "Baixa" | "Média" | "Alta";
-  status: "Não atendido" | "Em andamento" | "Em progresso" | "Concluída";
+  prioridade: string;
+  status: string;
   google_event_id: string;
 };
 
 const demandaInput = z.object({
   titulo: z.string().min(1),
   descricao: z.string().default(""),
-  tipo: tipoEnum,
+  tipo: z.string().default(""),
   contato_id: z.string().default(""),
   responsavel: z.string().default(""),
-  prazo: z.string().default(""), // ISO date or ""
-  prioridade: prioridadeEnum,
-  status: statusEnum,
+  prazo: z.string().default(""),
+  prioridade: z.string().default(""),
+  status: z.string().default(""),
 });
 
 function eventSummary(d: Pick<Demanda, "titulo" | "tipo" | "status">): string {

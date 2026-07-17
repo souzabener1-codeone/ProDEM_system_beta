@@ -2,6 +2,9 @@ import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { ClipboardList, X, Save, Search } from "@/components/icons";
 import { useState, type ReactNode } from "react";
 import { toast } from "sonner";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { useServerFn } from "@tanstack/react-start";
+import { createDemanda } from "@/lib/demandas.functions";
 import { AppLayout } from "@/components/layout/AppLayout";
 import { PageHeader } from "@/components/layout/PageHeader";
 import { StatusSelect } from "@/components/ui/StatusSelect";
@@ -56,22 +59,55 @@ const textareaCls =
 
 function NovaDemanda() {
   const navigate = useNavigate();
+  const queryClient = useQueryClient();
+  const createFn = useServerFn(createDemanda);
+
+  const [titulo, setTitulo] = useState("");
+  const [descricao, setDescricao] = useState("");
+  const [observacoes, setObservacoes] = useState("");
+  const [prazo, setPrazo] = useState("");
+  const [contatoVinculado, setContatoVinculado] = useState("");
+  const [responsavel, setResponsavel] = useState("");
   const [status, setStatus] = useState("");
   const [categoria, setCategoria] = useState("");
   const [prioridade, setPrioridade] = useState("");
   const [lembrete, setLembrete] = useState("");
-
   const [confirmOpen, setConfirmOpen] = useState(false);
+
+  const mutation = useMutation({
+    mutationFn: createFn,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["demandas"] });
+      toast.success("Demanda salva com sucesso!");
+      navigate({ to: "/demandas" });
+    },
+    onError: (err: Error) => toast.error(err.message || "Erro ao salvar"),
+  });
 
   const handleFormSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+    if (!titulo.trim()) {
+      toast.error("Informe o título da demanda");
+      return;
+    }
     setConfirmOpen(true);
   };
 
   const handleConfirmSave = () => {
     setConfirmOpen(false);
-    toast.success("Demanda salva com sucesso!");
-    navigate({ to: "/demandas" });
+    const descricaoFull = [descricao, observacoes && `\n\nObservações: ${observacoes}`, lembrete && `\nLembrete: ${lembrete}`].filter(Boolean).join("");
+    mutation.mutate({
+      data: {
+        titulo,
+        descricao: descricaoFull,
+        tipo: categoria,
+        contato_id: contatoVinculado,
+        responsavel,
+        prazo,
+        prioridade,
+        status,
+      },
+    });
   };
 
   return (
@@ -88,7 +124,7 @@ function NovaDemanda() {
       >
         <div className="space-y-5">
           <Field label="Título da Demanda" required>
-            <input className={inputCls} placeholder="Digite o título da demanda" />
+            <input className={inputCls} placeholder="Digite o título da demanda" value={titulo} onChange={(e) => setTitulo(e.target.value)} />
           </Field>
 
           <Field label="Descrição" required>
@@ -96,6 +132,8 @@ function NovaDemanda() {
               rows={4}
               className={textareaCls}
               placeholder="Descreva os detalhes da demanda..."
+              value={descricao}
+              onChange={(e) => setDescricao(e.target.value)}
             />
           </Field>
 
@@ -137,7 +175,7 @@ function NovaDemanda() {
               <StatusSelect value={status} onValueChange={setStatus} />
             </Field>
             <Field label="Data Solicitação" required>
-              <input type="date" className={inputCls} defaultValue="2026-07-13" />
+              <input type="date" className={inputCls} value={prazo} onChange={(e) => setPrazo(e.target.value)} />
             </Field>
 
             <Field label="Contato Vinculado">
@@ -146,6 +184,8 @@ function NovaDemanda() {
                 <input
                   className={`${inputCls} pl-9`}
                   placeholder="Digite para buscar contato..."
+                  value={contatoVinculado}
+                  onChange={(e) => setContatoVinculado(e.target.value)}
                 />
               </div>
             </Field>
@@ -155,6 +195,8 @@ function NovaDemanda() {
                 <input
                   className={`${inputCls} pl-9`}
                   placeholder="Digite para buscar responsável..."
+                  value={responsavel}
+                  onChange={(e) => setResponsavel(e.target.value)}
                 />
               </div>
             </Field>
@@ -165,6 +207,8 @@ function NovaDemanda() {
               rows={3}
               className={textareaCls}
               placeholder="Observações adicionais..."
+              value={observacoes}
+              onChange={(e) => setObservacoes(e.target.value)}
             />
           </Field>
 
@@ -184,10 +228,11 @@ function NovaDemanda() {
           </Link>
           <button
             type="submit"
-            className="inline-flex items-center gap-2 rounded-full bg-brand-blue px-6 py-2.5 text-sm font-semibold text-white shadow-sm transition-all hover:bg-brand-blue-strong active:scale-[0.98]"
+            disabled={mutation.isPending}
+            className="inline-flex items-center gap-2 rounded-full bg-brand-blue px-6 py-2.5 text-sm font-semibold text-white shadow-sm transition-all hover:bg-brand-blue-strong active:scale-[0.98] disabled:opacity-60"
           >
             <Save className="h-4 w-4" />
-            Salvar Demanda
+            {mutation.isPending ? "Salvando..." : "Salvar Demanda"}
           </button>
         </div>
       </form>
