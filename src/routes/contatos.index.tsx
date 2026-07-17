@@ -152,9 +152,9 @@ function Contatos() {
       {/* KPIs */}
       <div className="mb-4 grid grid-cols-2 gap-3 lg:grid-cols-4">
         <KPICard icon={Users} value={contacts.length} label="Total" tone="blue" compact />
-        <KPICard icon={UserCheck} value={4} label="Cidadãos" tone="navy" compact />
-        <KPICard icon={Building2} value={0} label="Entidades" tone="green" compact />
-        <KPICard icon={Building2} value={1} label="Empresas" tone="orange" compact />
+        <KPICard icon={UserCheck} value={contacts.filter((c) => c.tipo === "Cidadão").length} label="Cidadãos" tone="navy" compact />
+        <KPICard icon={Building2} value={contacts.filter((c) => c.tipo === "Entidade").length} label="Entidades" tone="green" compact />
+        <KPICard icon={Building2} value={contacts.filter((c) => c.tipo === "Empresa").length} label="Empresas" tone="orange" compact />
       </div>
 
       {/* Filter bar */}
