@@ -124,7 +124,7 @@ function NovaDemanda() {
       >
         <div className="space-y-5">
           <Field label="Título da Demanda" required>
-            <input className={inputCls} placeholder="Digite o título da demanda" />
+            <input className={inputCls} placeholder="Digite o título da demanda" value={titulo} onChange={(e) => setTitulo(e.target.value)} />
           </Field>
 
           <Field label="Descrição" required>
@@ -132,6 +132,8 @@ function NovaDemanda() {
               rows={4}
               className={textareaCls}
               placeholder="Descreva os detalhes da demanda..."
+              value={descricao}
+              onChange={(e) => setDescricao(e.target.value)}
             />
           </Field>
 
