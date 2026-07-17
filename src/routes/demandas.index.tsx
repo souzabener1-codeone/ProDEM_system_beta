@@ -99,9 +99,10 @@ function Demandas() {
   }, [rawContatos]);
 
   const demands = useMemo(
-    () => rawDemandas.map((d) => mapDemand(d, contactById.get(d.contato_id) ?? "")),
-    [rawDemandas, contactById],
+    () => rawDemandas.map((d, i) => mapDemand(d, i)),
+    [rawDemandas],
   );
+
 
   const [filtersOpen, setFiltersOpen] = useState(false);
   const [selectedDemand, setSelectedDemand] = useState<UIDemand | null>(null);
