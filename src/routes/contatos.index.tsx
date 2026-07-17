@@ -249,7 +249,6 @@ function Contatos() {
             </thead>
             <tbody>
               {filteredContacts.map((c) => {
-                const extra = contactExtras[c.id];
                 return (
                 <tr
                   key={c.id}
