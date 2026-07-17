@@ -29,8 +29,11 @@ type StepDefinition = {
   icon?: React.ReactElement
 }
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+type AnyStepper = any
+
 interface StepperContextValue {
-  stepper: ReturnType<ReturnType<typeof Stepperize.defineStepper>['useStepper']>
+  stepper: AnyStepper
   steps: StepDefinition[]
   orientation: StepperOrientation
   configOrientation: StepperOrientation
@@ -42,6 +45,9 @@ interface StepperContextValue {
   focusFirst: () => void
   focusLast: () => void
   indicators: StepIndicators
+  getIndex: (id: string) => number
+  currentId: string
+  goTo: (id: string) => void
 }
 
 interface StepItemContextValue {
@@ -89,11 +95,19 @@ function Stepper({
   onValueChange,
   ...props
 }: StepperProps) {
-  const stepperDefRef = useRef<ReturnType<typeof Stepperize.defineStepper> | null>(null)
-  if (stepperDefRef.current === null) {
-    stepperDefRef.current = Stepperize.defineStepper(steps as never)
+  const defRef = useRef<AnyStepper>(null)
+  if (defRef.current === null) {
+    defRef.current = (Stepperize.defineStepper as AnyStepper)(steps, {
+      defaultStep: defaultValue || steps[0]?.id,
+    })
   }
-  const stepper = stepperDefRef.current.useStepper({ defaultStep: (defaultValue || steps[0]?.id) as never }) as any
+  const stepper = (defRef.current as AnyStepper).useStepper() as AnyStepper
+  const currentId: string = stepper.current?.id ?? steps[0]?.id ?? ''
+  const goTo = useCallback((id: string) => stepper.goTo(id), [stepper])
+  const getIndex = useCallback(
+    (id: string) => steps.findIndex((s) => s.id === id),
+    [steps],
+  )
 
   const [triggerNodes, setTriggerNodes] = useState<HTMLButtonElement[]>([])
 
@@ -104,8 +118,7 @@ function Stepper({
   useEffect(() => {
     if (!responsive) return
     const mql = window.matchMedia('(min-width: 768px)')
-    const handler = (e: MediaQueryListEvent | MediaQueryList) =>
-      setIsMdUp('matches' in e ? e.matches : mql.matches)
+    const handler = (e: MediaQueryListEvent) => setIsMdUp(e.matches)
     mql.addEventListener('change', handler)
     return () => mql.removeEventListener('change', handler)
   }, [responsive])
@@ -140,7 +153,7 @@ function Stepper({
     return orientation
   }, [responsive, orientation, isMdUp])
 
-  const contextValue = useMemo(
+  const contextValue = useMemo<StepperContextValue>(
     () => ({
       stepper,
       steps,
@@ -154,6 +167,9 @@ function Stepper({
       focusLast,
       triggerNodes,
       indicators,
+      getIndex,
+      currentId,
+      goTo,
     }),
     [
       stepper,
@@ -168,20 +184,23 @@ function Stepper({
       focusLast,
       triggerNodes,
       indicators,
+      getIndex,
+      currentId,
+      goTo,
     ],
   )
 
   useEffect(() => {
-    if (typeof value === 'string' && value !== stepper.state.current.data.id) {
-      stepper.navigation.goTo(value)
+    if (typeof value === 'string' && value !== currentId) {
+      goTo(value)
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [value])
 
   useEffect(() => {
-    onValueChange?.(stepper.state.current.data.id)
+    onValueChange?.(currentId)
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [stepper.state.current.data.id])
+  }, [currentId])
 
   return (
     <StepperContext.Provider value={contextValue}>
@@ -213,9 +232,9 @@ function StepperItem({
   children,
   ...props
 }: StepperItemProps) {
-  const { stepper, steps, orientation } = useStepper()
-  const stepIndex = stepper.lookup.getIndex(stepId)
-  const currentIndex = stepper.lookup.getIndex(stepper.state.current.data.id)
+  const { steps, orientation, getIndex, currentId } = useStepper()
+  const stepIndex = getIndex(stepId)
+  const currentIndex = getIndex(currentId)
   const step = steps.find((s) => s.id === stepId)!
 
   const state: StepState =
@@ -239,8 +258,8 @@ function StepperItem({
         data-state={state}
         data-orientation={orientation}
         className={cn(
-          'group/step flex items-start',
-          orientation === 'vertical' ? 'flex-col' : 'flex-row',
+          'group/step flex',
+          orientation === 'vertical' ? 'flex-col' : 'flex-row items-start',
           className,
         )}
         {...props}
@@ -259,13 +278,20 @@ function StepperTrigger({
   asChild = false,
   className,
   children,
-  tabIndex,
   ...props
 }: StepperTriggerProps) {
-  const { stepper, registerTrigger, triggerNodes, focusNext, focusPrev, focusFirst, focusLast } =
-    useStepper()
+  const {
+    registerTrigger,
+    triggerNodes,
+    focusNext,
+    focusPrev,
+    focusFirst,
+    focusLast,
+    currentId,
+    goTo,
+  } = useStepper()
   const { step, isDisabled } = useStepItem()
-  const isSelected = stepper.state.current.data.id === step.id
+  const isSelected = currentId === step.id
   const id = `stepper-tab-${step.id}`
   const panelId = `stepper-panel-${step.id}`
 
@@ -311,7 +337,7 @@ function StepperTrigger({
       case 'Enter':
       case ' ':
         e.preventDefault()
-        stepper.navigation.goTo(step.id)
+        goTo(step.id)
         break
     }
   }
@@ -341,7 +367,7 @@ function StepperTrigger({
         'inline-flex items-center gap-3 rounded-md text-left outline-none focus-visible:ring-2 focus-visible:ring-primary/30 disabled:opacity-50 disabled:cursor-not-allowed',
         className,
       )}
-      onClick={() => stepper.navigation.goTo(step.id)}
+      onClick={() => goTo(step.id)}
       onKeyDown={handleKeyDown}
       disabled={isDisabled}
       {...props}
@@ -463,8 +489,8 @@ interface StepperContentProps extends React.ComponentProps<'div'> {
 }
 
 function StepperContent({ value, forceMount, children, className }: StepperContentProps) {
-  const { stepper } = useStepper()
-  const isActive = value === stepper.state.current.data.id
+  const { currentId } = useStepper()
+  const isActive = value === currentId
   if (!forceMount && !isActive) return null
   return (
     <div
