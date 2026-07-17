@@ -13,13 +13,11 @@ const HEADER = [
   "atualizado_em",
 ];
 
-const tipoEnum = z.enum(["Cidadão", "Liderança"]);
-
 export type Contato = {
   id: string;
   codigo: string;
   nome: string;
-  tipo: "Cidadão" | "Liderança";
+  tipo: string;
   contato: string;
   localizacao: string;
   criado_em: string;
@@ -27,9 +25,9 @@ export type Contato = {
 };
 
 const contatoInput = z.object({
-  codigo: z.string().min(1),
+  codigo: z.string().default(""),
   nome: z.string().min(1),
-  tipo: tipoEnum,
+  tipo: z.string().default(""),
   contato: z.string().default(""),
   localizacao: z.string().default(""),
 });
