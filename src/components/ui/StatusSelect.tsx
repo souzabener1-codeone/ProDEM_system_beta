@@ -1,4 +1,4 @@
-import { CircleIcon } from "lucide-react";
+import { CircleIcon } from "@/components/icons";
 import {
   Select,
   SelectContent,

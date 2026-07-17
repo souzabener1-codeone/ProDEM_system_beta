@@ -1,5 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { BarChart3, Download } from "lucide-react";
+import { BarChart3, Download } from "@/components/icons";
 import { PieChart, Pie, Cell, ResponsiveContainer } from "recharts";
 import { AppLayout } from "@/components/layout/AppLayout";
 import { PageHeader } from "@/components/layout/PageHeader";

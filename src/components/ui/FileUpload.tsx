@@ -11,7 +11,7 @@ import {
   Video,
   Headphones,
   File as FileIcon,
-} from "lucide-react";
+} from "@/components/icons";
 
 type UploadStatus = "uploading" | "completed" | "error";
 

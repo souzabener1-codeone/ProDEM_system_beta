@@ -10,7 +10,7 @@ import {
   Plus,
   Eye,
   Pencil,
-} from "lucide-react";
+} from "@/components/icons";
 import { AppLayout } from "@/components/layout/AppLayout";
 import { PageHeader } from "@/components/layout/PageHeader";
 import { SectionHeader } from "@/components/layout/SectionHeader";

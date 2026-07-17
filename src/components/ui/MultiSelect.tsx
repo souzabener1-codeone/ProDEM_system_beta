@@ -1,5 +1,5 @@
 import * as React from "react";
-import { Check, ChevronDown, X } from "lucide-react";
+import { Check, ChevronDown, X } from "@/components/icons";
 import { cn } from "@/lib/utils";
 
 export type MultiSelectOption = {
