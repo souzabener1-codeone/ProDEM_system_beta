@@ -32,6 +32,7 @@
         "@radix-ui/react-toggle": "^1.1.10",
         "@radix-ui/react-toggle-group": "^1.1.11",
         "@radix-ui/react-tooltip": "^1.2.8",
+        "@stepperize/react": "^7.0.0",
         "@tailwindcss/vite": "^4.2.1",
         "@tanstack/react-query": "^5.101.1",
         "@tanstack/react-router": "^1.170.16",
@@ -479,6 +480,10 @@
     "@rollup/rollup-win32-x64-msvc": ["@rollup/rollup-win32-x64-msvc@4.60.2", "", { "os": "win32", "cpu": "x64" }, "sha512-Nd/SgG27WoA9e+/TdK74KnHz852TLa94ovOYySo/yMPuTmpckK/jIF2jSwS3g7ELSKXK13/cVdmg1Z/DaCWKxA=="],
 
     "@standard-schema/utils": ["@standard-schema/utils@0.3.0", "", {}, "sha512-e7Mew686owMaPJVNNLs55PUvgz371nKgwsc4vxE49zsODpJEnxgxRo2y/OKrqueavXgZNMDVj3DdHFlaSAeU8g=="],
+
+    "@stepperize/core": ["@stepperize/core@3.0.0", "https://europe-west4-npm.pkg.dev/lovable-core-prod/sandbox-npm-cache/@stepperize/core/-/core-3.0.0.tgz", { "peerDependencies": { "typescript": ">=5.0.2" }, "optionalPeers": ["typescript"] }, "sha512-eWhs9qUsNOiuMAWRwajIIX94YnVp5rhd0FDfOQ+XpOevEYa7X0M1lzTQtJ5KWhOtNwCMSUzLV0AijntOdWG3yw=="],
+
+    "@stepperize/react": ["@stepperize/react@7.0.0", "https://europe-west4-npm.pkg.dev/lovable-core-prod/sandbox-npm-cache/@stepperize/react/-/react-7.0.0.tgz", { "dependencies": { "@stepperize/core": "3.0.0" }, "peerDependencies": { "react": "^17.0.0 || ^18.0.0 || ^19.0.0" } }, "sha512-Pfudzw2z+qalkt1PuJQZdxY885r3XS4LOt1QSE2vm88R7q2M6UY9X0OjXgc7Onc2d7DerGkzjUxi+VK2cPRzxA=="],
 
     "@tabby_ai/hijri-converter": ["@tabby_ai/hijri-converter@1.0.5", "", {}, "sha512-r5bClKrcIusDoo049dSL8CawnHR6mRdDwhlQuIgZRNty68q0x8k3Lf1BtPAMxRf/GgnHBnIO4ujd3+GQdLWzxQ=="],
 
