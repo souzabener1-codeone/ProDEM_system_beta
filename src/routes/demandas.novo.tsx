@@ -207,6 +207,8 @@ function NovaDemanda() {
               rows={3}
               className={textareaCls}
               placeholder="Observações adicionais..."
+              value={observacoes}
+              onChange={(e) => setObservacoes(e.target.value)}
             />
           </Field>
 
