@@ -20,6 +20,7 @@ import { Route as DemandasIndexRouteImport } from './routes/demandas.index'
 import { Route as ContatosIndexRouteImport } from './routes/contatos.index'
 import { Route as DemandasNovoRouteImport } from './routes/demandas.novo'
 import { Route as ContatosNovoRouteImport } from './routes/contatos.novo'
+import { Route as DemandasIdEditarRouteImport } from './routes/demandas.$id.editar'
 
 const StatusRoute = StatusRouteImport.update({
   id: '/status',
@@ -76,6 +77,11 @@ const ContatosNovoRoute = ContatosNovoRouteImport.update({
   path: '/novo',
   getParentRoute: () => ContatosRoute,
 } as any)
+const DemandasIdEditarRoute = DemandasIdEditarRouteImport.update({
+  id: '/$id/editar',
+  path: '/$id/editar',
+  getParentRoute: () => DemandasRoute,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -89,6 +95,7 @@ export interface FileRoutesByFullPath {
   '/demandas/novo': typeof DemandasNovoRoute
   '/contatos/': typeof ContatosIndexRoute
   '/demandas/': typeof DemandasIndexRoute
+  '/demandas/$id/editar': typeof DemandasIdEditarRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -100,6 +107,7 @@ export interface FileRoutesByTo {
   '/demandas/novo': typeof DemandasNovoRoute
   '/contatos': typeof ContatosIndexRoute
   '/demandas': typeof DemandasIndexRoute
+  '/demandas/$id/editar': typeof DemandasIdEditarRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -114,6 +122,7 @@ export interface FileRoutesById {
   '/demandas/novo': typeof DemandasNovoRoute
   '/contatos/': typeof ContatosIndexRoute
   '/demandas/': typeof DemandasIndexRoute
+  '/demandas/$id/editar': typeof DemandasIdEditarRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -129,6 +138,7 @@ export interface FileRouteTypes {
     | '/demandas/novo'
     | '/contatos/'
     | '/demandas/'
+    | '/demandas/$id/editar'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -140,6 +150,7 @@ export interface FileRouteTypes {
     | '/demandas/novo'
     | '/contatos'
     | '/demandas'
+    | '/demandas/$id/editar'
   id:
     | '__root__'
     | '/'
@@ -153,6 +164,7 @@ export interface FileRouteTypes {
     | '/demandas/novo'
     | '/contatos/'
     | '/demandas/'
+    | '/demandas/$id/editar'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -244,6 +256,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ContatosNovoRouteImport
       parentRoute: typeof ContatosRoute
     }
+    '/demandas/$id/editar': {
+      id: '/demandas/$id/editar'
+      path: '/$id/editar'
+      fullPath: '/demandas/$id/editar'
+      preLoaderRoute: typeof DemandasIdEditarRouteImport
+      parentRoute: typeof DemandasRoute
+    }
   }
 }
 
@@ -264,11 +283,13 @@ const ContatosRouteWithChildren = ContatosRoute._addFileChildren(
 interface DemandasRouteChildren {
   DemandasNovoRoute: typeof DemandasNovoRoute
   DemandasIndexRoute: typeof DemandasIndexRoute
+  DemandasIdEditarRoute: typeof DemandasIdEditarRoute
 }
 
 const DemandasRouteChildren: DemandasRouteChildren = {
   DemandasNovoRoute: DemandasNovoRoute,
   DemandasIndexRoute: DemandasIndexRoute,
+  DemandasIdEditarRoute: DemandasIdEditarRoute,
 }
 
 const DemandasRouteWithChildren = DemandasRoute._addFileChildren(
@@ -287,3 +308,13 @@ const rootRouteChildren: RootRouteChildren = {
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
+
+import type { getRouter } from './router.tsx'
+import type { startInstance } from './start.ts'
+declare module '@tanstack/react-start' {
+  interface Register {
+    ssr: true
+    router: Awaited<ReturnType<typeof getRouter>>
+    config: Awaited<ReturnType<typeof startInstance.getOptions>>
+  }
+}
