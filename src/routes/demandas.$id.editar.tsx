@@ -1,5 +1,5 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
-import { X, Save, Search, Edit, Clock, History } from "lucide-react";
+import { X, Save, Search, Edit, Clock } from "lucide-react";
 import { useState, type ReactNode } from "react";
 import { toast } from "sonner";
 import { AppLayout } from "@/components/layout/AppLayout";
@@ -8,6 +8,7 @@ import { StatusSelect } from "@/components/ui/StatusSelect";
 import { FileUpload } from "@/components/ui/FileUpload";
 import { CategorySelect } from "@/components/ui/CategorySelect";
 import { SimpleSelect } from "@/components/ui/SimpleSelect";
+import { MovimentacaoStepper } from "@/components/demandas/MovimentacaoStepper";
 import {
   AlertDialog,
   AlertDialogAction,
