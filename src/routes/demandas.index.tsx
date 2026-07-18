@@ -14,6 +14,27 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "
 import { Button } from "@/components/ui/button";
 import { listDemandas, type Demanda } from "@/lib/demandas.functions";
 import { listContatos } from "@/lib/contatos.functions";
+import { exportListToPdf } from "@/lib/export/exportPdf";
+import { exportListToExcel } from "@/lib/export/exportExcel";
+import { buildFilename } from "@/lib/export/filename";
+
+const DEMANDA_COLUMNS = [
+  { header: "Título", key: "titulo", width: 1.6 },
+  { header: "Categoria", key: "categoria", width: 1 },
+  { header: "Contato", key: "contato", width: 1.4 },
+  { header: "Cidade", key: "cidade", width: 1 },
+  { header: "Descrição", key: "descricao", width: 2.2 },
+  { header: "Data Solicitação", key: "dataSolicitacao", width: 1 },
+  { header: "Vencimento", key: "vencimento", width: 1 },
+  { header: "Observações", key: "observacoes", width: 2 },
+];
+
+function formatBRDate(iso: string): string {
+  if (!iso) return "-";
+  const d = new Date(iso);
+  if (isNaN(d.getTime())) return iso;
+  return d.toLocaleDateString("pt-BR");
+}
 
 export const Route = createFileRoute("/demandas/")({
   head: () => ({
