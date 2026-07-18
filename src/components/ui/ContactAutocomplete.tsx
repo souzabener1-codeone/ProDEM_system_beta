@@ -118,13 +118,13 @@ export function ContactAutocomplete({
               onMouseEnter={() => setHighlight(i)}
               onClick={() => pick(o)}
               className={cn(
-                "flex w-full flex-col items-start rounded-xl px-3 py-2 text-left text-sm font-[Onest] transition-colors",
+                "flex w-full items-center justify-between gap-3 rounded-xl px-3 py-2 text-left text-sm font-[Onest] transition-colors",
                 highlight === i ? "bg-brand-blue-soft text-brand-blue-strong" : "text-foreground hover:bg-slate-50"
               )}
             >
-              <span className="font-medium">{o.label}</span>
+              <span className="truncate font-medium">{o.label}</span>
               {o.sublabel && (
-                <span className="text-xs text-muted-foreground">{o.sublabel}</span>
+                <span className="shrink-0 text-xs text-muted-foreground">{o.sublabel}</span>
               )}
             </button>
           ))}
