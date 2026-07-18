@@ -12,6 +12,17 @@ import { PageHeader } from "@/components/layout/PageHeader";
 import { SectionHeader } from "@/components/layout/SectionHeader";
 import { KPICard } from "@/components/ui/KPICard";
 import { ContactAutocomplete } from "@/components/ui/ContactAutocomplete";
+import { exportListToPdf } from "@/lib/export/exportPdf";
+import { exportListToExcel } from "@/lib/export/exportExcel";
+import { buildFilename } from "@/lib/export/filename";
+
+const CONTATO_COLUMNS = [
+  { header: "Código", key: "codigo", width: 1 },
+  { header: "Contato", key: "contato", width: 2.4 },
+  { header: "Tipo", key: "tipo", width: 1.2 },
+  { header: "Telefone", key: "telefone", width: 1.4 },
+  { header: "Localização", key: "localizacao", width: 2 },
+];
 
 export const Route = createFileRoute("/contatos/")({
   head: () => ({
