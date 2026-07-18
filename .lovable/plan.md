@@ -1,96 +1,62 @@
-# Plano — Integração Google Sheets + Google Calendar (PRODEM)
+# Exportação PDF/Excel — Demandas e Contatos
 
-Ajustei o prompt original para respeitar a stack do projeto (TanStack Start + React 19 + Vite, sem Lovable Cloud) e o Supabase externo (`tdkgbyaadgcnaemsxqxv.supabase.co`) informado. As decisões de segurança e arquitetura do prompt são mantidas — muda apenas *onde* o backend roda.
+Implementar exportação real nos botões PDF/Excel que já existem no cabeçalho de "Todas as Demandas" e "Lista de Contatos", sem alterar UI/UX. Ajustar o prompt original ao contexto atual do projeto (colunas reais, tokens do design system, stack TanStack Start).
 
-## Ajustes principais em relação ao prompt
+## Ajustes ao prompt original
 
-1. **Backend não vai em Supabase Edge Functions.** O projeto é TanStack Start; o padrão correto é `createServerFn` (RPC tipado) rodando no runtime SSR/Worker. Edge Functions só entrariam se houvesse webhook externo, o que não é o caso.
-2. **Sem Lovable Cloud.** O Supabase informado é externo (BYO). Ele NÃO será usado como banco — a fonte de verdade continua sendo a planilha, como no prompt. O Supabase só entra se, mais tarde, você quiser autenticação/roles. Nada de tabelas nem RLS agora.
-3. **Segredos.** `GOOGLE_SERVICE_ACCOUNT_EMAIL`, `GOOGLE_PRIVATE_KEY`, `GOOGLE_SHEET_ID`, `GOOGLE_CALENDAR_ID` são gravados via `add_secret` e lidos com `process.env.*` **dentro do `.handler()`** (nunca em escopo de módulo — Workers injetam env por requisição).
-4. **JWT de Service Account em runtime Worker.** `jose` (mesma lib do exemplo) funciona; a nota do prompt sobre `googleapis` não rodar no Deno continua válida aqui — Worker também não é Node completo.
-5. **UI intacta.** Nada muda no design system, tabelas, badges, KPIs. Só troca a origem dos dados mockados por chamadas às server functions via React Query.
+- **Botões:** já implementados e estilizados no `SectionHeader` (fundo `bg-navy-800`, ícones `FileDown` / `FileSpreadsheet` do wrapper Iconoir). Não recriar; apenas ligar `onClick`.
+- **Cor do cabeçalho da tabela:** usar `#0F2A47` (token `navy-800` do PRODEM) em vez do roxo `#7C3AED` do prompt, para respeitar o design system.
+- **Fonte:** Onest (já é a fonte global do projeto).
+- **Colunas de Demandas:** usar exatamente os campos que existem em `Demanda` (`titulo`, `categoria`, `contato`, `cidade`, `descricao`, `dataSolicitacao`, `vencimento`, `observacoes`). Sem apelido de contato (não existe no modelo).
+- **Colunas de Contatos:** `Código`, `Contato`, `Tipo`, `Telefone`, `Localização` (mesmo cabeçalho da planilha).
+- **Geração:** client-side (volume esperado é baixo/médio; consistente com o restante do app).
+- **Filtros:** exportar o array já filtrado exibido em tela.
 
-## Arquitetura
+## Bibliotecas
 
-```text
-Browser (React)
-   │  useServerFn + React Query
-   ▼
-createServerFn (TanStack, roda no Worker SSR)
-   │  1. assina JWT (jose) → access_token OAuth2
-   │  2. chama Google Sheets API v4 / Calendar API v3
-   ▼
-Google Sheets (fonte da verdade)  +  Google Calendar (agenda/lembretes)
-```
+- `jspdf` + `jspdf-autotable` — PDF paginado com header/footer.
+- `exceljs` — Excel com estilos de célula, cabeçalho colorido, freeze panes e destaque condicional.
 
-## Estrutura de arquivos
+## Arquivos a criar
 
-```text
-src/lib/
-├── google/
-│   ├── google-auth.server.ts     # assina JWT, cacheia access_token em memória (~55 min)
-│   ├── sheets.server.ts          # get/append/update/batchUpdate helpers
-│   └── calendar.server.ts        # create/patch/delete event helpers
-├── contatos.functions.ts         # createServerFn: list/create/update/delete
-└── demandas.functions.ts         # createServerFn: list/create/update/delete + calendar sync
-```
+- `src/lib/export/exportPdf.ts`
+  - `exportListToPdf({ title, filtersLine, columns, rows, filename })`
+  - A4 paisagem, cabeçalho: título à esquerda, `Página X de Y` à direita, linha "Gerado em: DD/MM/AAAA HH:mm", linha "Ordenado por / filtros" (omite segmentos vazios).
+  - Tabela via autoTable: header `navy-800` + texto branco, zebra striping (`#F3F4F6`), sem bordas verticais, word wrap.
+  - Callback `didParseCell` para pintar em verde (`#16A34A`) células da coluna "Observações" cujo texto contenha `ok`, `atendido`, `concluíd`, `resolvid` (case-insensitive).
+  - Linha vazia → renderiza "Nenhum registro encontrado" no lugar da tabela.
+  - Datas em `DD/MM/AAAA`; campos vazios como `-`.
 
-Todos os `*.server.ts` ficam bloqueados do bundle do cliente pelo nome; `*.functions.ts` só expõe stubs RPC.
+- `src/lib/export/exportExcel.ts`
+  - `exportListToExcel({ title, filtersLine, columns, rows, filename, sheetName })`
+  - Aba única. Linha 1: título mesclado + negrito. Linha 2: metadados. Linha 4: cabeçalho colorido (`navy-800`, texto branco) com freeze panes. Datas `DD/MM/AAAA`. Largura por coluna com min/max (Descrição/Observações mais largas). Destaque verde na coluna Observações pelas mesmas regras do PDF.
 
-## Planilhas (idêntico ao prompt)
+- `src/lib/export/filename.ts`
+  - `buildFilename(base, extension, opts?)` — slugifica, remove acentos/espaços, anexa data `AAAA-MM-DD`. Ex.: `demandas_castanhal_2026-07-18.pdf`.
 
-Abas `Contatos` e `Demandas` com as colunas descritas. Regras críticas mantidas:
-- `id` (UUID) é a chave; **nunca** usar número de linha.
-- `google_event_id` na aba Demandas, preenchido pelo backend.
-- Update/delete: `values.get` da coluna `id` → localizar linha → `values.update` ou `batchUpdate` (deleteDimension).
+## Arquivos a editar
 
-## Server functions
+- `src/routes/demandas.index.tsx`
+  - Fatorar a lista já filtrada em `filteredDemands` (hoje a página mostra `demands` direto — deixar preparado para filtros futuros usando o mesmo array). Ligar `onClick` dos botões PDF/Excel chamando os helpers com as 8 colunas do modelo `Demanda`.
+  - Linha de filtros do relatório: montar dinamicamente a partir do estado (ex.: `Ordenado por: Vencimento`, `Cidade: X`, `Bairro: Y`), omitindo segmentos vazios.
 
-- `listContatos`, `createContato`, `updateContato`, `deleteContato`
-- `listDemandas`, `createDemanda`, `updateDemanda`, `deleteDemanda`
-  - Após sucesso na planilha, dispara sync no Calendar:
-    - `create` com `prazo` → cria evento, grava `google_event_id` de volta.
-    - `update` → `PATCH` se já existe evento; cria se `prazo` foi adicionado; deleta se `prazo` foi removido.
-    - `delete` → remove evento.
-  - `status = Concluída` → mantém evento, prefixa `✅` no summary.
-  - Falha no Calendar **não** reverte a planilha (registra `console.error`, retorna warning no payload).
-- `deleteContato` verifica demandas vinculadas antes; retorna erro amigável se houver.
+- `src/routes/contatos.index.tsx`
+  - Ligar `onClick` dos botões PDF/Excel usando `filteredContacts` (já existe) com as 5 colunas de contato.
 
-Lembrete padrão: `reminders.overrides = [{ method: "popup", minutes: 1440 }]` (1 dia antes), configurável por demanda no futuro.
+## Dependências
 
-## Frontend
+- Instalar `jspdf`, `jspdf-autotable`, `exceljs` via `bun add`.
 
-- React Query já está no template. Cada tela (Contatos, Demandas) troca o array mockado por `useSuspenseQuery` no loader + `useMutation` para CRUD.
-- `staleTime: 30_000`, invalidação da query específica após mutação.
-- Estados de loading/erro usando os componentes existentes (nenhum novo visual).
-- Formulários existentes (`contatos.novo`, `demandas.novo`) passam a chamar as mutations; o `AlertDialog` de confirmação atual continua.
+## Fora de escopo
 
-## Segredos e setup
+- Nenhuma mudança visual na tela (botões, cabeçalhos, filtros, tabelas permanecem idênticos).
+- Sem alterações no backend / Google Sheets.
+- Sem geração via Edge Function (client-side é suficiente).
 
-Vou solicitar via `add_secret` (o usuário cola no formulário seguro):
-- `GOOGLE_SERVICE_ACCOUNT_EMAIL`
-- `GOOGLE_PRIVATE_KEY` (colar com quebras reais `\n`; o código normaliza)
-- `GOOGLE_SHEET_ID`
-- `GOOGLE_CALENDAR_ID`
+## Critérios de aceite
 
-Pré-requisitos manuais do usuário (fora do Lovable):
-1. Google Cloud: ativar Sheets API + Calendar API.
-2. Criar Service Account, baixar JSON.
-3. Compartilhar a planilha e o calendário com o e-mail da SA (permissão Editor).
-4. Criar as abas `Contatos` e `Demandas` com os cabeçalhos exatos.
-
-## Dependência
-
-- `jose` (assinatura RS256 do JWT, roda em Workers).
-
-## Ordem de implementação
-
-1. `google-auth.server.ts` + teste isolado via uma server fn `pingSheets` que só lê o título da planilha.
-2. `sheets.server.ts` + `contatos.functions.ts` + refatorar `src/routes/contatos.index.tsx` e `contatos.novo.tsx`.
-3. `demandas.functions.ts` sem Calendar → validar CRUD.
-4. `calendar.server.ts` + integração no fluxo de demandas.
-5. Ajuste de invalidations e estados de loading.
-
-## Observação sobre o Supabase informado
-
-Não vou conectá-lo agora — não há necessidade para este escopo (a planilha é o "banco"). Se depois você quiser login por e-mail/gabinete ou papéis (admin/assessor), fazemos numa segunda etapa habilitando Cloud ou conectando esse Supabase externo. Confirma que seguimos assim?
+- Clique em PDF/Excel em Demandas gera arquivo com as 8 colunas, cabeçalho `navy-800`, zebra striping, "Observações" em verde quando indicar conclusão, paginação `X de Y` no PDF e freeze panes no Excel.
+- Clique em PDF/Excel em Contatos gera arquivo com as 5 colunas nos mesmos padrões.
+- Ambos respeitam o conjunto filtrado atualmente exibido.
+- Lista vazia gera arquivo com mensagem "Nenhum registro encontrado".
+- Nome do arquivo segue `demandas_{filtro}_{data}.ext` / `contatos_{filtro}_{data}.ext`.
