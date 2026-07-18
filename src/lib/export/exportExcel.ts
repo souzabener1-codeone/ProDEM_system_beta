@@ -1,5 +1,6 @@
 import ExcelJS from "exceljs";
 import type { ExportColumn, ExportRow } from "./exportPdf";
+import { loadLogoData } from "./logo";
 
 export interface ExportExcelOptions {
   title: string;
