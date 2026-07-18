@@ -12,6 +12,17 @@ import { PageHeader } from "@/components/layout/PageHeader";
 import { SectionHeader } from "@/components/layout/SectionHeader";
 import { KPICard } from "@/components/ui/KPICard";
 import { ContactAutocomplete } from "@/components/ui/ContactAutocomplete";
+import { exportListToPdf } from "@/lib/export/exportPdf";
+import { exportListToExcel } from "@/lib/export/exportExcel";
+import { buildFilename } from "@/lib/export/filename";
+
+const CONTATO_COLUMNS = [
+  { header: "Código", key: "codigo", width: 1 },
+  { header: "Contato", key: "contato", width: 2.4 },
+  { header: "Tipo", key: "tipo", width: 1.2 },
+  { header: "Telefone", key: "telefone", width: 1.4 },
+  { header: "Localização", key: "localizacao", width: 2 },
+];
 
 export const Route = createFileRoute("/contatos/")({
   head: () => ({
@@ -208,6 +219,27 @@ function Contatos() {
             <div className="flex items-center gap-2">
               <button
                 type="button"
+                onClick={() => {
+                  const rows = filteredContacts.map((c) => ({
+                    codigo: c.code || "-",
+                    contato: c.name || "-",
+                    tipo: c.tipo || "-",
+                    telefone: c.phone || "-",
+                    localizacao: c.city || "-",
+                  }));
+                  const filters = [
+                    appliedFilters.searchQuery ? `Busca: ${appliedFilters.searchQuery}` : "",
+                    appliedFilters.cidade !== "Todas as cidades" ? `Cidade: ${appliedFilters.cidade}` : "",
+                    appliedFilters.categoria !== "Todos" ? `Tipo: ${appliedFilters.categoria}` : "",
+                  ].filter(Boolean);
+                  exportListToPdf({
+                    title: "Lista de Contatos",
+                    filters,
+                    columns: CONTATO_COLUMNS,
+                    rows,
+                    filename: buildFilename("contatos", "pdf", appliedFilters.cidade !== "Todas as cidades" ? appliedFilters.cidade : undefined),
+                  });
+                }}
                 className="inline-flex items-center gap-1.5 rounded-full bg-white/10 px-3 py-1.5 text-xs font-semibold text-white transition-colors hover:bg-white/20"
               >
                 <FileDown className="h-3.5 w-3.5" />
@@ -215,6 +247,28 @@ function Contatos() {
               </button>
               <button
                 type="button"
+                onClick={() => {
+                  const rows = filteredContacts.map((c) => ({
+                    codigo: c.code || "-",
+                    contato: c.name || "-",
+                    tipo: c.tipo || "-",
+                    telefone: c.phone || "-",
+                    localizacao: c.city || "-",
+                  }));
+                  const filters = [
+                    appliedFilters.searchQuery ? `Busca: ${appliedFilters.searchQuery}` : "",
+                    appliedFilters.cidade !== "Todas as cidades" ? `Cidade: ${appliedFilters.cidade}` : "",
+                    appliedFilters.categoria !== "Todos" ? `Tipo: ${appliedFilters.categoria}` : "",
+                  ].filter(Boolean);
+                  void exportListToExcel({
+                    title: "Lista de Contatos",
+                    filters,
+                    columns: CONTATO_COLUMNS,
+                    rows,
+                    sheetName: "Contatos",
+                    filename: buildFilename("contatos", "xlsx", appliedFilters.cidade !== "Todas as cidades" ? appliedFilters.cidade : undefined),
+                  });
+                }}
                 className="inline-flex items-center gap-1.5 rounded-full bg-white/10 px-3 py-1.5 text-xs font-semibold text-white transition-colors hover:bg-white/20"
               >
                 <FileSpreadsheet className="h-3.5 w-3.5" />

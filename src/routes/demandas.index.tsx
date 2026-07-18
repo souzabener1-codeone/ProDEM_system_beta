@@ -14,6 +14,27 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "
 import { Button } from "@/components/ui/button";
 import { listDemandas, type Demanda } from "@/lib/demandas.functions";
 import { listContatos } from "@/lib/contatos.functions";
+import { exportListToPdf } from "@/lib/export/exportPdf";
+import { exportListToExcel } from "@/lib/export/exportExcel";
+import { buildFilename } from "@/lib/export/filename";
+
+const DEMANDA_COLUMNS = [
+  { header: "Título", key: "titulo", width: 1.6 },
+  { header: "Categoria", key: "categoria", width: 1 },
+  { header: "Contato", key: "contato", width: 1.4 },
+  { header: "Cidade", key: "cidade", width: 1 },
+  { header: "Descrição", key: "descricao", width: 2.2 },
+  { header: "Data Solicitação", key: "dataSolicitacao", width: 1 },
+  { header: "Vencimento", key: "vencimento", width: 1 },
+  { header: "Observações", key: "observacoes", width: 2 },
+];
+
+function formatBRDate(iso: string): string {
+  if (!iso) return "-";
+  const d = new Date(iso);
+  if (isNaN(d.getTime())) return iso;
+  return d.toLocaleDateString("pt-BR");
+}
 
 export const Route = createFileRoute("/demandas/")({
   head: () => ({
@@ -272,6 +293,26 @@ function Demandas() {
             <div className="flex items-center gap-2">
               <button
                 type="button"
+                onClick={() => {
+                  const rows = demands.map((d) => ({
+                    titulo: d.raw.titulo || "-",
+                    categoria: d.raw.categoria || "-",
+                    contato: d.raw.contato || "-",
+                    cidade: d.raw.cidade || "-",
+                    descricao: d.raw.descricao || "-",
+                    dataSolicitacao: formatBRDate(d.raw.dataSolicitacao),
+                    vencimento: formatBRDate(d.raw.vencimento),
+                    observacoes: d.raw.observacoes || "-",
+                  }));
+                  exportListToPdf({
+                    title: "Lista de Demandas",
+                    filters: [`Ordenado por: Data de solicitação`],
+                    columns: DEMANDA_COLUMNS,
+                    rows,
+                    observationsKey: "observacoes",
+                    filename: buildFilename("demandas", "pdf"),
+                  });
+                }}
                 className="inline-flex items-center gap-1.5 rounded-full bg-white/10 px-3 py-1.5 text-xs font-semibold text-white transition-colors hover:bg-white/20"
               >
                 <FileDown className="h-3.5 w-3.5" />
@@ -279,6 +320,27 @@ function Demandas() {
               </button>
               <button
                 type="button"
+                onClick={() => {
+                  const rows = demands.map((d) => ({
+                    titulo: d.raw.titulo || "-",
+                    categoria: d.raw.categoria || "-",
+                    contato: d.raw.contato || "-",
+                    cidade: d.raw.cidade || "-",
+                    descricao: d.raw.descricao || "-",
+                    dataSolicitacao: formatBRDate(d.raw.dataSolicitacao),
+                    vencimento: formatBRDate(d.raw.vencimento),
+                    observacoes: d.raw.observacoes || "-",
+                  }));
+                  void exportListToExcel({
+                    title: "Lista de Demandas",
+                    filters: [`Ordenado por: Data de solicitação`],
+                    columns: DEMANDA_COLUMNS,
+                    rows,
+                    sheetName: "Demandas",
+                    observationsKey: "observacoes",
+                    filename: buildFilename("demandas", "xlsx"),
+                  });
+                }}
                 className="inline-flex items-center gap-1.5 rounded-full bg-white/10 px-3 py-1.5 text-xs font-semibold text-white transition-colors hover:bg-white/20"
               >
                 <FileSpreadsheet className="h-3.5 w-3.5" />
