@@ -304,7 +304,7 @@ function Demandas() {
                     vencimento: formatBRDate(d.raw.vencimento),
                     observacoes: d.raw.observacoes || "-",
                   }));
-                  exportListToPdf({
+                  void exportListToPdf({
                     title: "Lista de Demandas",
                     filters: [`Ordenado por: Data de solicitação`],
                     columns: DEMANDA_COLUMNS,

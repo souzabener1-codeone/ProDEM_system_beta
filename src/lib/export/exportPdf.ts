@@ -1,5 +1,6 @@
 import jsPDF from "jspdf";
 import autoTable from "jspdf-autotable";
+import { loadLogoData } from "./logo";
 
 export type ExportColumn = {
   header: string;
@@ -26,29 +27,43 @@ function formatGeneratedAt(): string {
   return `${pad(d.getDate())}/${pad(d.getMonth() + 1)}/${d.getFullYear()} ${pad(d.getHours())}:${pad(d.getMinutes())}`;
 }
 
-export function exportListToPdf(opts: ExportPdfOptions): void {
+export async function exportListToPdf(opts: ExportPdfOptions): Promise<void> {
   const doc = new jsPDF({ orientation: "landscape", unit: "pt", format: "a4" });
   const pageWidth = doc.internal.pageSize.getWidth();
   const marginX = 32;
   const topY = 36;
 
+  // Logo (top-left)
+  let logoBottom = topY;
+  try {
+    const logo = await loadLogoData();
+    const logoH = 36;
+    const logoW = (logo.width / logo.height) * logoH;
+    doc.addImage(logo.dataUrl, "PNG", marginX, topY - 8, logoW, logoH);
+    logoBottom = topY - 8 + logoH;
+  } catch {
+    // ignore logo failures
+  }
+  const titleX = marginX + 140;
+
   // Header block
   doc.setFont("helvetica", "bold");
   doc.setFontSize(16);
   doc.setTextColor(15, 42, 71); // navy-800
-  doc.text(opts.title, marginX, topY);
+  doc.text(opts.title, titleX, topY);
 
   doc.setFont("helvetica", "normal");
   doc.setFontSize(9);
   doc.setTextColor(90, 100, 115);
-  doc.text(`Gerado em: ${formatGeneratedAt()}`, marginX, topY + 16);
+  doc.text(`Gerado em: ${formatGeneratedAt()}`, titleX, topY + 16);
 
   const filterLine = (opts.filters ?? []).filter(Boolean).join("  |  ");
   if (filterLine) {
-    doc.text(filterLine, marginX, topY + 30);
+    doc.text(filterLine, titleX, topY + 30);
   }
 
-  const startY = topY + (filterLine ? 46 : 32);
+  const headerBottom = Math.max(logoBottom, topY + (filterLine ? 30 : 16));
+  const startY = headerBottom + 14;
 
   if (opts.rows.length === 0) {
     doc.setFont("helvetica", "italic");
