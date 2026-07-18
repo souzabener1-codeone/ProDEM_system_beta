@@ -219,6 +219,27 @@ function Contatos() {
             <div className="flex items-center gap-2">
               <button
                 type="button"
+                onClick={() => {
+                  const rows = filteredContacts.map((c) => ({
+                    codigo: c.code || "-",
+                    contato: c.name || "-",
+                    tipo: c.tipo || "-",
+                    telefone: c.phone || "-",
+                    localizacao: c.city || "-",
+                  }));
+                  const filters = [
+                    appliedFilters.searchQuery ? `Busca: ${appliedFilters.searchQuery}` : "",
+                    appliedFilters.cidade !== "Todas as cidades" ? `Cidade: ${appliedFilters.cidade}` : "",
+                    appliedFilters.categoria !== "Todos" ? `Tipo: ${appliedFilters.categoria}` : "",
+                  ].filter(Boolean);
+                  exportListToPdf({
+                    title: "Lista de Contatos",
+                    filters,
+                    columns: CONTATO_COLUMNS,
+                    rows,
+                    filename: buildFilename("contatos", "pdf", appliedFilters.cidade !== "Todas as cidades" ? appliedFilters.cidade : undefined),
+                  });
+                }}
                 className="inline-flex items-center gap-1.5 rounded-full bg-white/10 px-3 py-1.5 text-xs font-semibold text-white transition-colors hover:bg-white/20"
               >
                 <FileDown className="h-3.5 w-3.5" />
@@ -226,6 +247,28 @@ function Contatos() {
               </button>
               <button
                 type="button"
+                onClick={() => {
+                  const rows = filteredContacts.map((c) => ({
+                    codigo: c.code || "-",
+                    contato: c.name || "-",
+                    tipo: c.tipo || "-",
+                    telefone: c.phone || "-",
+                    localizacao: c.city || "-",
+                  }));
+                  const filters = [
+                    appliedFilters.searchQuery ? `Busca: ${appliedFilters.searchQuery}` : "",
+                    appliedFilters.cidade !== "Todas as cidades" ? `Cidade: ${appliedFilters.cidade}` : "",
+                    appliedFilters.categoria !== "Todos" ? `Tipo: ${appliedFilters.categoria}` : "",
+                  ].filter(Boolean);
+                  void exportListToExcel({
+                    title: "Lista de Contatos",
+                    filters,
+                    columns: CONTATO_COLUMNS,
+                    rows,
+                    sheetName: "Contatos",
+                    filename: buildFilename("contatos", "xlsx", appliedFilters.cidade !== "Todas as cidades" ? appliedFilters.cidade : undefined),
+                  });
+                }}
                 className="inline-flex items-center gap-1.5 rounded-full bg-white/10 px-3 py-1.5 text-xs font-semibold text-white transition-colors hover:bg-white/20"
               >
                 <FileSpreadsheet className="h-3.5 w-3.5" />
