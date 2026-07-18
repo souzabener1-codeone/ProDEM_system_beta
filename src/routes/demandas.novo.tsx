@@ -1,16 +1,18 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
-import { ClipboardList, X, Save, Search } from "@/components/icons";
+import { ClipboardList, X, Save } from "@/components/icons";
 import { useState, type ReactNode } from "react";
 import { toast } from "sonner";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
 import { createDemanda } from "@/lib/demandas.functions";
+import { listContatos } from "@/lib/contatos.functions";
 import { AppLayout } from "@/components/layout/AppLayout";
 import { PageHeader } from "@/components/layout/PageHeader";
 import { StatusSelect } from "@/components/ui/StatusSelect";
 import { FileUpload } from "@/components/ui/FileUpload";
 import { CategorySelect } from "@/components/ui/CategorySelect";
 import { SimpleSelect } from "@/components/ui/SimpleSelect";
+import { ContactAutocomplete } from "@/components/ui/ContactAutocomplete";
 import {
   AlertDialog,
   AlertDialogAction,
