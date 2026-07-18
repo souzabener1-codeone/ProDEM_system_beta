@@ -2,7 +2,7 @@ import { useMemo, useState } from "react";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
-import { ClipboardList, Plus, Search, Eye, Pencil, Clock, Loader2, AlertTriangle, CheckCircle2, X, Filter, ChevronDown, FileText, Download } from "@/components/icons";
+import { ClipboardList, Plus, Search, Eye, Pencil, Clock, Loader2, AlertTriangle, CheckCircle2, X, Filter, ChevronDown, FileText, Download, FileDown, FileSpreadsheet } from "@/components/icons";
 import { KPICard } from "@/components/ui/KPICard";
 import { AppLayout } from "@/components/layout/AppLayout";
 import { PageHeader } from "@/components/layout/PageHeader";
