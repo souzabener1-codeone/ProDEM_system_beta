@@ -232,7 +232,7 @@ function Contatos() {
                     appliedFilters.cidade !== "Todas as cidades" ? `Cidade: ${appliedFilters.cidade}` : "",
                     appliedFilters.categoria !== "Todos" ? `Tipo: ${appliedFilters.categoria}` : "",
                   ].filter(Boolean);
-                  exportListToPdf({
+                  void exportListToPdf({
                     title: "Lista de Contatos",
                     filters,
                     columns: CONTATO_COLUMNS,
