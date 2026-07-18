@@ -2,7 +2,7 @@ import { useMemo, useState } from "react";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
-import { ClipboardList, Plus, Search, Eye, Pencil, Clock, Loader2, AlertTriangle, CheckCircle2, X, Filter, ChevronDown, FileText, Download } from "@/components/icons";
+import { ClipboardList, Plus, Search, Eye, Pencil, Clock, Loader2, AlertTriangle, CheckCircle2, X, Filter, ChevronDown, FileText, Download, FileDown, FileSpreadsheet } from "@/components/icons";
 import { KPICard } from "@/components/ui/KPICard";
 import { AppLayout } from "@/components/layout/AppLayout";
 import { PageHeader } from "@/components/layout/PageHeader";
@@ -265,7 +265,28 @@ function Demandas() {
       </div>
 
       <div className="overflow-hidden rounded-2xl border border-border bg-card shadow-[var(--shadow-card)]">
-        <SectionHeader title="Todas as Demandas" count={demands.length} />
+        <SectionHeader
+          title="Todas as Demandas"
+          count={demands.length}
+          action={
+            <div className="flex items-center gap-2">
+              <button
+                type="button"
+                className="inline-flex items-center gap-1.5 rounded-full bg-white/10 px-3 py-1.5 text-xs font-semibold text-white transition-colors hover:bg-white/20"
+              >
+                <FileDown className="h-3.5 w-3.5" />
+                PDF
+              </button>
+              <button
+                type="button"
+                className="inline-flex items-center gap-1.5 rounded-full bg-white/10 px-3 py-1.5 text-xs font-semibold text-white transition-colors hover:bg-white/20"
+              >
+                <FileSpreadsheet className="h-3.5 w-3.5" />
+                Excel
+              </button>
+            </div>
+          }
+        />
         <div className="overflow-x-auto">
           <table className="w-full text-sm">
             <thead className="bg-slate-50 text-xs uppercase tracking-wide text-muted-foreground">
