@@ -63,6 +63,13 @@ function NovaDemanda() {
   const navigate = useNavigate();
   const queryClient = useQueryClient();
   const createFn = useServerFn(createDemanda);
+  const listContFn = useServerFn(listContatos);
+  const { data: contatos = [] } = useQuery({ queryKey: ["contatos"], queryFn: () => listContFn() });
+  const contatoOptions = contatos.map((c: { codigo: string; nome: string }) => ({
+    value: c.codigo || c.nome,
+    label: c.nome,
+    sublabel: c.codigo ? `#${c.codigo}` : undefined,
+  }));
 
   const [titulo, setTitulo] = useState("");
   const [descricao, setDescricao] = useState("");
