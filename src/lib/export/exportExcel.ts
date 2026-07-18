@@ -25,33 +25,49 @@ export async function exportListToExcel(opts: ExportExcelOptions): Promise<void>
   wb.creator = "PRODEM";
   wb.created = new Date();
   const ws = wb.addWorksheet(opts.sheetName ?? "Dados", {
-    views: [{ state: "frozen", ySplit: 4 }],
+    views: [{ state: "frozen", ySplit: 5 }],
   });
 
   const colCount = opts.columns.length;
   const lastColLetter = columnLetter(colCount);
 
-  // Row 1 — title
-  ws.mergeCells(`A1:${lastColLetter}1`);
-  const titleCell = ws.getCell("A1");
+  // Row 1 — logo
+  ws.getRow(1).height = 48;
+  try {
+    const logo = await loadLogoData();
+    const imgId = wb.addImage({ base64: logo.base64, extension: "png" });
+    const h = 56;
+    const w = (logo.width / logo.height) * h;
+    ws.addImage(imgId, {
+      tl: { col: 0, row: 0 },
+      ext: { width: w, height: h },
+      editAs: "oneCell",
+    });
+  } catch {
+    // ignore
+  }
+
+  // Row 2 — title
+  ws.mergeCells(`A2:${lastColLetter}2`);
+  const titleCell = ws.getCell("A2");
   titleCell.value = opts.title;
   titleCell.font = { name: "Calibri", size: 14, bold: true, color: { argb: "FF0F2A47" } };
-  titleCell.alignment = { vertical: "middle", horizontal: "left" };
-  ws.getRow(1).height = 22;
+  titleCell.alignment = { vertical: "middle", horizontal: "left", indent: 3 };
+  ws.getRow(2).height = 22;
 
-  // Row 2 — metadata
-  ws.mergeCells(`A2:${lastColLetter}2`);
-  const metaCell = ws.getCell("A2");
+  // Row 3 — metadata
+  ws.mergeCells(`A3:${lastColLetter}3`);
+  const metaCell = ws.getCell("A3");
   const filterLine = (opts.filters ?? []).filter(Boolean).join("  |  ");
   metaCell.value = `Gerado em: ${formatGeneratedAt()}${filterLine ? `   |   ${filterLine}` : ""}`;
   metaCell.font = { name: "Calibri", size: 10, color: { argb: "FF5A6473" } };
-  metaCell.alignment = { vertical: "middle", horizontal: "left" };
+  metaCell.alignment = { vertical: "middle", horizontal: "left", indent: 3 };
 
-  // Row 3 empty
-  ws.getRow(3).height = 6;
+  // Row 4 empty
+  ws.getRow(4).height = 6;
 
-  // Row 4 — header
-  const headerRow = ws.getRow(4);
+  // Row 5 — header
+  const headerRow = ws.getRow(5);
   opts.columns.forEach((c, i) => {
     const cell = headerRow.getCell(i + 1);
     cell.value = c.header;
@@ -78,14 +94,14 @@ export async function exportListToExcel(opts: ExportExcelOptions): Promise<void>
     : -1;
 
   if (opts.rows.length === 0) {
-    ws.mergeCells(`A5:${lastColLetter}5`);
-    const empty = ws.getCell("A5");
+    ws.mergeCells(`A6:${lastColLetter}6`);
+    const empty = ws.getCell("A6");
     empty.value = "Nenhum registro encontrado.";
     empty.font = { italic: true, color: { argb: "FF7A8090" } };
     empty.alignment = { horizontal: "center", vertical: "middle" };
   } else {
     opts.rows.forEach((r, rIdx) => {
-      const row = ws.getRow(5 + rIdx);
+      const row = ws.getRow(6 + rIdx);
       opts.columns.forEach((c, cIdx) => {
         const cell = row.getCell(cIdx + 1);
         const value = r[c.key] ?? "-";
