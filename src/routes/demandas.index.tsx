@@ -293,6 +293,26 @@ function Demandas() {
             <div className="flex items-center gap-2">
               <button
                 type="button"
+                onClick={() => {
+                  const rows = demands.map((d) => ({
+                    titulo: d.raw.titulo || "-",
+                    categoria: d.raw.categoria || "-",
+                    contato: d.raw.contato || "-",
+                    cidade: d.raw.cidade || "-",
+                    descricao: d.raw.descricao || "-",
+                    dataSolicitacao: formatBRDate(d.raw.dataSolicitacao),
+                    vencimento: formatBRDate(d.raw.vencimento),
+                    observacoes: d.raw.observacoes || "-",
+                  }));
+                  exportListToPdf({
+                    title: "Lista de Demandas",
+                    filters: [`Ordenado por: Data de solicitação`],
+                    columns: DEMANDA_COLUMNS,
+                    rows,
+                    observationsKey: "observacoes",
+                    filename: buildFilename("demandas", "pdf"),
+                  });
+                }}
                 className="inline-flex items-center gap-1.5 rounded-full bg-white/10 px-3 py-1.5 text-xs font-semibold text-white transition-colors hover:bg-white/20"
               >
                 <FileDown className="h-3.5 w-3.5" />
@@ -300,6 +320,27 @@ function Demandas() {
               </button>
               <button
                 type="button"
+                onClick={() => {
+                  const rows = demands.map((d) => ({
+                    titulo: d.raw.titulo || "-",
+                    categoria: d.raw.categoria || "-",
+                    contato: d.raw.contato || "-",
+                    cidade: d.raw.cidade || "-",
+                    descricao: d.raw.descricao || "-",
+                    dataSolicitacao: formatBRDate(d.raw.dataSolicitacao),
+                    vencimento: formatBRDate(d.raw.vencimento),
+                    observacoes: d.raw.observacoes || "-",
+                  }));
+                  void exportListToExcel({
+                    title: "Lista de Demandas",
+                    filters: [`Ordenado por: Data de solicitação`],
+                    columns: DEMANDA_COLUMNS,
+                    rows,
+                    sheetName: "Demandas",
+                    observationsKey: "observacoes",
+                    filename: buildFilename("demandas", "xlsx"),
+                  });
+                }}
                 className="inline-flex items-center gap-1.5 rounded-full bg-white/10 px-3 py-1.5 text-xs font-semibold text-white transition-colors hover:bg-white/20"
               >
                 <FileSpreadsheet className="h-3.5 w-3.5" />
