@@ -50,19 +50,20 @@ export async function exportListToPdf(opts: ExportPdfOptions): Promise<void> {
   doc.setFont("helvetica", "bold");
   doc.setFontSize(16);
   doc.setTextColor(15, 42, 71); // navy-800
-  doc.text(opts.title, marginX, topY);
+  doc.text(opts.title, titleX, topY);
 
   doc.setFont("helvetica", "normal");
   doc.setFontSize(9);
   doc.setTextColor(90, 100, 115);
-  doc.text(`Gerado em: ${formatGeneratedAt()}`, marginX, topY + 16);
+  doc.text(`Gerado em: ${formatGeneratedAt()}`, titleX, topY + 16);
 
   const filterLine = (opts.filters ?? []).filter(Boolean).join("  |  ");
   if (filterLine) {
-    doc.text(filterLine, marginX, topY + 30);
+    doc.text(filterLine, titleX, topY + 30);
   }
 
-  const startY = topY + (filterLine ? 46 : 32);
+  const headerBottom = Math.max(logoBottom, topY + (filterLine ? 30 : 16));
+  const startY = headerBottom + 14;
 
   if (opts.rows.length === 0) {
     doc.setFont("helvetica", "italic");
