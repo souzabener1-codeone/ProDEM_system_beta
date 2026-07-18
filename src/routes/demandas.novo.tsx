@@ -1,16 +1,18 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
-import { ClipboardList, X, Save, Search } from "@/components/icons";
+import { ClipboardList, X, Save } from "@/components/icons";
 import { useState, type ReactNode } from "react";
 import { toast } from "sonner";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
 import { createDemanda } from "@/lib/demandas.functions";
+import { listContatos } from "@/lib/contatos.functions";
 import { AppLayout } from "@/components/layout/AppLayout";
 import { PageHeader } from "@/components/layout/PageHeader";
 import { StatusSelect } from "@/components/ui/StatusSelect";
 import { FileUpload } from "@/components/ui/FileUpload";
 import { CategorySelect } from "@/components/ui/CategorySelect";
 import { SimpleSelect } from "@/components/ui/SimpleSelect";
+import { ContactAutocomplete } from "@/components/ui/ContactAutocomplete";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -61,6 +63,13 @@ function NovaDemanda() {
   const navigate = useNavigate();
   const queryClient = useQueryClient();
   const createFn = useServerFn(createDemanda);
+  const listContFn = useServerFn(listContatos);
+  const { data: contatos = [] } = useQuery({ queryKey: ["contatos"], queryFn: () => listContFn() });
+  const contatoOptions = contatos.map((c: { codigo: string; nome: string }) => ({
+    value: c.codigo || c.nome,
+    label: c.nome,
+    sublabel: c.codigo ? `#${c.codigo}` : undefined,
+  }));
 
   const [titulo, setTitulo] = useState("");
   const [descricao, setDescricao] = useState("");
@@ -182,24 +191,22 @@ function NovaDemanda() {
             </Field>
 
             <Field label="Contato Vinculado">
-              <div className="relative">
-                <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" />
-                <input
-                  className={`${inputCls} pl-9`}
+              <div className="rounded-[16px] border border-slate-200 bg-slate-50/50 focus-within:border-brand-blue focus-within:bg-white focus-within:ring-2 focus-within:ring-brand-blue/20 transition-all">
+                <ContactAutocomplete
                   placeholder="Digite para buscar contato..."
                   value={contatoVinculado}
-                  onChange={(e) => setContatoVinculado(e.target.value)}
+                  onChange={setContatoVinculado}
+                  options={contatoOptions}
                 />
               </div>
             </Field>
             <Field label="Responsável">
-              <div className="relative">
-                <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" />
-                <input
-                  className={`${inputCls} pl-9`}
+              <div className="rounded-[16px] border border-slate-200 bg-slate-50/50 focus-within:border-brand-blue focus-within:bg-white focus-within:ring-2 focus-within:ring-brand-blue/20 transition-all">
+                <ContactAutocomplete
                   placeholder="Digite para buscar responsável..."
                   value={responsavel}
-                  onChange={(e) => setResponsavel(e.target.value)}
+                  onChange={setResponsavel}
+                  options={contatoOptions}
                 />
               </div>
             </Field>
