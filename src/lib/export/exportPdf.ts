@@ -1,5 +1,6 @@
 import jsPDF from "jspdf";
 import autoTable from "jspdf-autotable";
+import { loadLogoData } from "./logo";
 
 export type ExportColumn = {
   header: string;
