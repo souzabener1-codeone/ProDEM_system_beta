@@ -11,7 +11,9 @@
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as StatusRouteImport } from './routes/status'
 import { Route as SitemapDotxmlRouteImport } from './routes/sitemap[.]xml'
+import { Route as ResetPasswordRouteImport } from './routes/reset-password'
 import { Route as RelatoriosRouteImport } from './routes/relatorios'
+import { Route as LoginRouteImport } from './routes/login'
 import { Route as DemandasRouteImport } from './routes/demandas'
 import { Route as ContatosRouteImport } from './routes/contatos'
 import { Route as CategoriasRouteImport } from './routes/categorias'
@@ -33,9 +35,19 @@ const SitemapDotxmlRoute = SitemapDotxmlRouteImport.update({
   path: '/sitemap.xml',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ResetPasswordRoute = ResetPasswordRouteImport.update({
+  id: '/reset-password',
+  path: '/reset-password',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const RelatoriosRoute = RelatoriosRouteImport.update({
   id: '/relatorios',
   path: '/relatorios',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const LoginRoute = LoginRouteImport.update({
+  id: '/login',
+  path: '/login',
   getParentRoute: () => rootRouteImport,
 } as any)
 const DemandasRoute = DemandasRouteImport.update({
@@ -94,7 +106,9 @@ export interface FileRoutesByFullPath {
   '/categorias': typeof CategoriasRoute
   '/contatos': typeof ContatosRouteWithChildren
   '/demandas': typeof DemandasRouteWithChildren
+  '/login': typeof LoginRoute
   '/relatorios': typeof RelatoriosRoute
+  '/reset-password': typeof ResetPasswordRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/status': typeof StatusRoute
   '/contatos/novo': typeof ContatosNovoRoute
@@ -107,7 +121,9 @@ export interface FileRoutesByFullPath {
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/categorias': typeof CategoriasRoute
+  '/login': typeof LoginRoute
   '/relatorios': typeof RelatoriosRoute
+  '/reset-password': typeof ResetPasswordRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/status': typeof StatusRoute
   '/contatos/novo': typeof ContatosNovoRoute
@@ -123,7 +139,9 @@ export interface FileRoutesById {
   '/categorias': typeof CategoriasRoute
   '/contatos': typeof ContatosRouteWithChildren
   '/demandas': typeof DemandasRouteWithChildren
+  '/login': typeof LoginRoute
   '/relatorios': typeof RelatoriosRoute
+  '/reset-password': typeof ResetPasswordRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/status': typeof StatusRoute
   '/contatos/novo': typeof ContatosNovoRoute
@@ -140,7 +158,9 @@ export interface FileRouteTypes {
     | '/categorias'
     | '/contatos'
     | '/demandas'
+    | '/login'
     | '/relatorios'
+    | '/reset-password'
     | '/sitemap.xml'
     | '/status'
     | '/contatos/novo'
@@ -153,7 +173,9 @@ export interface FileRouteTypes {
   to:
     | '/'
     | '/categorias'
+    | '/login'
     | '/relatorios'
+    | '/reset-password'
     | '/sitemap.xml'
     | '/status'
     | '/contatos/novo'
@@ -168,7 +190,9 @@ export interface FileRouteTypes {
     | '/categorias'
     | '/contatos'
     | '/demandas'
+    | '/login'
     | '/relatorios'
+    | '/reset-password'
     | '/sitemap.xml'
     | '/status'
     | '/contatos/novo'
@@ -184,7 +208,9 @@ export interface RootRouteChildren {
   CategoriasRoute: typeof CategoriasRoute
   ContatosRoute: typeof ContatosRouteWithChildren
   DemandasRoute: typeof DemandasRouteWithChildren
+  LoginRoute: typeof LoginRoute
   RelatoriosRoute: typeof RelatoriosRoute
+  ResetPasswordRoute: typeof ResetPasswordRoute
   SitemapDotxmlRoute: typeof SitemapDotxmlRoute
   StatusRoute: typeof StatusRoute
 }
@@ -205,11 +231,25 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof SitemapDotxmlRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/reset-password': {
+      id: '/reset-password'
+      path: '/reset-password'
+      fullPath: '/reset-password'
+      preLoaderRoute: typeof ResetPasswordRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/relatorios': {
       id: '/relatorios'
       path: '/relatorios'
       fullPath: '/relatorios'
       preLoaderRoute: typeof RelatoriosRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/login': {
+      id: '/login'
+      path: '/login'
+      fullPath: '/login'
+      preLoaderRoute: typeof LoginRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/demandas': {
@@ -322,7 +362,9 @@ const rootRouteChildren: RootRouteChildren = {
   CategoriasRoute: CategoriasRoute,
   ContatosRoute: ContatosRouteWithChildren,
   DemandasRoute: DemandasRouteWithChildren,
+  LoginRoute: LoginRoute,
   RelatoriosRoute: RelatoriosRoute,
+  ResetPasswordRoute: ResetPasswordRoute,
   SitemapDotxmlRoute: SitemapDotxmlRoute,
   StatusRoute: StatusRoute,
 }
