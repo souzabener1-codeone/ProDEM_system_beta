@@ -1,5 +1,7 @@
 import { createServerFn } from "@tanstack/react-start";
 import { z } from "zod";
+import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
+import { assertActiveStaff } from "@/lib/access-control";
 
 const SHEET = "Demandas";
 
@@ -80,16 +82,21 @@ function buildRow(input: z.infer<typeof demandaInput>): DemandaRow {
   };
 }
 
-export const listDemandas = createServerFn({ method: "GET" }).handler(async () => {
-  const { readSheet, ensureHeader } = await import("./google/sheets.server");
-  await ensureHeader(SHEET, HEADER as unknown as string[]);
-  const { rows } = await readSheet(SHEET);
-  return rows.map((r) => toDemanda(r as DemandaRow));
-});
+export const listDemandas = createServerFn({ method: "GET" })
+  .middleware([requireSupabaseAuth])
+  .handler(async ({ context }) => {
+    await assertActiveStaff(context);
+    const { readSheet, ensureHeader } = await import("./google/sheets.server");
+    await ensureHeader(SHEET, HEADER as unknown as string[]);
+    const { rows } = await readSheet(SHEET);
+    return rows.map((r) => toDemanda(r as DemandaRow));
+  });
 
 export const createDemanda = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
   .inputValidator((d: unknown) => demandaInput.parse(d))
-  .handler(async ({ data }) => {
+  .handler(async ({ data, context }) => {
+    await assertActiveStaff(context);
     const { appendRow } = await import("./google/sheets.server");
     const row = buildRow(data);
     await appendRow(SHEET, HEADER as unknown as string[], row);
