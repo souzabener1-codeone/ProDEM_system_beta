@@ -197,6 +197,8 @@ function NovaDemanda() {
                   value={contatoVinculado}
                   onChange={setContatoVinculado}
                   options={contatoOptions}
+                  onCreateNew={() => navigate({ to: "/contatos/novo" })}
+                  createNewLabel="Cadastrar novo contato"
                 />
               </div>
             </Field>
