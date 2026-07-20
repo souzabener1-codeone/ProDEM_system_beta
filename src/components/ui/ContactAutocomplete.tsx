@@ -14,6 +14,8 @@ interface ContactAutocompleteProps {
   value?: string;
   onChange?: (value: string) => void;
   onSelect?: (option: AutocompleteOption) => void;
+  onCreateNew?: () => void;
+  createNewLabel?: string;
   className?: string;
 }
 
