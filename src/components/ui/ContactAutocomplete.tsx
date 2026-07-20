@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from "react";
-import { Search, X } from "@/components/icons";
+import { Search, X, Plus } from "@/components/icons";
 import { cn } from "@/lib/utils";
 
 export interface AutocompleteOption {
@@ -14,6 +14,8 @@ interface ContactAutocompleteProps {
   value?: string;
   onChange?: (value: string) => void;
   onSelect?: (option: AutocompleteOption) => void;
+  onCreateNew?: () => void;
+  createNewLabel?: string;
   className?: string;
 }
 
@@ -23,6 +25,8 @@ export function ContactAutocomplete({
   value: controlledValue,
   onChange,
   onSelect,
+  onCreateNew,
+  createNewLabel = "Cadastrar novo contato",
   className,
 }: ContactAutocompleteProps) {
   const [internal, setInternal] = useState("");
@@ -109,7 +113,7 @@ export function ContactAutocomplete({
           </button>
         )}
       </div>
-      {open && filtered.length > 0 && (
+      {open && (filtered.length > 0 || onCreateNew) && (
         <div className="absolute left-0 right-0 top-full z-50 mt-2 max-h-72 overflow-auto rounded-2xl border border-border bg-white p-1 shadow-lg">
           {filtered.map((o, i) => (
             <button
@@ -128,9 +132,25 @@ export function ContactAutocomplete({
               )}
             </button>
           ))}
+          {onCreateNew && (
+            <>
+              {filtered.length > 0 && <div className="my-1 border-t border-slate-100" />}
+              <button
+                type="button"
+                onClick={() => {
+                  setOpen(false);
+                  onCreateNew();
+                }}
+                className="flex w-full items-center gap-2 rounded-xl px-3 py-2 text-left text-sm font-[Onest] font-medium text-brand-blue-strong transition-colors hover:bg-brand-blue-soft"
+              >
+                <Plus className="h-4 w-4" />
+                <span>{createNewLabel}</span>
+              </button>
+            </>
+          )}
         </div>
       )}
-      {open && filtered.length === 0 && (
+      {open && filtered.length === 0 && !onCreateNew && (
         <div className="absolute left-0 right-0 top-full z-50 mt-2 rounded-2xl border border-border bg-white px-4 py-3 text-sm text-muted-foreground shadow-lg">
           Nenhum resultado encontrado
         </div>
