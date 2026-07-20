@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from "react";
-import { Search, X } from "@/components/icons";
+import { Search, X, Plus } from "@/components/icons";
 import { cn } from "@/lib/utils";
 
 export interface AutocompleteOption {
