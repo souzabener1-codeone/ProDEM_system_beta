@@ -25,6 +25,8 @@ export function ContactAutocomplete({
   value: controlledValue,
   onChange,
   onSelect,
+  onCreateNew,
+  createNewLabel = "Cadastrar novo contato",
   className,
 }: ContactAutocompleteProps) {
   const [internal, setInternal] = useState("");
