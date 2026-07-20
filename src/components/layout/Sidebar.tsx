@@ -1,4 +1,4 @@
-import { Link, useRouterState } from "@tanstack/react-router";
+import { Link, useNavigate, useRouterState } from "@tanstack/react-router";
 import {
   LayoutDashboard,
   Users,
@@ -10,6 +10,8 @@ import {
 } from "@/components/icons";
 import type { LucideIcon } from "@/components/icons";
 import prodemLogo from "@/assets/prodem-logo.png.asset.json";
+import { useAuth } from "@/hooks/useAuth";
+
 
 interface NavItem {
   to: string;
