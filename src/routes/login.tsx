@@ -3,7 +3,7 @@ import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { Loader2 } from "@/components/icons";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
-import prodemLogo from "@/assets/prodem-logo.png.asset.json";
+import prodemLogo from "@/assets/prodem-logo-full.png.asset.json";
 
 export const Route = createFileRoute("/login")({
   head: () => ({
