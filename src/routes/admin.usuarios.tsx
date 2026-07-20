@@ -118,7 +118,7 @@ function AdminUsuariosPage() {
   return (
     <AppLayout>
       <PageHeader
-        icon={SettingsProfiles}
+        icon={UserCog}
         title="Usuários"
         subtitle="Gerencie os usuários e permissões do sistema."
         action={
@@ -128,7 +128,7 @@ function AdminUsuariosPage() {
               onClick={() => void invalidate()}
               className="rounded-[12px]"
             >
-              <Refresh className="mr-2 h-4 w-4" />
+              <RefreshCw className="mr-2 h-4 w-4" />
               Atualizar
             </Button>
             <CreateUserDialog
