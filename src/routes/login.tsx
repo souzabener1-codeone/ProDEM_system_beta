@@ -3,7 +3,7 @@ import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { Loader2 } from "@/components/icons";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
-import prodemLogo from "@/assets/prodem-logo.png.asset.json";
+import prodemLogo from "@/assets/prodem-logo-full.png.asset.json";
 
 export const Route = createFileRoute("/login")({
   head: () => ({
@@ -71,14 +71,12 @@ function LoginPage() {
   return (
     <div className="flex min-h-screen items-center justify-center bg-background px-4 py-10">
       <div className="w-full max-w-md">
-        <div className="mb-6 flex justify-center">
-          <div className="flex w-full max-w-[220px] items-center justify-center rounded-2xl bg-navy-800 px-6 py-6 shadow-sm">
-            <img
-              src={prodemLogo.url}
-              alt="PRODEM — Tecnologia & Inovação"
-              className="h-auto w-full max-w-[180px] object-contain"
-            />
-          </div>
+        <div className="mb-8 flex justify-center">
+          <img
+            src={prodemLogo.url}
+            alt="PRODEM — Tecnologia & Inovação"
+            className="h-auto w-full max-w-[320px] object-contain"
+          />
         </div>
 
         <div className="rounded-[16px] border border-border bg-card p-6 shadow-sm">
