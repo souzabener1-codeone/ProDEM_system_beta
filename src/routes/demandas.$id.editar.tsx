@@ -2,6 +2,8 @@ import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { X, Save, Search, Edit, Clock } from "@/components/icons";
 import { useState, type ReactNode } from "react";
 import { toast } from "sonner";
+import { useQuery } from "@tanstack/react-query";
+import { useServerFn } from "@tanstack/react-start";
 import { AppLayout } from "@/components/layout/AppLayout";
 import { PageHeader } from "@/components/layout/PageHeader";
 import { StatusSelect } from "@/components/ui/StatusSelect";
@@ -9,6 +11,7 @@ import { FileUpload } from "@/components/ui/FileUpload";
 import { CategorySelect } from "@/components/ui/CategorySelect";
 import { SimpleSelect } from "@/components/ui/SimpleSelect";
 import { MovimentacaoStepper } from "@/components/demandas/MovimentacaoStepper";
+import { listDemandas, type Demanda } from "@/lib/demandas.functions";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -56,12 +59,49 @@ const textareaCls =
   "w-full rounded-[16px] border border-slate-200 bg-slate-50/50 px-4 py-3 text-sm text-foreground placeholder:text-slate-400 focus:border-brand-blue focus:bg-white focus:outline-none focus:ring-2 focus:ring-brand-blue/20 transition-all";
 
 function EditarDemanda() {
-  const navigate = useNavigate();
-  const [status, setStatus] = useState("concluida");
-  const [categoria, setCategoria] = useState("");
-  const [prioridade, setPrioridade] = useState("Baixa");
-  const [lembrete, setLembrete] = useState("Sem lembrete");
+  const { id } = Route.useParams();
+  const listDemFn = useServerFn(listDemandas);
+  const { data: rawDemandas, isLoading } = useQuery({
+    queryKey: ["demandas"],
+    queryFn: () => listDemFn(),
+  });
 
+  const index = Number(id);
+  const demanda: Demanda | undefined =
+    rawDemandas && Number.isFinite(index) ? rawDemandas[index] : undefined;
+
+  if (isLoading) {
+    return (
+      <AppLayout>
+        <PageHeader icon={Edit} title="Editar Demanda" subtitle="Carregando dados da demanda…" />
+      </AppLayout>
+    );
+  }
+
+  if (!demanda) {
+    return (
+      <AppLayout>
+        <PageHeader icon={Edit} title="Editar Demanda" subtitle="Demanda não encontrada" />
+        <div className="rounded-[24px] border border-border bg-white p-8 text-sm text-slate-600 shadow-sm">
+          Não foi possível localizar a demanda solicitada.{" "}
+          <Link to="/demandas" className="text-brand-blue underline">
+            Voltar para a lista
+          </Link>
+          .
+        </div>
+      </AppLayout>
+    );
+  }
+
+  return <EditarDemandaForm demanda={demanda} />;
+}
+
+function EditarDemandaForm({ demanda }: { demanda: Demanda }) {
+  const navigate = useNavigate();
+  const [status, setStatus] = useState(demanda.status || "");
+  const [categoria, setCategoria] = useState(demanda.categoria || "");
+  const [prioridade, setPrioridade] = useState(demanda.prioridade || "Média");
+  const [lembrete, setLembrete] = useState("Sem lembrete");
   const [confirmOpen, setConfirmOpen] = useState(false);
 
   const handleFormSubmit = (e: React.FormEvent<HTMLFormElement>) => {
@@ -90,14 +130,14 @@ function EditarDemanda() {
         >
           <div className="space-y-5">
             <Field label="Título da Demanda" required>
-              <input className={inputCls} defaultValue="Cesta básica" placeholder="Digite o título da demanda" />
+              <input className={inputCls} defaultValue={demanda.titulo} placeholder="Digite o título da demanda" />
             </Field>
 
             <Field label="Descrição" required>
               <textarea
                 rows={4}
                 className={textareaCls}
-                defaultValue="Munícipe solicitou uma cesta básica"
+                defaultValue={demanda.descricao}
                 placeholder="Descreva os detalhes da demanda..."
               />
             </Field>
@@ -140,7 +180,7 @@ function EditarDemanda() {
                 <StatusSelect value={status} onValueChange={setStatus} />
               </Field>
               <Field label="Data Solicitação" required>
-                <input type="date" className={inputCls} defaultValue="2026-04-28" />
+                <input type="date" className={inputCls} defaultValue={demanda.dataSolicitacao} />
               </Field>
 
               <Field label="Contato Vinculado">
@@ -148,7 +188,7 @@ function EditarDemanda() {
                   <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" />
                   <input
                     className={`${inputCls} pl-9`}
-                    defaultValue="Soraya Pereira"
+                    defaultValue={demanda.contato}
                     placeholder="Digite para buscar contato..."
                   />
                   <button type="button" className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600">
@@ -161,7 +201,7 @@ function EditarDemanda() {
                   <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" />
                   <input
                     className={`${inputCls} pl-9`}
-                    defaultValue="Jhiovana Alcântara"
+                    defaultValue={(demanda as any).responsavel ?? ""}
                     placeholder="Digite para buscar responsável..."
                   />
                   <button type="button" className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600">
@@ -175,7 +215,7 @@ function EditarDemanda() {
               <textarea
                 rows={3}
                 className={textareaCls}
-                defaultValue="Atendido na recepção por Selma no dia 28/04/2026"
+                defaultValue={demanda.observacoes}
                 placeholder="Observações adicionais..."
               />
             </Field>
@@ -215,7 +255,7 @@ function EditarDemanda() {
             </div>
           </div>
 
-          <MovimentacaoStepper currentStepId={status === "concluida" ? "concluida" : "em-progresso"} />
+          <MovimentacaoStepper currentStepId={status === "Concluída" || status === "concluida" ? "concluida" : "em-progresso"} />
         </div>
       </div>
 
