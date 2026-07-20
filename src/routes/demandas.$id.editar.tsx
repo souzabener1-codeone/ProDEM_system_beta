@@ -196,29 +196,25 @@ function EditarDemandaForm({ demanda }: { demanda: Demanda }) {
               </Field>
 
               <Field label="Contato Vinculado">
-                <div className="relative">
-                  <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" />
-                  <input
-                    className={`${inputCls} pl-9`}
-                    defaultValue={demanda.contato}
+                <div className="rounded-[16px] border border-slate-200 bg-slate-50/50 focus-within:border-brand-blue focus-within:bg-white focus-within:ring-2 focus-within:ring-brand-blue/20 transition-all">
+                  <ContactAutocomplete
                     placeholder="Digite para buscar contato..."
+                    value={contatoVinculado}
+                    onChange={setContatoVinculado}
+                    options={contatoOptions}
+                    onCreateNew={() => navigate({ to: "/contatos/novo" })}
+                    createNewLabel="Cadastrar novo contato"
                   />
-                  <button type="button" className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600">
-                    <X className="h-4 w-4" />
-                  </button>
                 </div>
               </Field>
               <Field label="Responsável">
-                <div className="relative">
-                  <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" />
-                  <input
-                    className={`${inputCls} pl-9`}
-                    defaultValue={(demanda as any).responsavel ?? ""}
+                <div className="rounded-[16px] border border-slate-200 bg-slate-50/50 focus-within:border-brand-blue focus-within:bg-white focus-within:ring-2 focus-within:ring-brand-blue/20 transition-all">
+                  <ContactAutocomplete
                     placeholder="Digite para buscar responsável..."
+                    value={responsavel}
+                    onChange={setResponsavel}
+                    options={contatoOptions}
                   />
-                  <button type="button" className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600">
-                    <X className="h-4 w-4" />
-                  </button>
                 </div>
               </Field>
             </div>
