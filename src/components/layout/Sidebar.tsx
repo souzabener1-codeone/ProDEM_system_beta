@@ -7,6 +7,7 @@ import {
   Activity,
   BarChart3,
   LogOut,
+  UserCog,
 } from "@/components/icons";
 import type { LucideIcon } from "@/components/icons";
 import prodemLogo from "@/assets/prodem-logo.png.asset.json";
@@ -17,6 +18,7 @@ interface NavItem {
   to: string;
   label: string;
   icon: LucideIcon;
+  adminOnly?: boolean;
 }
 
 const navItems: NavItem[] = [
@@ -26,12 +28,14 @@ const navItems: NavItem[] = [
   { to: "/categorias", label: "Categorias", icon: Tags },
   { to: "/status", label: "Status", icon: Activity },
   { to: "/relatorios", label: "Relatórios", icon: BarChart3 },
+  { to: "/admin/usuarios", label: "Usuários", icon: UserCog, adminOnly: true },
 ];
 
 export function Sidebar() {
   const pathname = useRouterState({ select: (s) => s.location.pathname });
   const navigate = useNavigate();
-  const { user, profile, signOut } = useAuth();
+  const { user, profile, isAdmin, signOut } = useAuth();
+  const visibleItems = navItems.filter((i) => !i.adminOnly || isAdmin);
 
   const displayName = profile?.full_name?.trim() || user?.email || "Usuário";
   const displayEmail = profile?.email || user?.email || "";
@@ -63,7 +67,7 @@ export function Sidebar() {
 
       {/* Nav */}
       <nav className="flex-1 space-y-1 px-3">
-        {navItems.map((item) => {
+        {visibleItems.map((item) => {
           const isActive =
             item.to === "/" ? pathname === "/" : pathname.startsWith(item.to);
           const Icon = item.icon;
