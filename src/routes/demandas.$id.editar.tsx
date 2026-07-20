@@ -100,11 +100,21 @@ function EditarDemanda() {
 
 function EditarDemandaForm({ demanda }: { demanda: Demanda }) {
   const navigate = useNavigate();
+  const listContFn = useServerFn(listContatos);
+  const { data: contatos = [] } = useQuery({ queryKey: ["contatos"], queryFn: () => listContFn() });
+  const contatoOptions = contatos.map((c: { codigo: string; nome: string }) => ({
+    value: c.codigo || c.nome,
+    label: c.nome,
+    sublabel: c.codigo ? `#${c.codigo}` : undefined,
+  }));
+
   const [status, setStatus] = useState(demanda.status || "");
   const [categoria, setCategoria] = useState(demanda.categoria || "");
   const [prioridade, setPrioridade] = useState(demanda.prioridade || "Média");
   const [lembrete, setLembrete] = useState("Sem lembrete");
   const [confirmOpen, setConfirmOpen] = useState(false);
+  const [contatoVinculado, setContatoVinculado] = useState(demanda.contato || "");
+  const [responsavel, setResponsavel] = useState((demanda as any).responsavel ?? "");
 
   const handleFormSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
