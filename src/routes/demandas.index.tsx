@@ -400,86 +400,86 @@ function Demandas() {
       </div>
 
       <Dialog open={!!selectedDemand} onOpenChange={(open) => !open && setSelectedDemand(null)}>
-        <DialogContent className="max-w-3xl border-slate-200 bg-slate-50 p-0 sm:rounded-2xl">
+        <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto border-slate-200 bg-slate-50 p-0 sm:rounded-2xl">
           {selectedDemand && (
             <>
-              <DialogHeader className="border-b border-slate-200 bg-white px-6 py-4 rounded-t-2xl">
+              <DialogHeader className="border-b border-slate-200 bg-white px-5 py-3 rounded-t-2xl">
                 <DialogTitle className="flex items-center gap-2 text-brand-blue">
                   <FileText className="h-5 w-5 text-blue-400" />
-                  <span className="text-blue-400 font-normal">Visualização do Relatório</span>
+                  <span className="text-blue-400 font-normal text-sm">Visualização do Relatório</span>
                 </DialogTitle>
               </DialogHeader>
 
-              <div className="px-6 py-6 space-y-4">
-                <div className="text-center mb-6">
-                  <h2 className="text-2xl font-bold text-blue-500">ProDEM - Relatório de Demanda</h2>
-                  <p className="text-sm text-slate-500 mt-1">Gerado em: 16/07/2026 às 09:53</p>
+              <div className="px-5 py-4 space-y-3">
+                <div className="text-center mb-3">
+                  <h2 className="text-xl font-bold text-blue-500">ProDEM - Relatório de Demanda</h2>
+                  <p className="text-xs text-slate-500 mt-0.5">Gerado em: {new Date().toLocaleDateString("pt-BR")} às {new Date().toLocaleTimeString("pt-BR", { hour: "2-digit", minute: "2-digit" })}</p>
                 </div>
 
-                <div className="grid grid-cols-2 gap-4">
-                  <div className="rounded-xl border border-slate-200 bg-white p-4 shadow-sm">
-                    <p className="text-xs font-semibold uppercase text-blue-400">Contato</p>
-                    <p className="mt-1 text-lg font-bold text-slate-800">{selectedDemand.contact}</p>
+                <div className="grid grid-cols-2 gap-3">
+                  <div className="rounded-xl border border-slate-200 bg-white p-3 shadow-sm">
+                    <p className="text-[10px] font-semibold uppercase text-blue-400">Contato</p>
+                    <p className="mt-0.5 text-base font-bold text-slate-800">{selectedDemand.contact}</p>
                   </div>
-                  <div className="rounded-xl border border-slate-200 bg-white p-4 shadow-sm">
-                    <p className="text-xs font-semibold uppercase text-blue-400">Cidade</p>
-                    <p className="mt-1 text-lg font-bold text-slate-800">Castanhal</p>
-                  </div>
-                </div>
-
-                <div className="grid grid-cols-12 gap-4">
-                  <div className="col-span-6 rounded-xl border border-slate-200 bg-white p-4 shadow-sm">
-                    <p className="text-xs font-semibold uppercase text-blue-400">Título da Demanda</p>
-                    <p className="mt-1 text-base font-bold text-slate-800">{selectedDemand.request}</p>
-                  </div>
-                  <div className="col-span-3 rounded-xl border border-slate-200 bg-white p-4 shadow-sm">
-                    <p className="text-xs font-semibold uppercase text-blue-400">Categoria</p>
-                    <p className="mt-1 text-base text-slate-800">{selectedDemand.category}</p>
-                  </div>
-                  <div className="col-span-3 rounded-xl border border-slate-200 bg-white p-4 shadow-sm">
-                    <p className="text-xs font-semibold uppercase text-blue-400">Datas</p>
-                    <p className="mt-1 text-sm text-slate-800">Sol: 27/04/2026<br/>Venc: -</p>
+                  <div className="rounded-xl border border-slate-200 bg-white p-3 shadow-sm">
+                    <p className="text-[10px] font-semibold uppercase text-blue-400">Cidade</p>
+                    <p className="mt-0.5 text-base font-bold text-slate-800">{selectedDemand.raw.cidade || "-"}</p>
                   </div>
                 </div>
 
-                <div className="rounded-xl border border-slate-200 bg-white p-4 shadow-sm">
-                  <p className="text-xs font-semibold uppercase text-blue-400">Descrição</p>
-                  <p className="mt-1 text-base text-slate-800">Munícipe solicitou uma cesta básica</p>
-                </div>
-
-                <div className="rounded-xl border border-slate-200 bg-white p-4 shadow-sm">
-                  <p className="text-xs font-semibold uppercase text-blue-400">Observação</p>
-                  <p className="mt-1 text-base text-slate-800">Atendido na recepção por Selma no dia 28/04/2026</p>
-                </div>
-
-                <div className="rounded-xl border border-slate-200 bg-white p-4 text-center shadow-sm">
-                  <p className="text-xs font-semibold uppercase text-blue-400">Responsável pela Demanda</p>
-                  <p className="mt-1 text-base font-bold text-slate-800">Jhiovana Alcântara</p>
-                </div>
-
-                <div className="grid grid-cols-3 gap-4">
-                  <div className="rounded-xl border border-slate-200 bg-white p-4 text-center shadow-sm">
-                    <p className="text-xs font-semibold uppercase text-blue-400">Data de Criação</p>
-                    <p className="mt-1 text-base font-bold text-slate-800">{selectedDemand.date}</p>
+                <div className="grid grid-cols-12 gap-3">
+                  <div className="col-span-6 rounded-xl border border-slate-200 bg-white p-3 shadow-sm">
+                    <p className="text-[10px] font-semibold uppercase text-blue-400">Título da Demanda</p>
+                    <p className="mt-0.5 text-sm font-bold text-slate-800">{selectedDemand.request}</p>
                   </div>
-                  <div className="rounded-xl border border-slate-200 bg-white p-4 text-center shadow-sm">
-                    <p className="text-xs font-semibold uppercase text-blue-400">Prioridade</p>
-                    <p className={`mt-1 font-bold ${selectedDemand.priority === 'Alta' ? 'text-red-500' : selectedDemand.priority === 'Média' ? 'text-orange-500' : 'text-green-500'}`}>
+                  <div className="col-span-3 rounded-xl border border-slate-200 bg-white p-3 shadow-sm">
+                    <p className="text-[10px] font-semibold uppercase text-blue-400">Categoria</p>
+                    <p className="mt-0.5 text-sm text-slate-800">{selectedDemand.category}</p>
+                  </div>
+                  <div className="col-span-3 rounded-xl border border-slate-200 bg-white p-3 shadow-sm">
+                    <p className="text-[10px] font-semibold uppercase text-blue-400">Datas</p>
+                    <p className="mt-0.5 text-xs text-slate-800">Sol: {formatBRDate(selectedDemand.raw.dataSolicitacao)}<br/>Venc: {selectedDemand.raw.vencimento ? formatBRDate(selectedDemand.raw.vencimento) : "-"}</p>
+                  </div>
+                </div>
+
+                <div className="rounded-xl border border-slate-200 bg-white p-3 shadow-sm">
+                  <p className="text-[10px] font-semibold uppercase text-blue-400">Descrição</p>
+                  <p className="mt-0.5 text-sm text-slate-800">{selectedDemand.raw.descricao || "-"}</p>
+                </div>
+
+                <div className="rounded-xl border border-slate-200 bg-white p-3 shadow-sm">
+                  <p className="text-[10px] font-semibold uppercase text-blue-400">Observação</p>
+                  <p className="mt-0.5 text-sm text-slate-800">{selectedDemand.raw.observacoes || "-"}</p>
+                </div>
+
+                <div className="rounded-xl border border-slate-200 bg-white p-3 text-center shadow-sm">
+                  <p className="text-[10px] font-semibold uppercase text-blue-400">Responsável pela Demanda</p>
+                  <p className="mt-0.5 text-sm font-bold text-slate-800">{(selectedDemand.raw as any).responsavel || "-"}</p>
+                </div>
+
+                <div className="grid grid-cols-3 gap-3">
+                  <div className="rounded-xl border border-slate-200 bg-white p-3 text-center shadow-sm">
+                    <p className="text-[10px] font-semibold uppercase text-blue-400">Data de Criação</p>
+                    <p className="mt-0.5 text-sm font-bold text-slate-800">{selectedDemand.date}</p>
+                  </div>
+                  <div className="rounded-xl border border-slate-200 bg-white p-3 text-center shadow-sm">
+                    <p className="text-[10px] font-semibold uppercase text-blue-400">Prioridade</p>
+                    <p className={`mt-0.5 text-sm font-bold ${selectedDemand.priority === 'Alta' ? 'text-red-500' : selectedDemand.priority === 'Média' ? 'text-orange-500' : 'text-green-500'}`}>
                       {selectedDemand.priority}
                     </p>
                   </div>
-                  <div className="rounded-xl border border-slate-200 bg-white p-4 text-center shadow-sm">
-                    <p className="text-xs font-semibold uppercase text-blue-400">Status</p>
-                    <p className={`mt-1 font-bold ${selectedDemand.status === 'done' ? 'text-green-500' : 'text-slate-800'}`}>
+                  <div className="rounded-xl border border-slate-200 bg-white p-3 text-center shadow-sm">
+                    <p className="text-[10px] font-semibold uppercase text-blue-400">Status</p>
+                    <p className={`mt-0.5 text-sm font-bold ${selectedDemand.status === 'done' ? 'text-green-500' : 'text-slate-800'}`}>
                       {selectedDemand.statusLabel}
                     </p>
                   </div>
                 </div>
               </div>
 
-              <DialogFooter className="border-t border-slate-200 bg-slate-50/50 px-6 py-4 rounded-b-2xl flex justify-end gap-2">
-                <Button variant="outline" className="rounded-full bg-white text-slate-700 font-normal px-6" onClick={() => setSelectedDemand(null)}>Fechar</Button>
-                <Button className="rounded-full bg-[#3b82f6] hover:bg-blue-600 text-white font-normal px-6">
+              <DialogFooter className="border-t border-slate-200 bg-slate-50/50 px-5 py-3 rounded-b-2xl flex justify-end gap-2">
+                <Button variant="outline" className="rounded-full bg-white text-slate-700 font-normal px-5" onClick={() => setSelectedDemand(null)}>Fechar</Button>
+                <Button className="rounded-full bg-[#3b82f6] hover:bg-blue-600 text-white font-normal px-5">
                   <Download className="mr-2 h-4 w-4" />
                   Baixar PDF
                 </Button>
