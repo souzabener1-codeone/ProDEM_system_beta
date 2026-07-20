@@ -89,18 +89,23 @@ async function migrateLegacyContatos(): Promise<void> {
   await overwriteSheet(SHEET, HEADER, migrated);
 }
 
-export const listContatos = createServerFn({ method: "GET" }).handler(async () => {
-  const { readSheet, ensureHeader } = await import("./google/sheets.server");
-  await migrateLegacyContatos();
-  await ensureHeader(SHEET, HEADER);
-  const { rows } = await readSheet(SHEET);
-  return rows.map(toContato);
-});
+export const listContatos = createServerFn({ method: "GET" })
+  .middleware([requireSupabaseAuth])
+  .handler(async ({ context }) => {
+    await assertActiveStaff(context);
+    const { readSheet, ensureHeader } = await import("./google/sheets.server");
+    await migrateLegacyContatos();
+    await ensureHeader(SHEET, HEADER);
+    const { rows } = await readSheet(SHEET);
+    return rows.map(toContato);
+  });
 
 
 export const createContato = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
   .inputValidator((d: unknown) => contatoInput.parse(d))
-  .handler(async ({ data }) => {
+  .handler(async ({ data, context }) => {
+    await assertActiveStaff(context);
     const { appendRow } = await import("./google/sheets.server");
     await appendRow(SHEET, HEADER, toRow(data));
     return { ok: true };
