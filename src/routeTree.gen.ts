@@ -22,6 +22,7 @@ import { Route as DemandasIndexRouteImport } from './routes/demandas.index'
 import { Route as ContatosIndexRouteImport } from './routes/contatos.index'
 import { Route as DemandasNovoRouteImport } from './routes/demandas.novo'
 import { Route as ContatosNovoRouteImport } from './routes/contatos.novo'
+import { Route as AdminUsuariosRouteImport } from './routes/admin.usuarios'
 import { Route as DemandasIdEditarRouteImport } from './routes/demandas.$id.editar'
 import { Route as ContatosIdEditarRouteImport } from './routes/contatos.$id.editar'
 
@@ -90,6 +91,11 @@ const ContatosNovoRoute = ContatosNovoRouteImport.update({
   path: '/novo',
   getParentRoute: () => ContatosRoute,
 } as any)
+const AdminUsuariosRoute = AdminUsuariosRouteImport.update({
+  id: '/admin/usuarios',
+  path: '/admin/usuarios',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const DemandasIdEditarRoute = DemandasIdEditarRouteImport.update({
   id: '/$id/editar',
   path: '/$id/editar',
@@ -111,6 +117,7 @@ export interface FileRoutesByFullPath {
   '/reset-password': typeof ResetPasswordRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/status': typeof StatusRoute
+  '/admin/usuarios': typeof AdminUsuariosRoute
   '/contatos/novo': typeof ContatosNovoRoute
   '/demandas/novo': typeof DemandasNovoRoute
   '/contatos/': typeof ContatosIndexRoute
@@ -126,6 +133,7 @@ export interface FileRoutesByTo {
   '/reset-password': typeof ResetPasswordRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/status': typeof StatusRoute
+  '/admin/usuarios': typeof AdminUsuariosRoute
   '/contatos/novo': typeof ContatosNovoRoute
   '/demandas/novo': typeof DemandasNovoRoute
   '/contatos': typeof ContatosIndexRoute
@@ -144,6 +152,7 @@ export interface FileRoutesById {
   '/reset-password': typeof ResetPasswordRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/status': typeof StatusRoute
+  '/admin/usuarios': typeof AdminUsuariosRoute
   '/contatos/novo': typeof ContatosNovoRoute
   '/demandas/novo': typeof DemandasNovoRoute
   '/contatos/': typeof ContatosIndexRoute
@@ -163,6 +172,7 @@ export interface FileRouteTypes {
     | '/reset-password'
     | '/sitemap.xml'
     | '/status'
+    | '/admin/usuarios'
     | '/contatos/novo'
     | '/demandas/novo'
     | '/contatos/'
@@ -178,6 +188,7 @@ export interface FileRouteTypes {
     | '/reset-password'
     | '/sitemap.xml'
     | '/status'
+    | '/admin/usuarios'
     | '/contatos/novo'
     | '/demandas/novo'
     | '/contatos'
@@ -195,6 +206,7 @@ export interface FileRouteTypes {
     | '/reset-password'
     | '/sitemap.xml'
     | '/status'
+    | '/admin/usuarios'
     | '/contatos/novo'
     | '/demandas/novo'
     | '/contatos/'
@@ -213,6 +225,7 @@ export interface RootRouteChildren {
   ResetPasswordRoute: typeof ResetPasswordRoute
   SitemapDotxmlRoute: typeof SitemapDotxmlRoute
   StatusRoute: typeof StatusRoute
+  AdminUsuariosRoute: typeof AdminUsuariosRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -308,6 +321,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ContatosNovoRouteImport
       parentRoute: typeof ContatosRoute
     }
+    '/admin/usuarios': {
+      id: '/admin/usuarios'
+      path: '/admin/usuarios'
+      fullPath: '/admin/usuarios'
+      preLoaderRoute: typeof AdminUsuariosRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/demandas/$id/editar': {
       id: '/demandas/$id/editar'
       path: '/$id/editar'
@@ -367,6 +387,7 @@ const rootRouteChildren: RootRouteChildren = {
   ResetPasswordRoute: ResetPasswordRoute,
   SitemapDotxmlRoute: SitemapDotxmlRoute,
   StatusRoute: StatusRoute,
+  AdminUsuariosRoute: AdminUsuariosRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
