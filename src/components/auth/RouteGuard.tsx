@@ -12,10 +12,11 @@ function isPublic(pathname: string) {
 }
 
 export function RouteGuard({ children }: { children: ReactNode }) {
-  const { session, profile, loading } = useAuth();
+  const { session, profile, isAdmin, loading } = useAuth();
   const navigate = useNavigate();
   const pathname = useRouterState({ select: (s) => s.location.pathname });
   const publicRoute = isPublic(pathname);
+  const adminRoute = pathname.startsWith("/admin");
 
   // Bloqueia usuários inativos (segurança em profundidade — o servidor também barra via RLS/status).
   useEffect(() => {
@@ -42,6 +43,15 @@ export function RouteGuard({ children }: { children: ReactNode }) {
       navigate({ to: "/", replace: true });
     }
   }, [loading, session, profile, pathname, navigate]);
+
+  // Bloqueia rotas /admin/* para não-admins.
+  useEffect(() => {
+    if (loading) return;
+    if (session && adminRoute && !isAdmin) {
+      toast.error("Acesso restrito a administradores.");
+      navigate({ to: "/", replace: true });
+    }
+  }, [loading, session, adminRoute, isAdmin, navigate]);
 
   if (loading) {
     return (
