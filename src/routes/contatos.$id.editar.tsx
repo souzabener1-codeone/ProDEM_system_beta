@@ -8,6 +8,7 @@ import { AppLayout } from "@/components/layout/AppLayout";
 import { PageHeader } from "@/components/layout/PageHeader";
 import { SimpleSelect } from "@/components/ui/SimpleSelect";
 import { listContatos, updateContato, type Contato } from "@/lib/contatos.functions";
+import { useCepLookup } from "@/hooks/useCepLookup";
 import {
   AlertDialog,
   AlertDialogAction,
