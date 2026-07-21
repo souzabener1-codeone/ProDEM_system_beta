@@ -76,7 +76,7 @@ function formatDate(iso: string): string {
 
 function mapDemand(d: Demanda, index: number): UIDemand {
   const s = STATUS_MAP[d.status] ?? { variant: "pending" as const, label: d.status || "Pendente" };
-  const priority = (["Alta", "Média", "Baixa"].includes(d.prioridade) ? d.prioridade : "Média") as UIDemand["priority"];
+  const priority = (["Alta", "Média", "Baixa"].includes(d.prioridade) ? d.prioridade : (d.prioridade || "-")) as UIDemand["priority"];
   const dueDate = d.vencimento || d.dataSolicitacao;
   const isOverdue = !!dueDate && new Date(dueDate) < new Date() && s.variant !== "done" && s.variant !== "cancelled";
   return {
@@ -87,7 +87,7 @@ function mapDemand(d: Demanda, index: number): UIDemand {
     priority,
     status: isOverdue ? "overdue" : s.variant,
     statusLabel: isOverdue ? "Atrasada" : s.label,
-    date: formatDate(d.dataSolicitacao || d.vencimento),
+    date: formatDate(d.dataSolicitacao),
     raw: d,
   };
 }
