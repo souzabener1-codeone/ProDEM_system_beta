@@ -185,7 +185,7 @@ function NovaDemanda() {
                 min={0}
                 max={100}
                 value={diasEstimados}
-                onChange={(e) => setDiasEstimados(Number(e.target.value) || 0)}
+                onChange={(e) => setDiasEstimados(Math.max(0, Number(e.target.value) || 0))}
                 className={inputCls}
                 placeholder="Ex: 5"
               />
