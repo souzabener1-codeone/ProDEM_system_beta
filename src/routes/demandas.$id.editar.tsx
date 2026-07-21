@@ -60,6 +60,23 @@ const inputCls =
 const textareaCls =
   "w-full rounded-[16px] border border-slate-200 bg-slate-50/50 px-4 py-3 text-sm text-foreground placeholder:text-slate-400 focus:border-brand-blue focus:bg-white focus:outline-none focus:ring-2 focus:ring-brand-blue/20 transition-all";
 
+function statusToStepId(status: string): string {
+  switch (status) {
+    case "Pendente":
+      return "criacao";
+    case "Em Andamento":
+    case "em-progresso":
+      return "em-progresso";
+    case "Aguardando Retorno":
+      return "aguardando-retorno";
+    case "Concluída":
+    case "concluida":
+      return "concluida";
+    default:
+      return "criacao";
+  }
+}
+
 function EditarDemanda() {
   const { id } = Route.useParams();
   const listDemFn = useServerFn(listDemandas);
@@ -263,7 +280,7 @@ function EditarDemandaForm({ demanda }: { demanda: Demanda }) {
             </div>
           </div>
 
-          <MovimentacaoStepper currentStepId={status === "Concluída" || status === "concluida" ? "concluida" : "em-progresso"} />
+          <MovimentacaoStepper currentStepId={statusToStepId(status)} />
         </div>
       </div>
 

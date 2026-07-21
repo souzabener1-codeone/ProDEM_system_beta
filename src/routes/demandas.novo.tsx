@@ -104,6 +104,7 @@ function NovaDemanda() {
 
   const handleConfirmSave = () => {
     setConfirmOpen(false);
+    const today = new Date().toISOString().slice(0, 10);
     mutation.mutate({
       data: {
         titulo,
@@ -111,7 +112,7 @@ function NovaDemanda() {
         contato: contatoVinculado,
         cidade: "",
         descricao,
-        dataSolicitacao: prazo,
+        dataSolicitacao: today,
         vencimento: prazo,
         observacoes,
         prioridade,
@@ -186,7 +187,7 @@ function NovaDemanda() {
             <Field label="Status" required>
               <StatusSelect value={status} onValueChange={setStatus} />
             </Field>
-            <Field label="Data Solicitação" required>
+            <Field label="Vencimento" required>
               <input type="date" className={inputCls} value={prazo} onChange={(e) => setPrazo(e.target.value)} />
             </Field>
 

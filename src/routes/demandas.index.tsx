@@ -51,7 +51,7 @@ type UIDemand = {
   contact: string;
   request: string;
   category: string;
-  priority: "Alta" | "Média" | "Baixa";
+  priority: string;
   status: "pending" | "in-progress" | "waiting" | "done" | "overdue" | "cancelled";
   statusLabel: string;
   date: string;
@@ -76,7 +76,7 @@ function formatDate(iso: string): string {
 
 function mapDemand(d: Demanda, index: number): UIDemand {
   const s = STATUS_MAP[d.status] ?? { variant: "pending" as const, label: d.status || "Pendente" };
-  const priority = (["Alta", "Média", "Baixa"].includes(d.prioridade) ? d.prioridade : "Média") as UIDemand["priority"];
+  const priority = (["Alta", "Média", "Baixa"].includes(d.prioridade) ? d.prioridade : (d.prioridade || "-")) as UIDemand["priority"];
   const dueDate = d.vencimento || d.dataSolicitacao;
   const isOverdue = !!dueDate && new Date(dueDate) < new Date() && s.variant !== "done" && s.variant !== "cancelled";
   return {
@@ -87,7 +87,7 @@ function mapDemand(d: Demanda, index: number): UIDemand {
     priority,
     status: isOverdue ? "overdue" : s.variant,
     statusLabel: isOverdue ? "Atrasada" : s.label,
-    date: formatDate(d.dataSolicitacao || d.vencimento),
+    date: formatDate(d.dataSolicitacao),
     raw: d,
   };
 }
@@ -103,8 +103,8 @@ function FilterField({ label, children }: { label: string; children: React.React
 }
 
 
-function priorityVariant(p: "Alta" | "Média" | "Baixa") {
-  return p === "Alta" ? "priority-high" : p === "Média" ? "priority-medium" : "priority-low";
+function priorityVariant(p: string) {
+  return p === "Alta" ? "priority-high" : p === "Média" ? "priority-medium" : p === "Baixa" ? "priority-low" : "priority-low";
 }
 
 function Demandas() {
@@ -113,9 +113,13 @@ function Demandas() {
   const { data: rawDemandas = [] } = useQuery({ queryKey: ["demandas"], queryFn: () => listDemFn() });
   const { data: rawContatos = [] } = useQuery({ queryKey: ["contatos"], queryFn: () => listContFn() });
 
-  const contactById = useMemo(() => {
+  const cityByContact = useMemo(() => {
     const m = new Map<string, string>();
-    rawContatos.forEach((c: any) => m.set(c.id, c.nome));
+    rawContatos.forEach((c: any) => {
+      const cidade = (c.localizacao || "").split("/")[0]?.trim() || "";
+      if (c.nome) m.set(String(c.nome).toLowerCase(), cidade);
+      if (c.codigo) m.set(String(c.codigo).toLowerCase(), cidade);
+    });
     return m;
   }, [rawContatos]);
 
@@ -123,6 +127,7 @@ function Demandas() {
     () => rawDemandas.map((d, i) => mapDemand(d, i)),
     [rawDemandas],
   );
+
 
 
   const [filtersOpen, setFiltersOpen] = useState(false);
@@ -423,7 +428,7 @@ function Demandas() {
                   </div>
                   <div className="rounded-xl border border-slate-200 bg-white p-3 shadow-sm">
                     <p className="text-[10px] font-semibold uppercase text-blue-400">Cidade</p>
-                    <p className="mt-0.5 text-base font-bold text-slate-800">{selectedDemand.raw.cidade || "-"}</p>
+                    <p className="mt-0.5 text-base font-bold text-slate-800">{selectedDemand.raw.cidade || cityByContact.get(String(selectedDemand.contact).toLowerCase()) || "-"}</p>
                   </div>
                 </div>
 
