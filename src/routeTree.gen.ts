@@ -25,6 +25,7 @@ import { Route as ContatosNovoRouteImport } from './routes/contatos.novo'
 import { Route as AdminUsuariosRouteImport } from './routes/admin.usuarios'
 import { Route as DemandasIdEditarRouteImport } from './routes/demandas.$id.editar'
 import { Route as ContatosIdEditarRouteImport } from './routes/contatos.$id.editar'
+import { Route as ApiPublicLookupCepRouteImport } from './routes/api/public/lookup-cep'
 
 const StatusRoute = StatusRouteImport.update({
   id: '/status',
@@ -106,6 +107,11 @@ const ContatosIdEditarRoute = ContatosIdEditarRouteImport.update({
   path: '/$id/editar',
   getParentRoute: () => ContatosRoute,
 } as any)
+const ApiPublicLookupCepRoute = ApiPublicLookupCepRouteImport.update({
+  id: '/api/public/lookup-cep',
+  path: '/api/public/lookup-cep',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -122,6 +128,7 @@ export interface FileRoutesByFullPath {
   '/demandas/novo': typeof DemandasNovoRoute
   '/contatos/': typeof ContatosIndexRoute
   '/demandas/': typeof DemandasIndexRoute
+  '/api/public/lookup-cep': typeof ApiPublicLookupCepRoute
   '/contatos/$id/editar': typeof ContatosIdEditarRoute
   '/demandas/$id/editar': typeof DemandasIdEditarRoute
 }
@@ -138,6 +145,7 @@ export interface FileRoutesByTo {
   '/demandas/novo': typeof DemandasNovoRoute
   '/contatos': typeof ContatosIndexRoute
   '/demandas': typeof DemandasIndexRoute
+  '/api/public/lookup-cep': typeof ApiPublicLookupCepRoute
   '/contatos/$id/editar': typeof ContatosIdEditarRoute
   '/demandas/$id/editar': typeof DemandasIdEditarRoute
 }
@@ -157,6 +165,7 @@ export interface FileRoutesById {
   '/demandas/novo': typeof DemandasNovoRoute
   '/contatos/': typeof ContatosIndexRoute
   '/demandas/': typeof DemandasIndexRoute
+  '/api/public/lookup-cep': typeof ApiPublicLookupCepRoute
   '/contatos/$id/editar': typeof ContatosIdEditarRoute
   '/demandas/$id/editar': typeof DemandasIdEditarRoute
 }
@@ -177,6 +186,7 @@ export interface FileRouteTypes {
     | '/demandas/novo'
     | '/contatos/'
     | '/demandas/'
+    | '/api/public/lookup-cep'
     | '/contatos/$id/editar'
     | '/demandas/$id/editar'
   fileRoutesByTo: FileRoutesByTo
@@ -193,6 +203,7 @@ export interface FileRouteTypes {
     | '/demandas/novo'
     | '/contatos'
     | '/demandas'
+    | '/api/public/lookup-cep'
     | '/contatos/$id/editar'
     | '/demandas/$id/editar'
   id:
@@ -211,6 +222,7 @@ export interface FileRouteTypes {
     | '/demandas/novo'
     | '/contatos/'
     | '/demandas/'
+    | '/api/public/lookup-cep'
     | '/contatos/$id/editar'
     | '/demandas/$id/editar'
   fileRoutesById: FileRoutesById
@@ -226,6 +238,7 @@ export interface RootRouteChildren {
   SitemapDotxmlRoute: typeof SitemapDotxmlRoute
   StatusRoute: typeof StatusRoute
   AdminUsuariosRoute: typeof AdminUsuariosRoute
+  ApiPublicLookupCepRoute: typeof ApiPublicLookupCepRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -342,6 +355,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ContatosIdEditarRouteImport
       parentRoute: typeof ContatosRoute
     }
+    '/api/public/lookup-cep': {
+      id: '/api/public/lookup-cep'
+      path: '/api/public/lookup-cep'
+      fullPath: '/api/public/lookup-cep'
+      preLoaderRoute: typeof ApiPublicLookupCepRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
@@ -388,6 +408,7 @@ const rootRouteChildren: RootRouteChildren = {
   SitemapDotxmlRoute: SitemapDotxmlRoute,
   StatusRoute: StatusRoute,
   AdminUsuariosRoute: AdminUsuariosRoute,
+  ApiPublicLookupCepRoute: ApiPublicLookupCepRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
