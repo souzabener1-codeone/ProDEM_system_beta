@@ -252,6 +252,45 @@ function Demandas() {
     return result;
   }, [applied, demands, tipoByContact, cityByContact]);
 
+  const exportFilters = useMemo(() => {
+    const f = applied;
+    const catLabelMap: Record<string, string> = {
+      oficio: "Ofício", indicacao: "Indicação", requerimento: "Requerimento",
+      emenda: "Emenda", projeto_lei: "Projeto de Lei", mensagem: "Mensagem",
+      saude_exames: "Saúde/Exames",
+    };
+    const statusLabelMap: Record<string, string> = {
+      pendente: "Pendente", em_andamento: "Em Andamento",
+      aguardando: "Aguardando Retorno", concluida: "Concluída",
+      cancelada: "Cancelada", nao_atendido: "Não atendido",
+    };
+    const prioLabelMap: Record<string, string> = { alta: "Alta", media: "Média", baixa: "Baixa" };
+    const tipoLabelMap: Record<string, string> = {
+      parlamentar: "Parlamentar", autoridade: "Autoridade", cidadao: "Cidadão",
+      entidade: "Entidade", empresa: "Empresa",
+    };
+    const ordLabelMap: Record<string, string> = {
+      vencimento: "Vencimento", criacao: "Data de criação",
+      prioridade: "Prioridade", status: "Status",
+    };
+    const mapLabels = (arr: string[], m: Record<string, string>) =>
+      arr.map((v) => m[v] || v).join(", ");
+
+    const parts: string[] = [];
+    const ord = f.ordenar[0];
+    parts.push(`Ordenado por: ${ord ? (ordLabelMap[ord] || ord) : "Vencimento"}`);
+    if (f.search.trim()) parts.push(`Busca: ${f.search.trim()}`);
+    if (f.dataInicial) parts.push(`Data Inicial: ${formatBRDate(f.dataInicial)}`);
+    if (f.dataFinal) parts.push(`Data Final: ${formatBRDate(f.dataFinal)}`);
+    if (f.categoria.length) parts.push(`Categoria: ${mapLabels(f.categoria, catLabelMap)}`);
+    if (f.prioridade.length) parts.push(`Prioridade: ${mapLabels(f.prioridade, prioLabelMap)}`);
+    if (f.status.length) parts.push(`Status: ${mapLabels(f.status, statusLabelMap)}`);
+    if (f.tipoContato.length) parts.push(`Tipo Contato: ${mapLabels(f.tipoContato, tipoLabelMap)}`);
+    if (f.cidade.length) parts.push(`Cidade: ${f.cidade.join(", ")}`);
+    if (f.bairro.length) parts.push(`Bairro: ${f.bairro.join(", ")}`);
+    return parts;
+  }, [applied]);
+
   const counts = useMemo(() => ({
     pending: filteredDemands.filter((d) => d.status === "pending").length,
     inProgress: filteredDemands.filter((d) => d.status === "in-progress").length,
