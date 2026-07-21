@@ -103,8 +103,8 @@ function FilterField({ label, children }: { label: string; children: React.React
 }
 
 
-function priorityVariant(p: "Alta" | "Média" | "Baixa") {
-  return p === "Alta" ? "priority-high" : p === "Média" ? "priority-medium" : "priority-low";
+function priorityVariant(p: string) {
+  return p === "Alta" ? "priority-high" : p === "Média" ? "priority-medium" : p === "Baixa" ? "priority-low" : "priority-low";
 }
 
 function Demandas() {
@@ -113,9 +113,13 @@ function Demandas() {
   const { data: rawDemandas = [] } = useQuery({ queryKey: ["demandas"], queryFn: () => listDemFn() });
   const { data: rawContatos = [] } = useQuery({ queryKey: ["contatos"], queryFn: () => listContFn() });
 
-  const contactById = useMemo(() => {
+  const cityByContact = useMemo(() => {
     const m = new Map<string, string>();
-    rawContatos.forEach((c: any) => m.set(c.id, c.nome));
+    rawContatos.forEach((c: any) => {
+      const cidade = (c.localizacao || "").split("/")[0]?.trim() || "";
+      if (c.nome) m.set(String(c.nome).toLowerCase(), cidade);
+      if (c.codigo) m.set(String(c.codigo).toLowerCase(), cidade);
+    });
     return m;
   }, [rawContatos]);
 
@@ -123,6 +127,7 @@ function Demandas() {
     () => rawDemandas.map((d, i) => mapDemand(d, i)),
     [rawDemandas],
   );
+
 
 
   const [filtersOpen, setFiltersOpen] = useState(false);
