@@ -497,7 +497,7 @@ function Demandas() {
                   }));
                   void exportListToPdf({
                     title: "Lista de Demandas",
-                    filters: [`Ordenado por: Data de solicitação`],
+                    filters: exportFilters,
                     columns: DEMANDA_COLUMNS,
                     rows,
                     observationsKey: "observacoes",
@@ -524,7 +524,7 @@ function Demandas() {
                   }));
                   void exportListToExcel({
                     title: "Lista de Demandas",
-                    filters: [`Ordenado por: Data de solicitação`],
+                    filters: exportFilters,
                     columns: DEMANDA_COLUMNS,
                     rows,
                     sheetName: "Demandas",
