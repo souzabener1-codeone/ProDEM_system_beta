@@ -166,7 +166,7 @@ function EditarDemandaForm({ demanda }: { demanda: Demanda }) {
           descricao,
           observacoes,
           dataSolicitacao,
-          vencimento: demanda.vencimento,
+          vencimento: computeVencimento(dataSolicitacao, diasEstimados),
           status,
           categoria,
           prioridade,
