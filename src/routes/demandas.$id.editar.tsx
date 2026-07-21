@@ -242,7 +242,15 @@ function EditarDemandaForm({ demanda }: { demanda: Demanda }) {
               </Field>
 
               <Field label="Dias Estimados">
-                <input type="number" min={0} max={100} defaultValue={5} className={inputCls} placeholder="Ex: 5" />
+                <input
+                  type="number"
+                  min={0}
+                  max={100}
+                  value={diasEstimados}
+                  onChange={(e) => setDiasEstimados(Math.max(0, Number(e.target.value) || 0))}
+                  className={inputCls}
+                  placeholder="Ex: 5"
+                />
               </Field>
               <Field label="Lembrete">
                 <SimpleSelect
