@@ -428,7 +428,7 @@ function Demandas() {
                   </div>
                   <div className="rounded-xl border border-slate-200 bg-white p-3 shadow-sm">
                     <p className="text-[10px] font-semibold uppercase text-blue-400">Cidade</p>
-                    <p className="mt-0.5 text-base font-bold text-slate-800">{selectedDemand.raw.cidade || "-"}</p>
+                    <p className="mt-0.5 text-base font-bold text-slate-800">{selectedDemand.raw.cidade || cityByContact.get(String(selectedDemand.contact).toLowerCase()) || "-"}</p>
                   </div>
                 </div>
 
