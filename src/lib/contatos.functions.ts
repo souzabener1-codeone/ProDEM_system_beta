@@ -110,3 +110,23 @@ export const createContato = createServerFn({ method: "POST" })
     await appendRow(SHEET, HEADER, toRow(data));
     return { ok: true };
   });
+
+const contatoUpdateInput = contatoInput.extend({
+  id: z.string().min(1),
+});
+
+export const updateContato = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((d: unknown) => contatoUpdateInput.parse(d))
+  .handler(async ({ data, context }) => {
+    await assertActiveStaff(context);
+    const { updateRow, ensureHeader } = await import("./google/sheets.server");
+    await ensureHeader(SHEET, HEADER);
+    const rowNumber = Number(data.id);
+    if (!Number.isFinite(rowNumber) || rowNumber < 2) {
+      throw new Error("Contato inválido");
+    }
+    const { id: _id, ...rest } = data;
+    await updateRow(SHEET, HEADER, rowNumber, toRow(rest));
+    return { ok: true };
+  });
