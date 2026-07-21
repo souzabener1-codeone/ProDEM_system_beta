@@ -117,7 +117,9 @@ function EditarDemanda() {
 
 function EditarDemandaForm({ demanda }: { demanda: Demanda }) {
   const navigate = useNavigate();
+  const queryClient = useQueryClient();
   const listContFn = useServerFn(listContatos);
+  const updateFn = useServerFn(updateDemanda);
   const { data: contatos = [] } = useQuery({ queryKey: ["contatos"], queryFn: () => listContFn() });
   const contatoOptions = contatos.map((c: { codigo: string; nome: string }) => ({
     value: c.codigo || c.nome,
@@ -125,13 +127,45 @@ function EditarDemandaForm({ demanda }: { demanda: Demanda }) {
     sublabel: c.codigo ? `#${c.codigo}` : undefined,
   }));
 
+  const [titulo, setTitulo] = useState(demanda.titulo || "");
+  const [descricao, setDescricao] = useState(demanda.descricao || "");
+  const [observacoes, setObservacoes] = useState(demanda.observacoes || "");
+  const [dataSolicitacao, setDataSolicitacao] = useState(demanda.dataSolicitacao || "");
   const [status, setStatus] = useState(demanda.status || "");
   const [categoria, setCategoria] = useState(demanda.categoria || "");
   const [prioridade, setPrioridade] = useState(demanda.prioridade || "Média");
   const [lembrete, setLembrete] = useState("Sem lembrete");
   const [confirmOpen, setConfirmOpen] = useState(false);
   const [contatoVinculado, setContatoVinculado] = useState(demanda.contato || "");
-  const [responsavel, setResponsavel] = useState((demanda as any).responsavel ?? "");
+  const [responsavel, setResponsavel] = useState(demanda.responsavel || "");
+
+  const mutation = useMutation({
+    mutationFn: () =>
+      updateFn({
+        data: {
+          rowNumber: demanda.rowNumber,
+          titulo,
+          descricao,
+          observacoes,
+          dataSolicitacao,
+          vencimento: demanda.vencimento,
+          status,
+          categoria,
+          prioridade,
+          contato: contatoVinculado,
+          cidade: demanda.cidade,
+          responsavel,
+        },
+      }),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["demandas"] });
+      toast.success("Demanda atualizada com sucesso!");
+      navigate({ to: "/demandas" });
+    },
+    onError: (err) => {
+      toast.error(err instanceof Error ? err.message : "Erro ao atualizar demanda");
+    },
+  });
 
   const handleFormSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -140,8 +174,7 @@ function EditarDemandaForm({ demanda }: { demanda: Demanda }) {
 
   const handleConfirmSave = () => {
     setConfirmOpen(false);
-    toast.success("Demanda atualizada com sucesso!");
-    navigate({ to: "/demandas" });
+    mutation.mutate();
   };
 
   return (
@@ -159,14 +192,15 @@ function EditarDemandaForm({ demanda }: { demanda: Demanda }) {
         >
           <div className="space-y-5">
             <Field label="Título da Demanda" required>
-              <input className={inputCls} defaultValue={demanda.titulo} placeholder="Digite o título da demanda" />
+              <input className={inputCls} value={titulo} onChange={(e) => setTitulo(e.target.value)} placeholder="Digite o título da demanda" />
             </Field>
 
             <Field label="Descrição" required>
               <textarea
                 rows={4}
                 className={textareaCls}
-                defaultValue={demanda.descricao}
+                value={descricao}
+                onChange={(e) => setDescricao(e.target.value)}
                 placeholder="Descreva os detalhes da demanda..."
               />
             </Field>
@@ -209,7 +243,7 @@ function EditarDemandaForm({ demanda }: { demanda: Demanda }) {
                 <StatusSelect value={status} onValueChange={setStatus} />
               </Field>
               <Field label="Data Solicitação" required>
-                <input type="date" className={inputCls} defaultValue={demanda.dataSolicitacao} />
+                <input type="date" className={inputCls} value={dataSolicitacao} onChange={(e) => setDataSolicitacao(e.target.value)} />
               </Field>
 
               <Field label="Contato Vinculado">
@@ -240,7 +274,8 @@ function EditarDemandaForm({ demanda }: { demanda: Demanda }) {
               <textarea
                 rows={3}
                 className={textareaCls}
-                defaultValue={demanda.observacoes}
+                value={observacoes}
+                onChange={(e) => setObservacoes(e.target.value)}
                 placeholder="Observações adicionais..."
               />
             </Field>
@@ -261,10 +296,11 @@ function EditarDemandaForm({ demanda }: { demanda: Demanda }) {
             </Link>
             <button
               type="submit"
-              className="inline-flex items-center gap-2 rounded-full bg-brand-blue px-6 py-2.5 text-sm font-semibold text-white shadow-sm transition-all hover:bg-brand-blue-strong active:scale-[0.98]"
+              disabled={mutation.isPending}
+              className="inline-flex items-center gap-2 rounded-full bg-brand-blue px-6 py-2.5 text-sm font-semibold text-white shadow-sm transition-all hover:bg-brand-blue-strong active:scale-[0.98] disabled:opacity-60"
             >
               <Save className="h-4 w-4" />
-              Atualizar Demanda
+              {mutation.isPending ? "Atualizando..." : "Atualizar Demanda"}
             </button>
           </div>
         </form>
