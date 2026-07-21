@@ -433,7 +433,7 @@ function Demandas() {
       <div className="overflow-hidden rounded-2xl border border-border bg-card shadow-[var(--shadow-card)]">
         <SectionHeader
           title="Todas as Demandas"
-          count={demands.length}
+          count={filteredDemands.length}
           action={
             <div className="flex items-center gap-2">
               <button
