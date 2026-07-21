@@ -272,6 +272,11 @@ function EditarDemandaForm({ demanda }: { demanda: Demanda }) {
               </Field>
               <Field label="Data Solicitação" required>
                 <input type="date" className={inputCls} value={dataSolicitacao} onChange={(e) => setDataSolicitacao(e.target.value)} />
+                {vencimentoCalculado && (
+                  <span className="mt-1 block text-xs text-slate-500">
+                    Vencimento previsto: {new Date(vencimentoCalculado + "T00:00:00").toLocaleDateString("pt-BR")}
+                  </span>
+                )}
               </Field>
 
               <Field label="Contato Vinculado">
