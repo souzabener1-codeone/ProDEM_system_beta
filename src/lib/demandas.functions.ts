@@ -24,6 +24,7 @@ export type DemandaRow = Record<(typeof HEADER)[number], string>;
 
 /** Tipo tipado usado pela UI (aliases em camelCase). */
 export type Demanda = {
+  rowNumber: number;
   titulo: string;
   categoria: string;
   contato: string;
@@ -34,10 +35,12 @@ export type Demanda = {
   observacoes: string;
   prioridade: string;
   status: string;
+  responsavel: string;
 };
 
-function toDemanda(row: DemandaRow): Demanda {
+function toDemanda(row: DemandaRow, rowNumber: number): Demanda {
   return {
+    rowNumber,
     titulo: row["Título"] ?? "",
     categoria: row["Categoria"] ?? "",
     contato: row["Contato"] ?? "",
@@ -48,6 +51,7 @@ function toDemanda(row: DemandaRow): Demanda {
     observacoes: row["Observações"] ?? "",
     prioridade: row["Prioridade"] ?? "",
     status: row["Status"] ?? "",
+    responsavel: row["Responsável"] ?? "",
   };
 }
 
@@ -88,8 +92,8 @@ export const listDemandas = createServerFn({ method: "GET" })
     await assertActiveStaff(context);
     const { readSheet, ensureHeader } = await import("./google/sheets.server");
     await ensureHeader(SHEET, HEADER as unknown as string[]);
-    const { rows } = await readSheet(SHEET);
-    return rows.map((r) => toDemanda(r as DemandaRow));
+    const { rows, rowNumbers } = await readSheet(SHEET);
+    return rows.map((r, i) => toDemanda(r as DemandaRow, rowNumbers[i]));
   });
 
 export const createDemanda = createServerFn({ method: "POST" })
@@ -118,5 +122,22 @@ export const createDemanda = createServerFn({ method: "POST" })
       }
     }
 
-    return toDemanda(row);
+    return toDemanda(row, 0);
+  });
+
+const demandaUpdateInput = demandaInput.extend({
+  rowNumber: z.number().int().min(2),
+});
+
+export const updateDemanda = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((d: unknown) => demandaUpdateInput.parse(d))
+  .handler(async ({ data, context }) => {
+    await assertActiveStaff(context);
+    const { updateRow, ensureHeader } = await import("./google/sheets.server");
+    await ensureHeader(SHEET, HEADER as unknown as string[]);
+    const { rowNumber, ...rest } = data;
+    const row = buildRow(rest);
+    await updateRow(SHEET, HEADER as unknown as string[], rowNumber, row);
+    return toDemanda(row, rowNumber);
   });
