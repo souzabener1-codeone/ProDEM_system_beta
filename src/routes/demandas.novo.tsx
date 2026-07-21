@@ -88,10 +88,11 @@ function NovaDemanda() {
     if (!baseDate) return "";
     const d = new Date(baseDate + "T00:00:00");
     if (isNaN(d.getTime())) return "";
-    d.setDate(d.getDate() + (Number.isFinite(dias) ? dias : 0));
+    d.setDate(d.getDate() + Math.max(0, Number.isFinite(dias) ? dias : 0));
     return d.toISOString().slice(0, 10);
   };
-  const vencimentoCalculado = computeVencimento(dataSolicitacao, diasEstimados);
+  const hoje = new Date().toISOString().slice(0, 10);
+  const vencimentoCalculado = computeVencimento(dataSolicitacao || hoje, diasEstimados);
 
   const mutation = useMutation({
     mutationFn: createFn,
