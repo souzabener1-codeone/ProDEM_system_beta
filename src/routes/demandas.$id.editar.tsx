@@ -2,7 +2,7 @@ import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { X, Save, Edit, Clock } from "@/components/icons";
 import { useState, type ReactNode } from "react";
 import { toast } from "sonner";
-import { useQuery } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
 import { AppLayout } from "@/components/layout/AppLayout";
 import { PageHeader } from "@/components/layout/PageHeader";
@@ -12,7 +12,7 @@ import { CategorySelect } from "@/components/ui/CategorySelect";
 import { SimpleSelect } from "@/components/ui/SimpleSelect";
 import { ContactAutocomplete } from "@/components/ui/ContactAutocomplete";
 import { MovimentacaoStepper } from "@/components/demandas/MovimentacaoStepper";
-import { listDemandas, type Demanda } from "@/lib/demandas.functions";
+import { listDemandas, updateDemanda, type Demanda } from "@/lib/demandas.functions";
 import { listContatos } from "@/lib/contatos.functions";
 import {
   AlertDialog,
