@@ -74,10 +74,11 @@ const STATUS_MAP: Record<string, { variant: UIDemand["status"]; label: string }>
 
 function formatDate(iso: string): string {
   if (!iso) return "-";
-  const d = new Date(iso);
+  const d = parseISOLocal(iso);
   if (isNaN(d.getTime())) return iso;
   return d.toLocaleDateString("pt-BR");
 }
+
 
 function mapDemand(d: Demanda, index: number): UIDemand {
   const s = STATUS_MAP[d.status] ?? { variant: "pending" as const, label: d.status || "Pendente" };
