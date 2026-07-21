@@ -29,12 +29,17 @@ const DEMANDA_COLUMNS = [
   { header: "Observações", key: "observacoes", width: 2 },
 ];
 
+function parseISOLocal(iso: string): Date {
+  return /^\d{4}-\d{2}-\d{2}$/.test(iso) ? new Date(iso + "T00:00:00") : new Date(iso);
+}
+
 function formatBRDate(iso: string): string {
   if (!iso) return "-";
-  const d = new Date(iso);
+  const d = parseISOLocal(iso);
   if (isNaN(d.getTime())) return iso;
   return d.toLocaleDateString("pt-BR");
 }
+
 
 export const Route = createFileRoute("/demandas/")({
   head: () => ({
@@ -69,10 +74,11 @@ const STATUS_MAP: Record<string, { variant: UIDemand["status"]; label: string }>
 
 function formatDate(iso: string): string {
   if (!iso) return "-";
-  const d = new Date(iso);
+  const d = parseISOLocal(iso);
   if (isNaN(d.getTime())) return iso;
   return d.toLocaleDateString("pt-BR");
 }
+
 
 function mapDemand(d: Demanda, index: number): UIDemand {
   const s = STATUS_MAP[d.status] ?? { variant: "pending" as const, label: d.status || "Pendente" };
@@ -181,8 +187,9 @@ function Demandas() {
   const filteredDemands = useMemo(() => {
     const f = applied;
     const s = f.search.trim().toLowerCase();
-    const di = f.dataInicial ? new Date(f.dataInicial).getTime() : null;
-    const df = f.dataFinal ? new Date(f.dataFinal).getTime() + 86_400_000 - 1 : null;
+    const di = f.dataInicial ? parseISOLocal(f.dataInicial).getTime() : null;
+    const df = f.dataFinal ? parseISOLocal(f.dataFinal).getTime() + 86_400_000 - 1 : null;
+
     const catLabelMap: Record<string, string> = {
       oficio: "Ofício", indicacao: "Indicação", requerimento: "Requerimento",
       emenda: "Emenda", projeto_lei: "Projeto de Lei", mensagem: "Mensagem",
@@ -210,7 +217,7 @@ function Demandas() {
         if (!hay.includes(s)) return false;
       }
       if (di || df) {
-        const t = d.raw.dataSolicitacao ? new Date(d.raw.dataSolicitacao).getTime() : NaN;
+        const t = d.raw.dataSolicitacao ? parseISOLocal(d.raw.dataSolicitacao).getTime() : NaN;
         if (isNaN(t)) return false;
         if (di && t < di) return false;
         if (df && t > df) return false;
