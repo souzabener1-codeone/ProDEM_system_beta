@@ -217,7 +217,7 @@ function Demandas() {
         if (!hay.includes(s)) return false;
       }
       if (di || df) {
-        const t = d.raw.dataSolicitacao ? new Date(d.raw.dataSolicitacao).getTime() : NaN;
+        const t = d.raw.dataSolicitacao ? parseISOLocal(d.raw.dataSolicitacao).getTime() : NaN;
         if (isNaN(t)) return false;
         if (di && t < di) return false;
         if (df && t > df) return false;
