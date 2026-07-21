@@ -179,7 +179,15 @@ function NovaDemanda() {
             </Field>
 
             <Field label="Dias Estimados">
-              <input type="number" min={0} max={100} defaultValue={5} className={inputCls} placeholder="Ex: 5" />
+              <input
+                type="number"
+                min={0}
+                max={100}
+                value={diasEstimados}
+                onChange={(e) => setDiasEstimados(Number(e.target.value) || 0)}
+                className={inputCls}
+                placeholder="Ex: 5"
+              />
             </Field>
             <Field label="Lembrete">
               <SimpleSelect
@@ -190,7 +198,8 @@ function NovaDemanda() {
                   { value: "Sem lembrete", label: "Sem lembrete" },
                   { value: "1 dia antes", label: "1 dia antes" },
                   { value: "3 dias antes", label: "3 dias antes" },
-                  { value: "1 semana antes", label: "1 semana antes" },
+                  { value: "7 dias antes", label: "7 dias antes" },
+                  { value: "15 dias antes", label: "15 dias antes" },
                 ]}
               />
             </Field>
@@ -198,8 +207,18 @@ function NovaDemanda() {
             <Field label="Status" required>
               <StatusSelect value={status} onValueChange={setStatus} />
             </Field>
-            <Field label="Vencimento" required>
-              <input type="date" className={inputCls} value={prazo} onChange={(e) => setPrazo(e.target.value)} />
+            <Field label="Data da Solicitação" required>
+              <input
+                type="date"
+                className={inputCls}
+                value={dataSolicitacao}
+                onChange={(e) => setDataSolicitacao(e.target.value)}
+              />
+              {vencimentoCalculado && (
+                <span className="mt-1 block text-xs text-slate-500">
+                  Vencimento previsto: {new Date(vencimentoCalculado + "T00:00:00").toLocaleDateString("pt-BR")}
+                </span>
+              )}
             </Field>
 
             <Field label="Contato Vinculado">
