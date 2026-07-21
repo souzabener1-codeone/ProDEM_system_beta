@@ -89,38 +89,29 @@ function NovoContato() {
   const [cepLoading, setCepLoading] = useState(false);
   const [confirmOpen, setConfirmOpen] = useState(false);
 
-  const mutation = useMutation({
-    mutationFn: createFn,
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["contatos"] });
-      toast.success("Contato salvo com sucesso!");
-      navigate({ to: "/contatos" });
-    },
-    onError: (err: Error) => toast.error(err.message || "Erro ao salvar"),
-  });
+  const { status: cepStatus, data: cepData, errorMessage: cepError, lookupCep } = useCepLookup();
+
+  useEffect(() => {
+    setCepLoading(cepStatus === "loading");
+  }, [cepStatus]);
+
+  useEffect(() => {
+    if (cepStatus === "success" && cepData) {
+      setEndereco(cepData.logradouro);
+      setBairro(cepData.bairro);
+      setCidade(cepData.cidade);
+      setEstado(cepData.uf);
+      if (cepData.complemento) setComplemento(cepData.complemento);
+    } else if (cepStatus === "not_found" || cepStatus === "error") {
+      if (cepError) toast.error(cepError);
+    }
+  }, [cepStatus, cepData, cepError]);
 
   const handleCepChange = (raw: string) => {
     const digits = raw.replace(/\D/g, "").slice(0, 8);
     const formatted = digits.length > 5 ? `${digits.slice(0, 5)}-${digits.slice(5)}` : digits;
     setCep(formatted);
-    if (digits.length === 8) {
-      setCepLoading(true);
-      fetch(`https://viacep.com.br/ws/${digits}/json/`)
-        .then((r) => r.json())
-        .then((data: { erro?: boolean; logradouro?: string; bairro?: string; localidade?: string; uf?: string; complemento?: string }) => {
-          if (data.erro) {
-            toast.error("CEP não encontrado");
-            return;
-          }
-          setEndereco(data.logradouro ?? "");
-          setBairro(data.bairro ?? "");
-          setCidade(data.localidade ?? "");
-          setEstado(data.uf ?? "");
-          if (data.complemento) setComplemento(data.complemento);
-        })
-        .catch(() => toast.error("Erro ao buscar CEP"))
-        .finally(() => setCepLoading(false));
-    }
+    lookupCep(digits);
   };
 
   const handleFormSubmit = (e: React.FormEvent<HTMLFormElement>) => {
