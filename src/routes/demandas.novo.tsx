@@ -74,7 +74,8 @@ function NovaDemanda() {
   const [titulo, setTitulo] = useState("");
   const [descricao, setDescricao] = useState("");
   const [observacoes, setObservacoes] = useState("");
-  const [prazo, setPrazo] = useState("");
+  const [dataSolicitacao, setDataSolicitacao] = useState("");
+  const [diasEstimados, setDiasEstimados] = useState<number>(5);
   const [contatoVinculado, setContatoVinculado] = useState("");
   const [responsavel, setResponsavel] = useState("");
   const [status, setStatus] = useState("");
@@ -82,6 +83,15 @@ function NovaDemanda() {
   const [prioridade, setPrioridade] = useState("");
   const [lembrete, setLembrete] = useState("");
   const [confirmOpen, setConfirmOpen] = useState(false);
+
+  const computeVencimento = (baseDate: string, dias: number) => {
+    if (!baseDate) return "";
+    const d = new Date(baseDate + "T00:00:00");
+    if (isNaN(d.getTime())) return "";
+    d.setDate(d.getDate() + (Number.isFinite(dias) ? dias : 0));
+    return d.toISOString().slice(0, 10);
+  };
+  const vencimentoCalculado = computeVencimento(dataSolicitacao, diasEstimados);
 
   const mutation = useMutation({
     mutationFn: createFn,
@@ -105,6 +115,7 @@ function NovaDemanda() {
   const handleConfirmSave = () => {
     setConfirmOpen(false);
     const today = new Date().toISOString().slice(0, 10);
+    const solic = dataSolicitacao || today;
     mutation.mutate({
       data: {
         titulo,
@@ -112,9 +123,9 @@ function NovaDemanda() {
         contato: contatoVinculado,
         cidade: "",
         descricao,
-        dataSolicitacao: today,
-        vencimento: prazo,
-        observacoes,
+        dataSolicitacao: solic,
+        vencimento: computeVencimento(solic, diasEstimados),
+        observacoes: [observacoes, lembrete ? `Lembrete: ${lembrete}` : ""].filter(Boolean).join("\n"),
         prioridade,
         status,
         responsavel,
@@ -168,7 +179,15 @@ function NovaDemanda() {
             </Field>
 
             <Field label="Dias Estimados">
-              <input type="number" min={0} max={100} defaultValue={5} className={inputCls} placeholder="Ex: 5" />
+              <input
+                type="number"
+                min={0}
+                max={100}
+                value={diasEstimados}
+                onChange={(e) => setDiasEstimados(Number(e.target.value) || 0)}
+                className={inputCls}
+                placeholder="Ex: 5"
+              />
             </Field>
             <Field label="Lembrete">
               <SimpleSelect
@@ -179,7 +198,8 @@ function NovaDemanda() {
                   { value: "Sem lembrete", label: "Sem lembrete" },
                   { value: "1 dia antes", label: "1 dia antes" },
                   { value: "3 dias antes", label: "3 dias antes" },
-                  { value: "1 semana antes", label: "1 semana antes" },
+                  { value: "7 dias antes", label: "7 dias antes" },
+                  { value: "15 dias antes", label: "15 dias antes" },
                 ]}
               />
             </Field>
@@ -187,8 +207,18 @@ function NovaDemanda() {
             <Field label="Status" required>
               <StatusSelect value={status} onValueChange={setStatus} />
             </Field>
-            <Field label="Vencimento" required>
-              <input type="date" className={inputCls} value={prazo} onChange={(e) => setPrazo(e.target.value)} />
+            <Field label="Data da Solicitação" required>
+              <input
+                type="date"
+                className={inputCls}
+                value={dataSolicitacao}
+                onChange={(e) => setDataSolicitacao(e.target.value)}
+              />
+              {vencimentoCalculado && (
+                <span className="mt-1 block text-xs text-slate-500">
+                  Vencimento previsto: {new Date(vencimentoCalculado + "T00:00:00").toLocaleDateString("pt-BR")}
+                </span>
+              )}
             </Field>
 
             <Field label="Contato Vinculado">
