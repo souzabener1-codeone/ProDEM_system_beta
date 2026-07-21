@@ -74,7 +74,8 @@ function NovaDemanda() {
   const [titulo, setTitulo] = useState("");
   const [descricao, setDescricao] = useState("");
   const [observacoes, setObservacoes] = useState("");
-  const [prazo, setPrazo] = useState("");
+  const [dataSolicitacao, setDataSolicitacao] = useState("");
+  const [diasEstimados, setDiasEstimados] = useState<number>(5);
   const [contatoVinculado, setContatoVinculado] = useState("");
   const [responsavel, setResponsavel] = useState("");
   const [status, setStatus] = useState("");
@@ -82,6 +83,15 @@ function NovaDemanda() {
   const [prioridade, setPrioridade] = useState("");
   const [lembrete, setLembrete] = useState("");
   const [confirmOpen, setConfirmOpen] = useState(false);
+
+  const computeVencimento = (baseDate: string, dias: number) => {
+    if (!baseDate) return "";
+    const d = new Date(baseDate + "T00:00:00");
+    if (isNaN(d.getTime())) return "";
+    d.setDate(d.getDate() + (Number.isFinite(dias) ? dias : 0));
+    return d.toISOString().slice(0, 10);
+  };
+  const vencimentoCalculado = computeVencimento(dataSolicitacao, diasEstimados);
 
   const mutation = useMutation({
     mutationFn: createFn,
