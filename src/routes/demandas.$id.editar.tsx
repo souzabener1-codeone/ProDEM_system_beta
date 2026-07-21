@@ -127,10 +127,19 @@ function EditarDemandaForm({ demanda }: { demanda: Demanda }) {
     sublabel: c.codigo ? `#${c.codigo}` : undefined,
   }));
 
+  const inferDias = () => {
+    if (!demanda.dataSolicitacao || !demanda.vencimento) return 5;
+    const s = new Date(demanda.dataSolicitacao + "T00:00:00").getTime();
+    const v = new Date(demanda.vencimento + "T00:00:00").getTime();
+    const diff = (v - s) / 86400000;
+    return Number.isFinite(diff) && diff >= 0 ? Math.round(diff) : 5;
+  };
+
   const [titulo, setTitulo] = useState(demanda.titulo || "");
   const [descricao, setDescricao] = useState(demanda.descricao || "");
   const [observacoes, setObservacoes] = useState(demanda.observacoes || "");
   const [dataSolicitacao, setDataSolicitacao] = useState(demanda.dataSolicitacao || "");
+  const [diasEstimados, setDiasEstimados] = useState<number>(inferDias());
   const [status, setStatus] = useState(demanda.status || "");
   const [categoria, setCategoria] = useState(demanda.categoria || "");
   const [prioridade, setPrioridade] = useState(demanda.prioridade || "Média");
@@ -138,6 +147,15 @@ function EditarDemandaForm({ demanda }: { demanda: Demanda }) {
   const [confirmOpen, setConfirmOpen] = useState(false);
   const [contatoVinculado, setContatoVinculado] = useState(demanda.contato || "");
   const [responsavel, setResponsavel] = useState(demanda.responsavel || "");
+
+  const computeVencimento = (baseDate: string, dias: number) => {
+    if (!baseDate) return "";
+    const d = new Date(baseDate + "T00:00:00");
+    if (isNaN(d.getTime())) return "";
+    d.setDate(d.getDate() + Math.max(0, Number.isFinite(dias) ? dias : 0));
+    return d.toISOString().slice(0, 10);
+  };
+  const vencimentoCalculado = computeVencimento(dataSolicitacao, diasEstimados);
 
   const mutation = useMutation({
     mutationFn: () =>
