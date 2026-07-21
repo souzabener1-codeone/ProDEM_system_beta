@@ -356,35 +356,44 @@ function Demandas() {
           <table className="w-full text-sm">
             <thead className="bg-slate-50 text-xs uppercase tracking-wide text-muted-foreground">
               <tr>
-                <th className="px-5 py-3 text-left font-semibold">#</th>
-                <th className="px-5 py-3 text-left font-semibold">Contato</th>
                 <th className="px-5 py-3 text-left font-semibold">Demanda</th>
                 <th className="px-5 py-3 text-left font-semibold">Categoria</th>
+                <th className="px-5 py-3 text-left font-semibold">Contato</th>
+                <th className="px-5 py-3 text-left font-semibold">Data Solicitação</th>
+                <th className="px-5 py-3 text-left font-semibold">Vencimento</th>
                 <th className="px-5 py-3 text-left font-semibold">Prioridade</th>
                 <th className="px-5 py-3 text-left font-semibold">Status</th>
-                <th className="px-5 py-3 text-left font-semibold">Data</th>
                 <th className="px-5 py-3 text-right font-semibold">Ações</th>
               </tr>
             </thead>
             <tbody>
               {demands.map((d) => (
                 <tr key={d.id} className="border-t border-border transition-colors hover:bg-slate-50">
-                  <td className="px-5 py-3.5 font-mono text-xs text-muted-foreground">#{d.id}</td>
-                  <td className="px-5 py-3.5 font-semibold text-foreground">{d.contact}</td>
-                  <td className="px-5 py-3.5 text-muted-foreground">{d.request}</td>
                   <td className="px-5 py-3.5">
-                    <span className="inline-flex items-center gap-1.5 text-xs font-medium text-muted-foreground">
-                      <span className="h-2 w-2 rounded-full bg-brand-blue" />
+                    <div className="font-semibold text-foreground">{d.request}</div>
+                    {d.raw.descricao && (
+                      <div className="mt-0.5 text-xs text-muted-foreground line-clamp-1">{d.raw.descricao}</div>
+                    )}
+                  </td>
+                  <td className="px-5 py-3.5">
+                    <span className="inline-flex items-center rounded-full bg-slate-100 px-2.5 py-1 text-xs font-medium text-slate-700">
                       {d.category}
                     </span>
                   </td>
+                  <td className="px-5 py-3.5 text-foreground">
+                    <span className="inline-flex items-center gap-1.5">
+                      <span className="inline-block h-4 w-4 rounded-full bg-slate-200" />
+                      {d.contact}
+                    </span>
+                  </td>
+                  <td className="px-5 py-3.5 text-muted-foreground">{formatBRDate(d.raw.dataSolicitacao)}</td>
+                  <td className="px-5 py-3.5 text-muted-foreground">{d.raw.vencimento ? formatBRDate(d.raw.vencimento) : "-"}</td>
                   <td className="px-5 py-3.5">
                     <StatusBadge variant={priorityVariant(d.priority)}>{d.priority}</StatusBadge>
                   </td>
                   <td className="px-5 py-3.5">
                     <StatusBadge variant={d.status}>{d.statusLabel}</StatusBadge>
                   </td>
-                  <td className="px-5 py-3.5 text-muted-foreground">{d.date}</td>
                   <td className="px-5 py-3.5">
                     <div className="flex items-center justify-end gap-1">
                       <button onClick={() => setSelectedDemand(d)} aria-label="Visualizar" className="rounded-md p-1.5 text-muted-foreground hover:bg-brand-blue-soft hover:text-brand-blue-strong">
