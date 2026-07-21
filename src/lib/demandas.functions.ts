@@ -24,6 +24,7 @@ export type DemandaRow = Record<(typeof HEADER)[number], string>;
 
 /** Tipo tipado usado pela UI (aliases em camelCase). */
 export type Demanda = {
+  rowNumber: number;
   titulo: string;
   categoria: string;
   contato: string;
@@ -34,10 +35,12 @@ export type Demanda = {
   observacoes: string;
   prioridade: string;
   status: string;
+  responsavel: string;
 };
 
-function toDemanda(row: DemandaRow): Demanda {
+function toDemanda(row: DemandaRow, rowNumber: number): Demanda {
   return {
+    rowNumber,
     titulo: row["Título"] ?? "",
     categoria: row["Categoria"] ?? "",
     contato: row["Contato"] ?? "",
@@ -48,6 +51,7 @@ function toDemanda(row: DemandaRow): Demanda {
     observacoes: row["Observações"] ?? "",
     prioridade: row["Prioridade"] ?? "",
     status: row["Status"] ?? "",
+    responsavel: row["Responsável"] ?? "",
   };
 }
 
