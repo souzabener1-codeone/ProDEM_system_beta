@@ -115,6 +115,7 @@ function NovaDemanda() {
   const handleConfirmSave = () => {
     setConfirmOpen(false);
     const today = new Date().toISOString().slice(0, 10);
+    const solic = dataSolicitacao || today;
     mutation.mutate({
       data: {
         titulo,
@@ -122,9 +123,9 @@ function NovaDemanda() {
         contato: contatoVinculado,
         cidade: "",
         descricao,
-        dataSolicitacao: today,
-        vencimento: prazo,
-        observacoes,
+        dataSolicitacao: solic,
+        vencimento: computeVencimento(solic, diasEstimados),
+        observacoes: [observacoes, lembrete ? `Lembrete: ${lembrete}` : ""].filter(Boolean).join("\n"),
         prioridade,
         status,
         responsavel,
