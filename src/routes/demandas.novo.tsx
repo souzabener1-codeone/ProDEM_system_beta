@@ -187,7 +187,7 @@ function NovaDemanda() {
             <Field label="Status" required>
               <StatusSelect value={status} onValueChange={setStatus} />
             </Field>
-            <Field label="Data Solicitação" required>
+            <Field label="Vencimento" required>
               <input type="date" className={inputCls} value={prazo} onChange={(e) => setPrazo(e.target.value)} />
             </Field>
 
