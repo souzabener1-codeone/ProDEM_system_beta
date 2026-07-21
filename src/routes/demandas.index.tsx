@@ -29,12 +29,17 @@ const DEMANDA_COLUMNS = [
   { header: "Observações", key: "observacoes", width: 2 },
 ];
 
+function parseISOLocal(iso: string): Date {
+  return /^\d{4}-\d{2}-\d{2}$/.test(iso) ? new Date(iso + "T00:00:00") : new Date(iso);
+}
+
 function formatBRDate(iso: string): string {
   if (!iso) return "-";
-  const d = new Date(iso);
+  const d = parseISOLocal(iso);
   if (isNaN(d.getTime())) return iso;
   return d.toLocaleDateString("pt-BR");
 }
+
 
 export const Route = createFileRoute("/demandas/")({
   head: () => ({
