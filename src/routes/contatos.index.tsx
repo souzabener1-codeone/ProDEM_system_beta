@@ -3,6 +3,7 @@ import { useMemo, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
 import { listContatos, type Contato } from "@/lib/contatos.functions";
+import { listDemandas } from "@/lib/demandas.functions";
 import { Users, Plus, Search, Eye, Pencil, Phone, Mail, Hash, Building2, UserCheck, FileDown, FileSpreadsheet, MoreHorizontal, Trash2, FileText, Download } from "@/components/icons";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
@@ -90,11 +91,35 @@ function initials(name: string) {
 
 function Contatos() {
   const listFn = useServerFn(listContatos);
+  const listDemandasFn = useServerFn(listDemandas);
   const { data: raw = [] } = useQuery({
     queryKey: ["contatos"],
     queryFn: () => listFn(),
   });
-  const contacts = useMemo(() => raw.map(mapContato), [raw]);
+  const { data: demandas = [] } = useQuery({
+    queryKey: ["demandas"],
+    queryFn: () => listDemandasFn(),
+    refetchInterval: 15000,
+    refetchOnWindowFocus: true,
+  });
+  const demandCountByContact = useMemo(() => {
+    const map = new Map<string, number>();
+    for (const d of demandas) {
+      const key = (d.contato ?? "").trim().toLowerCase();
+      if (!key) continue;
+      map.set(key, (map.get(key) ?? 0) + 1);
+    }
+    return map;
+  }, [demandas]);
+  const contacts = useMemo(
+    () =>
+      raw.map((c, i) => {
+        const ui = mapContato(c, i);
+        ui.demands = demandCountByContact.get((c.nome ?? "").trim().toLowerCase()) ?? 0;
+        return ui;
+      }),
+    [raw, demandCountByContact],
+  );
 
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedContact, setSelectedContact] = useState<UIContact | null>(null);
