@@ -234,7 +234,8 @@ function EditarDemandaForm({ demanda }: { demanda: Demanda }) {
                     { value: "Sem lembrete", label: "Sem lembrete" },
                     { value: "1 dia antes", label: "1 dia antes" },
                     { value: "3 dias antes", label: "3 dias antes" },
-                    { value: "1 semana antes", label: "1 semana antes" },
+                    { value: "7 dias antes", label: "7 dias antes" },
+                    { value: "15 dias antes", label: "15 dias antes" },
                   ]}
                 />
               </Field>
