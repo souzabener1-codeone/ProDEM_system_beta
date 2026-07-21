@@ -157,6 +157,25 @@ function columnLetter(n: number): string {
   return s;
 }
 
+/** Normalize a date value coming from Sheets to ISO yyyy-mm-dd for the UI. */
+export function parseSheetDate(v: string): string {
+  if (!v) return "";
+  const s = v.trim();
+  const br = /^(\d{2})\/(\d{2})\/(\d{4})$/.exec(s);
+  if (br) return `${br[3]}-${br[2]}-${br[1]}`;
+  if (/^\d{4}-\d{2}-\d{2}$/.test(s)) return s;
+  return s;
+}
+
+/** Format an ISO yyyy-mm-dd date for writing back to Sheets as dd/mm/yyyy. */
+export function toSheetDate(v: string): string {
+  if (!v) return "";
+  const s = v.trim();
+  const iso = /^(\d{4})-(\d{2})-(\d{2})$/.exec(s);
+  if (iso) return `${iso[3]}/${iso[2]}/${iso[1]}`;
+  return s;
+}
+
 /** Find a row by matching a column value; returns the row + its grid row number. */
 export function findRowById(
   rows: Record<string, string>[],
