@@ -91,11 +91,35 @@ function initials(name: string) {
 
 function Contatos() {
   const listFn = useServerFn(listContatos);
+  const listDemandasFn = useServerFn(listDemandas);
   const { data: raw = [] } = useQuery({
     queryKey: ["contatos"],
     queryFn: () => listFn(),
   });
-  const contacts = useMemo(() => raw.map(mapContato), [raw]);
+  const { data: demandas = [] } = useQuery({
+    queryKey: ["demandas"],
+    queryFn: () => listDemandasFn(),
+    refetchInterval: 15000,
+    refetchOnWindowFocus: true,
+  });
+  const demandCountByContact = useMemo(() => {
+    const map = new Map<string, number>();
+    for (const d of demandas) {
+      const key = (d.contato ?? "").trim().toLowerCase();
+      if (!key) continue;
+      map.set(key, (map.get(key) ?? 0) + 1);
+    }
+    return map;
+  }, [demandas]);
+  const contacts = useMemo(
+    () =>
+      raw.map((c, i) => {
+        const ui = mapContato(c, i);
+        ui.demands = demandCountByContact.get((c.nome ?? "").trim().toLowerCase()) ?? 0;
+        return ui;
+      }),
+    [raw, demandCountByContact],
+  );
 
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedContact, setSelectedContact] = useState<UIContact | null>(null);
