@@ -77,6 +77,62 @@ function statusToStepId(status: string): string {
   }
 }
 
+function formatDateTime(date: string): string {
+  if (!date) return "";
+  const d = new Date(date + "T00:00:00");
+  if (isNaN(d.getTime())) return "";
+  return d.toLocaleDateString("pt-BR");
+}
+
+function buildHistorico({
+  dataSolicitacao,
+  vencimento,
+  responsavel,
+  status,
+}: {
+  dataSolicitacao: string;
+  vencimento: string;
+  responsavel: string;
+  status: string;
+}) {
+  const autor = responsavel || "—";
+  const steps = [
+    {
+      id: "criacao",
+      title: "Criação",
+      author: autor,
+      date: formatDateTime(dataSolicitacao),
+      note: 'Demanda registrada com status "Pendente"',
+    },
+    {
+      id: "em-progresso",
+      title: "Em Progresso",
+      author: status === "Em Andamento" ? autor : undefined,
+      note:
+        status === "Em Andamento"
+          ? "Atendimento em andamento pelo responsável"
+          : "Aguardando início do atendimento",
+    },
+    {
+      id: "aguardando-retorno",
+      title: "Aguardando Retorno",
+      author: status === "Aguardando Retorno" ? autor : undefined,
+      note:
+        status === "Aguardando Retorno"
+          ? "Aguardando retorno do responsável"
+          : "—",
+    },
+    {
+      id: "concluida",
+      title: "Concluída",
+      author: status === "Concluída" ? autor : undefined,
+      date: status === "Concluída" ? formatDateTime(vencimento) : undefined,
+      note: status === "Concluída" ? "Demanda finalizada" : "Pendente de conclusão",
+    },
+  ];
+  return steps;
+}
+
 function EditarDemanda() {
   const { id } = Route.useParams();
   const listDemFn = useServerFn(listDemandas);
