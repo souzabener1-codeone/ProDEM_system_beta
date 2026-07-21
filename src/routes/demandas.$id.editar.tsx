@@ -157,8 +157,9 @@ function EditarDemandaForm({ demanda }: { demanda: Demanda }) {
           responsavel,
         },
       }),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["demandas"] });
+    onSuccess: async () => {
+      await queryClient.invalidateQueries({ queryKey: ["demandas"] });
+      await queryClient.refetchQueries({ queryKey: ["demandas"], type: "active" });
       toast.success("Demanda atualizada com sucesso!");
       navigate({ to: "/demandas" });
     },
