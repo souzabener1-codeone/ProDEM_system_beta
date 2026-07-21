@@ -51,7 +51,7 @@ type UIDemand = {
   contact: string;
   request: string;
   category: string;
-  priority: "Alta" | "Média" | "Baixa";
+  priority: string;
   status: "pending" | "in-progress" | "waiting" | "done" | "overdue" | "cancelled";
   statusLabel: string;
   date: string;
