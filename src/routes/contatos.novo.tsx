@@ -89,6 +89,16 @@ function NovoContato() {
   const [cepLoading, setCepLoading] = useState(false);
   const [confirmOpen, setConfirmOpen] = useState(false);
 
+  const mutation = useMutation({
+    mutationFn: createFn,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["contatos"] });
+      toast.success("Contato salvo com sucesso!");
+      navigate({ to: "/contatos" });
+    },
+    onError: (err: Error) => toast.error(err.message || "Erro ao salvar"),
+  });
+
   const { status: cepStatus, data: cepData, errorMessage: cepError, lookupCep } = useCepLookup();
 
   useEffect(() => {
