@@ -187,8 +187,9 @@ function Demandas() {
   const filteredDemands = useMemo(() => {
     const f = applied;
     const s = f.search.trim().toLowerCase();
-    const di = f.dataInicial ? new Date(f.dataInicial).getTime() : null;
-    const df = f.dataFinal ? new Date(f.dataFinal).getTime() + 86_400_000 - 1 : null;
+    const di = f.dataInicial ? parseISOLocal(f.dataInicial).getTime() : null;
+    const df = f.dataFinal ? parseISOLocal(f.dataFinal).getTime() + 86_400_000 - 1 : null;
+
     const catLabelMap: Record<string, string> = {
       oficio: "Ofício", indicacao: "Indicação", requerimento: "Requerimento",
       emenda: "Emenda", projeto_lei: "Projeto de Lei", mensagem: "Mensagem",
