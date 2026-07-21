@@ -263,7 +263,7 @@ function EditarDemandaForm({ demanda }: { demanda: Demanda }) {
             </div>
           </div>
 
-          <MovimentacaoStepper currentStepId={status === "Concluída" || status === "concluida" ? "concluida" : "em-progresso"} />
+          <MovimentacaoStepper currentStepId={statusToStepId(status)} />
         </div>
       </div>
 
