@@ -296,6 +296,8 @@ function Demandas() {
         <div id="filters-panel" className="space-y-3">
         <ContactAutocomplete
           placeholder="Buscar por código, nome, email ou telefone…"
+          value={draft.search}
+          onChange={(v) => setDraftField("search", v)}
           options={demands.map((d) => ({
             value: String(d.id),
             label: d.request,
@@ -306,18 +308,24 @@ function Demandas() {
           <FilterField label="Data Inicial">
             <input
               type="date"
+              value={draft.dataInicial}
+              onChange={(e) => setDraftField("dataInicial", e.target.value)}
               className="w-full rounded-[10px] border-0 bg-white px-3 py-2 text-sm text-slate-500 focus:outline-none focus:ring-2 focus:ring-brand-blue"
             />
           </FilterField>
           <FilterField label="Data Final">
             <input
               type="date"
+              value={draft.dataFinal}
+              onChange={(e) => setDraftField("dataFinal", e.target.value)}
               className="w-full rounded-[10px] border-0 bg-white px-3 py-2 text-sm text-slate-500 focus:outline-none focus:ring-2 focus:ring-brand-blue"
             />
           </FilterField>
           <FilterField label="Categoria">
             <MultiSelect
               placeholder="Todas"
+              value={draft.categoria}
+              onChange={(v) => setDraftField("categoria", v)}
               options={[
                 { value: "oficio", label: "Ofício" },
                 { value: "indicacao", label: "Indicação" },
@@ -332,6 +340,8 @@ function Demandas() {
           <FilterField label="Prioridade">
             <MultiSelect
               placeholder="Todas"
+              value={draft.prioridade}
+              onChange={(v) => setDraftField("prioridade", v)}
               options={[
                 { value: "alta", label: "Alta" },
                 { value: "media", label: "Média" },
@@ -342,6 +352,8 @@ function Demandas() {
           <FilterField label="Status">
             <MultiSelect
               placeholder="Todos"
+              value={draft.status}
+              onChange={(v) => setDraftField("status", v)}
               options={[
                 { value: "pendente", label: "Pendente" },
                 { value: "em_andamento", label: "Em Andamento" },
@@ -355,6 +367,8 @@ function Demandas() {
           <FilterField label="Ordenar por">
             <MultiSelect
               placeholder="Vencimento"
+              value={draft.ordenar}
+              onChange={(v) => setDraftField("ordenar", v.slice(-1))}
               options={[
                 { value: "vencimento", label: "Vencimento" },
                 { value: "criacao", label: "Data de criação" },
@@ -366,6 +380,8 @@ function Demandas() {
           <FilterField label="Tipo Contato">
             <MultiSelect
               placeholder="Todos"
+              value={draft.tipoContato}
+              onChange={(v) => setDraftField("tipoContato", v)}
               options={[
                 { value: "parlamentar", label: "Parlamentar" },
                 { value: "autoridade", label: "Autoridade" },
@@ -376,14 +392,25 @@ function Demandas() {
             />
           </FilterField>
           <FilterField label="Cidade">
-            <MultiSelect placeholder="Todas" options={[]} />
+            <MultiSelect
+              placeholder="Todas"
+              value={draft.cidade}
+              onChange={(v) => setDraftField("cidade", v)}
+              options={cidadeOptions}
+            />
           </FilterField>
           <FilterField label="Bairro">
-            <MultiSelect placeholder="Todos" options={[]} />
+            <MultiSelect
+              placeholder="Todos"
+              value={draft.bairro}
+              onChange={(v) => setDraftField("bairro", v)}
+              options={[]}
+            />
           </FilterField>
           <div className="flex items-end gap-2">
             <button
               type="button"
+              onClick={() => setApplied(draft)}
               aria-label="Aplicar filtros"
               className="inline-flex h-10 w-10 items-center justify-center rounded-full bg-brand-orange text-white transition-transform hover:brightness-110 active:scale-95"
             >
@@ -391,6 +418,7 @@ function Demandas() {
             </button>
             <button
               type="button"
+              onClick={() => { setDraft(emptyFilters); setApplied(emptyFilters); }}
               aria-label="Limpar filtros"
               className="inline-flex h-10 w-10 items-center justify-center rounded-full bg-slate-500 text-white transition-transform hover:brightness-110 active:scale-95"
             >
