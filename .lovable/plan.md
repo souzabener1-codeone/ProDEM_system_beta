@@ -1,39 +1,39 @@
-## Problema
+## Diagnóstico
 
-Na lista de demandas, o **Vencimento** aparece antes da **Data Solicitação** (ex.: solicitação 19/07/2026, vencimento 17/07/2026). Isso ocorre porque:
+As datas editadas não persistem porque há uma **incompatibilidade de formato** entre o que a planilha devolve e o que o app envia:
 
-1. Em `demandas.$id.editar.tsx`, o formulário não expõe os campos "Dias Estimados" nem recalcula `vencimento`. Ao salvar, envia `vencimento: demanda.vencimento` (valor antigo), mesmo quando o usuário altera a Data da Solicitação — mantendo vencimento defasado/incoerente.
-2. Em `demandas.novo.tsx`, se o usuário deixa a Data da Solicitação em branco, o código usa `hoje` como solicitação, mas o `vencimento` exibido/enviado é calculado a partir de uma data vazia até o submit — se o usuário digitar dias negativos ou datas antigas, o vencimento pode ficar antes da solicitação.
+1. O app grava datas como `"2026-07-24"` (ISO `yyyy-mm-dd`) via `valueInputOption=USER_ENTERED`. O Google Sheets interpreta como data e passa a exibir como `24/07/2026` (formato pt-BR).
+2. Ao reler, `readSheet` traz o valor formatado (`"24/07/2026"`). Esse valor volta para `Demanda.dataSolicitacao` / `vencimento`.
+3. No formulário de edição, `<input type="date">` **não aceita** `"24/07/2026"` → o campo aparece vazio. Se o usuário salvar sem redigitar, o app envia `dataSolicitacao: ""` e `computeVencimento("", n) → ""`, apagando/desalinhando as datas.
+4. Também explica o caso da imagem (solicitação 19/07 × vencimento 17/07): edições anteriores gravaram vencimento vazio ou recalculado sobre uma data-base inválida.
+
+Não confirmei via query ao vivo qual das duas pontas está no formato "errado"; o primeiro passo do plano é justamente logar/verificar isso antes de aplicar a normalização.
 
 ## Correções
 
-### 1. `src/routes/demandas.$id.editar.tsx`
-- Adicionar estado `diasEstimados` (número, default calculado a partir da diferença entre `demanda.vencimento` e `demanda.dataSolicitacao`, senão 5).
-- Ligar o input "Dias Estimados" (hoje é `defaultValue`, sem controle) ao estado.
-- Criar helper `computeVencimento(base, dias)` (mesma lógica de `novo`).
-- No `mutation`, enviar `vencimento: computeVencimento(dataSolicitacao, diasEstimados)` em vez de `demanda.vencimento`.
-- Mostrar preview "Vencimento previsto: dd/mm/aaaa" abaixo do campo Data Solicitação.
+### 1. `src/lib/google/sheets.server.ts` (leitura)
+- Continuar lendo com `FORMATTED_VALUE` (default), mas adicionar helper `parseSheetDate(v)`:
+  - Se casar `^\d{2}/\d{2}/\d{4}$` → converter para `yyyy-mm-dd`.
+  - Se já for `yyyy-mm-dd` → devolver como está.
+  - Caso contrário → devolver original.
+- Não aplicar globalmente; expor o helper.
 
-### 2. `src/routes/demandas.novo.tsx`
-- Garantir `diasEstimados >= 0` (clamp no `onChange`).
-- Recalcular `vencimentoCalculado` a partir de `dataSolicitacao || hoje` para que o preview e o valor enviado sejam sempre coerentes com a solicitação efetiva.
+### 2. `src/lib/demandas.functions.ts`
+- Em `toDemanda`, passar `dataSolicitacao` e `vencimento` por `parseSheetDate` → UI sempre recebe ISO `yyyy-mm-dd`, compatível com `<input type="date">`.
+- Em `buildRow`, formatar `dataSolicitacao` e `vencimento` para `dd/mm/yyyy` antes de enviar (helper `toSheetDate`), para que a planilha armazene de forma consistente sem depender do parse locale-dependente do Sheets.
+- Aplicar o mesmo tratamento também em `contatos.functions.ts` **apenas se** tiver campos de data equivalentes — verificar antes; não alterar se não houver.
 
-Nenhuma outra alteração de UI, lógica de negócio ou schema.
+### 3. `src/routes/demandas.$id.editar.tsx` (defensivo)
+- Antes de popular `useState(demanda.dataSolicitacao)`, passar por `parseSheetDate` (helper local pequeno, mesma regex) — garante que, mesmo se algum registro legado ainda estiver em `dd/mm/yyyy`, o input abre preenchido.
+- Reaproveitar o mesmo helper para `inferDias()`.
 
-## Detalhes técnicos
+### 4. `src/routes/demandas.novo.tsx`
+- Nenhuma mudança de UX. Só confirmar que o valor enviado passa pelo `toSheetDate` centralizado em `demandas.functions.ts` (o form continua trabalhando em ISO internamente).
 
-```ts
-const computeVencimento = (base: string, dias: number) => {
-  if (!base) return "";
-  const d = new Date(base + "T00:00:00");
-  if (isNaN(d.getTime())) return "";
-  d.setDate(d.getDate() + Math.max(0, Number.isFinite(dias) ? dias : 0));
-  return d.toISOString().slice(0, 10);
-};
-```
+### 5. Verificação
+- Após aplicar: abrir uma demanda existente na tela de edição e confirmar que os campos "Data Solicitação" e "Vencimento previsto" aparecem preenchidos.
+- Alterar a data, salvar, e conferir na Lista de Demandas que a nova data aparece e que vencimento = solicitação + diasEstimados (nunca anterior).
+- Criar uma nova demanda e repetir a verificação.
 
-Inferência de `diasEstimados` inicial na edição:
-```ts
-const diff = (new Date(v) - new Date(s)) / 86400000;
-const initial = Number.isFinite(diff) && diff >= 0 ? Math.round(diff) : 5;
-```
+## Fora do escopo
+- Nenhuma mudança de layout, colunas da tabela, filtros, cálculo de KPIs, RLS, políticas ou schema. Apenas normalização de datas no ciclo leitura/escrita da planilha e o parse defensivo na tela de edição.

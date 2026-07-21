@@ -38,6 +38,22 @@ export type Demanda = {
   responsavel: string;
 };
 
+function normalizeDateForUI(v: string): string {
+  if (!v) return "";
+  const s = v.trim();
+  const br = /^(\d{2})\/(\d{2})\/(\d{4})$/.exec(s);
+  if (br) return `${br[3]}-${br[2]}-${br[1]}`;
+  return s;
+}
+
+function normalizeDateForSheet(v: string): string {
+  if (!v) return "";
+  const s = v.trim();
+  const iso = /^(\d{4})-(\d{2})-(\d{2})$/.exec(s);
+  if (iso) return `${iso[3]}/${iso[2]}/${iso[1]}`;
+  return s;
+}
+
 function toDemanda(row: DemandaRow, rowNumber: number): Demanda {
   return {
     rowNumber,
@@ -46,8 +62,8 @@ function toDemanda(row: DemandaRow, rowNumber: number): Demanda {
     contato: row["Contato"] ?? "",
     cidade: row["Cidade"] ?? "",
     descricao: row["Descrição"] ?? "",
-    dataSolicitacao: row["Data Solicitação"] ?? "",
-    vencimento: row["Vencimento"] ?? "",
+    dataSolicitacao: normalizeDateForUI(row["Data Solicitação"] ?? ""),
+    vencimento: normalizeDateForUI(row["Vencimento"] ?? ""),
     observacoes: row["Observações"] ?? "",
     prioridade: row["Prioridade"] ?? "",
     status: row["Status"] ?? "",
@@ -77,8 +93,8 @@ function buildRow(input: z.infer<typeof demandaInput>): DemandaRow {
     "Contato": input.contato,
     "Cidade": input.cidade,
     "Descrição": input.descricao,
-    "Data Solicitação": input.dataSolicitacao,
-    "Vencimento": input.vencimento,
+    "Data Solicitação": normalizeDateForSheet(input.dataSolicitacao),
+    "Vencimento": normalizeDateForSheet(input.vencimento),
     "Observações": input.observacoes,
     "Prioridade": input.prioridade,
     "Status": input.status,
