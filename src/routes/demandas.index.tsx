@@ -298,7 +298,7 @@ function Demandas() {
           placeholder="Buscar por código, nome, email ou telefone…"
           value={draft.search}
           onChange={(v) => setDraftField("search", v)}
-          options={demands.map((d) => ({
+          options={filteredDemands.map((d) => ({
             value: String(d.id),
             label: d.request,
             sublabel: `#${d.id} • ${d.contact}`,
@@ -439,7 +439,7 @@ function Demandas() {
               <button
                 type="button"
                 onClick={() => {
-                  const rows = demands.map((d) => ({
+                  const rows = filteredDemands.map((d) => ({
                     titulo: d.raw.titulo || "-",
                     categoria: d.raw.categoria || "-",
                     contato: d.raw.contato || "-",
@@ -466,7 +466,7 @@ function Demandas() {
               <button
                 type="button"
                 onClick={() => {
-                  const rows = demands.map((d) => ({
+                  const rows = filteredDemands.map((d) => ({
                     titulo: d.raw.titulo || "-",
                     categoria: d.raw.categoria || "-",
                     contato: d.raw.contato || "-",
@@ -509,7 +509,7 @@ function Demandas() {
               </tr>
             </thead>
             <tbody>
-              {demands.map((d) => (
+              {filteredDemands.map((d) => (
                 <tr key={d.id} className="border-t border-border transition-colors hover:bg-slate-50">
                   <td className="px-5 py-3.5">
                     <div className="font-semibold text-foreground">{d.request}</div>
