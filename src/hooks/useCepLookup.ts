@@ -36,65 +36,18 @@ function isValidCepLength(cep: string): boolean {
 }
 
 const DEBOUNCE_MS = 400;
-const REQUEST_TIMEOUT_MS = 5000;
 
-async function fetchWithTimeout(url: string, timeoutMs: number): Promise<Response> {
-  const controller = new AbortController();
-  const timer = setTimeout(() => controller.abort(), timeoutMs);
-  try {
-    return await fetch(url, { signal: controller.signal });
-  } finally {
-    clearTimeout(timer);
-  }
-}
-
-async function fetchFromViaCep(cep: string): Promise<AddressData | null> {
-  const res = await fetchWithTimeout(`https://viacep.com.br/ws/${cep}/json/`, REQUEST_TIMEOUT_MS);
-  if (!res.ok) return null;
-  const data = (await res.json()) as {
-    erro?: boolean;
-    cep?: string;
-    logradouro?: string;
-    bairro?: string;
-    localidade?: string;
-    uf?: string;
-    complemento?: string;
-  };
-  if (data.erro) return null;
-  return {
-    cep: data.cep ?? cep,
-    logradouro: data.logradouro ?? "",
-    bairro: data.bairro ?? "",
-    cidade: data.localidade ?? "",
-    uf: data.uf ?? "",
-    complemento: data.complemento,
-  };
-}
-
-async function fetchFromBrasilApi(cep: string): Promise<AddressData | null> {
-  const res = await fetchWithTimeout(
-    `https://brasilapi.com.br/api/cep/v2/${cep}`,
-    REQUEST_TIMEOUT_MS,
-  );
-  if (!res.ok) return null;
-  const data = (await res.json()) as {
-    cep?: string;
-    street?: string;
-    neighborhood?: string;
-    city?: string;
-    state?: string;
-  };
-  return {
-    cep: data.cep ?? cep,
-    logradouro: data.street ?? "",
-    bairro: data.neighborhood ?? "",
-    cidade: data.city ?? "",
-    uf: data.state ?? "",
-  };
+interface LookupCepResponse {
+  found: boolean;
+  source?: "viacep" | "brasilapi";
+  address?: AddressData;
+  message?: string;
+  error?: string;
 }
 
 // ============================================================
-// Hook — ViaCEP with BrasilAPI fallback (client-side, CORS-safe)
+// Hook — chama o proxy interno /api/public/lookup-cep
+// (ViaCEP + fallback BrasilAPI executados no servidor)
 // ============================================================
 
 export function useCepLookup(): UseCepLookupResult {
@@ -118,21 +71,28 @@ export function useCepLookup(): UseCepLookupResult {
     setErrorMessage(null);
 
     try {
-      let address = await fetchFromViaCep(cep).catch(() => null);
-      if (!address) {
-        address = await fetchFromBrasilApi(cep).catch(() => null);
-      }
+      const res = await fetch("/api/public/lookup-cep", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ cep }),
+      });
 
       if (currentRequestId !== requestId.current) return;
 
-      if (!address) {
+      const response = (await res.json().catch(() => null)) as LookupCepResponse | null;
+
+      if (!res.ok || !response) {
+        throw new Error(response?.error ?? `HTTP ${res.status}`);
+      }
+
+      if (!response.found || !response.address) {
         setStatus("not_found");
         setData(null);
         setErrorMessage("CEP não encontrado. Preencha o endereço manualmente.");
         return;
       }
 
-      setData(address);
+      setData(response.address);
       setStatus("success");
     } catch (err) {
       if (currentRequestId !== requestId.current) return;
