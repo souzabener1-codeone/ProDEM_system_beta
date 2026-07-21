@@ -104,6 +104,7 @@ function NovaDemanda() {
 
   const handleConfirmSave = () => {
     setConfirmOpen(false);
+    const today = new Date().toISOString().slice(0, 10);
     mutation.mutate({
       data: {
         titulo,
@@ -111,7 +112,7 @@ function NovaDemanda() {
         contato: contatoVinculado,
         cidade: "",
         descricao,
-        dataSolicitacao: prazo,
+        dataSolicitacao: today,
         vencimento: prazo,
         observacoes,
         prioridade,
