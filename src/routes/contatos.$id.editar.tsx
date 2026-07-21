@@ -1,10 +1,13 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { X, Save, UserCog } from "@/components/icons";
-import { useState, type ReactNode } from "react";
+import { useMemo, useState, type ReactNode } from "react";
 import { toast } from "sonner";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { useServerFn } from "@tanstack/react-start";
 import { AppLayout } from "@/components/layout/AppLayout";
 import { PageHeader } from "@/components/layout/PageHeader";
 import { SimpleSelect } from "@/components/ui/SimpleSelect";
+import { listContatos, updateContato, type Contato } from "@/lib/contatos.functions";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -36,7 +39,7 @@ export const Route = createFileRoute("/contatos/$id/editar")({
       { name: "description", content: "Edição de contato no PRODEM." },
     ],
   }),
-  component: EditarContato,
+  component: EditarContatoRoute,
 });
 
 function Field({
@@ -64,14 +67,63 @@ const inputCls =
 const textareaCls =
   "w-full rounded-[16px] border border-slate-200 bg-slate-50/50 px-4 py-3 text-sm text-foreground placeholder:text-slate-400 focus:border-brand-blue focus:bg-white focus:outline-none focus:ring-2 focus:ring-brand-blue/20 transition-all";
 
-function EditarContato() {
+function EditarContatoRoute() {
+  const { id } = Route.useParams();
+  const listFn = useServerFn(listContatos);
+  const { data: contatos, isLoading } = useQuery({
+    queryKey: ["contatos"],
+    queryFn: () => listFn(),
+  });
+
+  const contato = contatos?.find((c) => c.id === id);
+
+  if (isLoading) {
+    return (
+      <AppLayout>
+        <PageHeader icon={UserCog} title="Editar Contato" subtitle="Carregando dados do contato…" />
+      </AppLayout>
+    );
+  }
+
+  if (!contato) {
+    return (
+      <AppLayout>
+        <PageHeader icon={UserCog} title="Editar Contato" subtitle="Contato não encontrado" />
+        <div className="rounded-[24px] border border-border bg-white p-8 text-sm text-slate-600 shadow-sm">
+          Não foi possível localizar o contato solicitado.{" "}
+          <Link to="/contatos" className="text-brand-blue underline">
+            Voltar para a lista
+          </Link>
+          .
+        </div>
+      </AppLayout>
+    );
+  }
+
+  return <EditarContatoForm contato={contato} />;
+}
+
+function parseLocalizacao(raw: string): { cidade: string; estado: string } {
+  if (!raw) return { cidade: "", estado: "" };
+  const [cidade = "", estado = ""] = raw.split("/").map((s) => s.trim());
+  return { cidade, estado };
+}
+
+function EditarContatoForm({ contato }: { contato: Contato }) {
   const navigate = useNavigate();
-  const [tipoContato, setTipoContato] = useState("Cidadão");
-  const [cep, setCep] = useState("00000-000");
+  const queryClient = useQueryClient();
+  const updateFn = useServerFn(updateContato);
+
+  const initialLoc = useMemo(() => parseLocalizacao(contato.localizacao), [contato.localizacao]);
+
+  const [nome, setNome] = useState(contato.nome);
+  const [tipoContato, setTipoContato] = useState(contato.tipo || "Cidadão");
+  const [telefone, setTelefone] = useState(contato.telefone);
+  const [cep, setCep] = useState("");
   const [endereco, setEndereco] = useState("");
   const [bairro, setBairro] = useState("");
-  const [cidade, setCidade] = useState("Castanhal");
-  const [estado, setEstado] = useState("");
+  const [cidade, setCidade] = useState(initialLoc.cidade);
+  const [estado, setEstado] = useState(initialLoc.estado);
   const [complemento, setComplemento] = useState("");
   const [cepLoading, setCepLoading] = useState(false);
   const [confirmOpen, setConfirmOpen] = useState(false);
@@ -100,6 +152,28 @@ function EditarContato() {
     }
   };
 
+  const mutation = useMutation({
+    mutationFn: () =>
+      updateFn({
+        data: {
+          id: contato.id,
+          codigo: contato.codigo,
+          nome,
+          tipo: tipoContato,
+          telefone,
+          localizacao: [cidade, estado].filter(Boolean).join("/"),
+        },
+      }),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["contatos"] });
+      toast.success("Contato atualizado com sucesso!");
+      navigate({ to: "/contatos" });
+    },
+    onError: (err) => {
+      toast.error(err instanceof Error ? err.message : "Erro ao atualizar contato");
+    },
+  });
+
   const handleFormSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setConfirmOpen(true);
@@ -107,8 +181,7 @@ function EditarContato() {
 
   const handleConfirmSave = () => {
     setConfirmOpen(false);
-    toast.success("Contato atualizado com sucesso!");
-    navigate({ to: "/contatos" });
+    mutation.mutate();
   };
 
   return (
@@ -128,7 +201,12 @@ function EditarContato() {
             <div className="grid gap-x-6 gap-y-5 md:grid-cols-2">
               <div className="md:col-span-2">
                 <Field label="Nome Completo" required>
-                  <input className={inputCls} defaultValue="Amanda - Beleza no Espectro" placeholder="Digite o nome completo" />
+                  <input
+                    className={inputCls}
+                    value={nome}
+                    onChange={(e) => setNome(e.target.value)}
+                    placeholder="Digite o nome completo"
+                  />
                 </Field>
               </div>
               <Field label="Tipo de Contato" required>
@@ -139,8 +217,8 @@ function EditarContato() {
                   options={contactTypes}
                 />
               </Field>
-              <Field label="CPF/CNPJ">
-                <input className={inputCls} defaultValue="000.000.000-00" placeholder="000.000.000-00" />
+              <Field label="Código">
+                <input className={inputCls} value={contato.codigo} readOnly />
               </Field>
             </div>
           </section>
@@ -151,10 +229,15 @@ function EditarContato() {
             <hr className="mb-6 mt-3 border-slate-100" />
             <div className="grid gap-x-6 gap-y-5 md:grid-cols-2">
               <Field label="Telefone">
-                <input className={inputCls} defaultValue="(00) 00000-0000" placeholder="(00) 00000-0000" />
+                <input
+                  className={inputCls}
+                  value={telefone}
+                  onChange={(e) => setTelefone(e.target.value)}
+                  placeholder="(00) 00000-0000"
+                />
               </Field>
               <Field label="Email">
-                <input type="email" className={inputCls} defaultValue="email@exemplo.com" placeholder="email@exemplo.com" />
+                <input type="email" className={inputCls} placeholder="email@exemplo.com" />
               </Field>
             </div>
           </section>
@@ -250,7 +333,6 @@ function EditarContato() {
               <textarea
                 rows={4}
                 className={textareaCls}
-                defaultValue="Amiga da deputada"
                 placeholder="Observações adicionais sobre o contato..."
               />
             </Field>
@@ -268,10 +350,11 @@ function EditarContato() {
           </Link>
           <button
             type="submit"
-            className="inline-flex items-center gap-2 rounded-full bg-brand-blue px-6 py-2.5 text-sm font-semibold text-white shadow-sm transition-all hover:bg-brand-blue-strong active:scale-[0.98]"
+            disabled={mutation.isPending}
+            className="inline-flex items-center gap-2 rounded-full bg-brand-blue px-6 py-2.5 text-sm font-semibold text-white shadow-sm transition-all hover:bg-brand-blue-strong active:scale-[0.98] disabled:opacity-60"
           >
             <Save className="h-4 w-4" />
-            Atualizar Contato
+            {mutation.isPending ? "Atualizando..." : "Atualizar Contato"}
           </button>
         </div>
       </form>
