@@ -349,7 +349,15 @@ function EditarDemandaForm({ demanda }: { demanda: Demanda }) {
             </div>
           </div>
 
-          <MovimentacaoStepper currentStepId={statusToStepId(status)} />
+          <MovimentacaoStepper
+            currentStepId={statusToStepId(status)}
+            steps={buildHistorico({
+              dataSolicitacao,
+              vencimento: vencimentoCalculado,
+              responsavel,
+              status,
+            })}
+          />
         </div>
       </div>
 
