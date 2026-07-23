@@ -149,6 +149,15 @@ function NovaDemanda() {
         onSubmit={handleFormSubmit}
         className="rounded-[24px] border border-border bg-white p-8 shadow-sm"
       >
+        {showSuccess && (
+          <Alert className="mb-6 border-none bg-green-600/10 text-green-600 dark:bg-green-400/10 dark:text-green-400">
+            <Check />
+            <AlertTitle>Demanda Salva com sucesso</AlertTitle>
+            <AlertDescription className="text-green-600/80 dark:text-green-400/80">
+              A demanda foi cadastrada e já está disponível na lista de demandas.
+            </AlertDescription>
+          </Alert>
+        )}
         <div className="space-y-5">
           <Field label="Título da Demanda" required>
             <input className={inputCls} placeholder="Digite o título da demanda" value={titulo} onChange={(e) => setTitulo(e.target.value)} />
