@@ -1,5 +1,6 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
-import { UserPlus, X, Save } from "@/components/icons";
+import { UserPlus, X, Save, Check } from "@/components/icons";
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { useEffect, useState, type ReactNode } from "react";
 import { toast } from "sonner";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
@@ -88,13 +89,14 @@ function NovoContato() {
   const [complemento, setComplemento] = useState("");
   const [cepLoading, setCepLoading] = useState(false);
   const [confirmOpen, setConfirmOpen] = useState(false);
+  const [showSuccess, setShowSuccess] = useState(false);
 
   const mutation = useMutation({
     mutationFn: createFn,
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["contatos"] });
-      toast.success("Contato salvo com sucesso!");
-      navigate({ to: "/contatos" });
+      setShowSuccess(true);
+      setTimeout(() => navigate({ to: "/contatos" }), 1800);
     },
     onError: (err: Error) => toast.error(err.message || "Erro ao salvar"),
   });
@@ -150,6 +152,15 @@ function NovoContato() {
       />
 
       <form onSubmit={handleFormSubmit} className="rounded-[24px] border border-border bg-white p-8 shadow-sm">
+        {showSuccess && (
+          <Alert className="mb-6 border-none bg-green-600/10 text-green-600 dark:bg-green-400/10 dark:text-green-400">
+            <Check />
+            <AlertTitle>Contato Salvo com sucesso</AlertTitle>
+            <AlertDescription className="text-green-600/80 dark:text-green-400/80">
+              O contato foi cadastrado e já está disponível na lista de contatos.
+            </AlertDescription>
+          </Alert>
+        )}
         <div className="space-y-10">
           {/* Dados Pessoais */}
           <section>

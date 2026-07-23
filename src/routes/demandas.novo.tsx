@@ -1,5 +1,6 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
-import { ClipboardList, X, Save } from "@/components/icons";
+import { ClipboardList, X, Save, Check } from "@/components/icons";
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { useState, type ReactNode } from "react";
 import { toast } from "sonner";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
@@ -83,6 +84,7 @@ function NovaDemanda() {
   const [prioridade, setPrioridade] = useState("");
   const [lembrete, setLembrete] = useState("");
   const [confirmOpen, setConfirmOpen] = useState(false);
+  const [showSuccess, setShowSuccess] = useState(false);
 
   const computeVencimento = (baseDate: string, dias: number) => {
     if (!baseDate) return "";
@@ -98,8 +100,8 @@ function NovaDemanda() {
     mutationFn: createFn,
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["demandas"] });
-      toast.success("Demanda salva com sucesso!");
-      navigate({ to: "/demandas" });
+      setShowSuccess(true);
+      setTimeout(() => navigate({ to: "/demandas" }), 1800);
     },
     onError: (err: Error) => toast.error(err.message || "Erro ao salvar"),
   });
@@ -147,6 +149,15 @@ function NovaDemanda() {
         onSubmit={handleFormSubmit}
         className="rounded-[24px] border border-border bg-white p-8 shadow-sm"
       >
+        {showSuccess && (
+          <Alert className="mb-6 border-none bg-green-600/10 text-green-600 dark:bg-green-400/10 dark:text-green-400">
+            <Check />
+            <AlertTitle>Demanda Salva com sucesso</AlertTitle>
+            <AlertDescription className="text-green-600/80 dark:text-green-400/80">
+              A demanda foi cadastrada e já está disponível na lista de demandas.
+            </AlertDescription>
+          </Alert>
+        )}
         <div className="space-y-5">
           <Field label="Título da Demanda" required>
             <input className={inputCls} placeholder="Digite o título da demanda" value={titulo} onChange={(e) => setTitulo(e.target.value)} />
