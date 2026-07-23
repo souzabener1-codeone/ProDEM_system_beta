@@ -89,13 +89,14 @@ function NovoContato() {
   const [complemento, setComplemento] = useState("");
   const [cepLoading, setCepLoading] = useState(false);
   const [confirmOpen, setConfirmOpen] = useState(false);
+  const [showSuccess, setShowSuccess] = useState(false);
 
   const mutation = useMutation({
     mutationFn: createFn,
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["contatos"] });
-      toast.success("Contato salvo com sucesso!");
-      navigate({ to: "/contatos" });
+      setShowSuccess(true);
+      setTimeout(() => navigate({ to: "/contatos" }), 1800);
     },
     onError: (err: Error) => toast.error(err.message || "Erro ao salvar"),
   });
