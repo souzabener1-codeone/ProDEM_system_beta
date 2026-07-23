@@ -84,6 +84,7 @@ function NovaDemanda() {
   const [prioridade, setPrioridade] = useState("");
   const [lembrete, setLembrete] = useState("");
   const [confirmOpen, setConfirmOpen] = useState(false);
+  const [showSuccess, setShowSuccess] = useState(false);
 
   const computeVencimento = (baseDate: string, dias: number) => {
     if (!baseDate) return "";
@@ -99,8 +100,8 @@ function NovaDemanda() {
     mutationFn: createFn,
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["demandas"] });
-      toast.success("Demanda salva com sucesso!");
-      navigate({ to: "/demandas" });
+      setShowSuccess(true);
+      setTimeout(() => navigate({ to: "/demandas" }), 1800);
     },
     onError: (err: Error) => toast.error(err.message || "Erro ao salvar"),
   });
