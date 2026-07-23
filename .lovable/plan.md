@@ -1,25 +1,46 @@
-## Diagnóstico
+## Objetivo
 
-Confirmado em `src/routes/demandas.index.tsx` linhas 34 e 72:
+Ao clicar em **Salvar Demanda** e **Salvar Contato**, exibir uma mensagem de sucesso no estilo do componente `AlertSoftSuccessDemo` (fundo verde suave, ícone `CheckCheck`, título + descrição), no lugar do atual `toast.success`.
 
-```ts
-const d = new Date(iso);         // iso = "2026-07-22"
-return d.toLocaleDateString("pt-BR");
-```
+## Escopo
 
-`new Date("2026-07-22")` (sem hora) é interpretado como **UTC 00:00**. No fuso pt-BR (UTC-3), ao formatar como local, cai para **21/07/2026 21:00** → exibe "21/07/2026". Mesmo bug afeta o vencimento (27 → 26).
+Apenas as duas telas de cadastro:
+- `src/routes/demandas.novo.tsx`
+- `src/routes/contatos.novo.tsx`
 
-Os outros pontos do arquivo (`demandas.$id.editar.tsx`, `demandas.novo.tsx`) já usam o sufixo `"T00:00:00"`, que força interpretação local e evita o shift. Só a lista está errada.
+Nada mais será alterado (telas de edição, layout, lógica de mutation, redirecionamento etc. permanecem iguais).
 
-## Correção
+## Como implementar
 
-### `src/routes/demandas.index.tsx`
-- Nas duas funções que formatam data (linhas ~33-36 e ~71-74), trocar `new Date(iso)` por `new Date(iso + "T00:00:00")` **apenas quando `iso` estiver no formato `yyyy-mm-dd`**. Se já vier em outro formato, manter fallback atual.
-- Também revisar linhas 184-185 e 213 (filtros por intervalo e ordenação), aplicar o mesmo sufixo para evitar off-by-one nos filtros de "Data Inicial/Final".
+1. Em cada arquivo, importar:
+   - `Alert`, `AlertTitle`, `AlertDescription` de `@/components/ui/alert`
+   - `CheckCheck` de `@/components/icons` (mantém consistência com os demais ícones do projeto).
 
-### Verificação
-- Abrir uma demanda com Data Solicitação 22/07/2026 e Vencimento 27/07/2026 → lista deve exibir exatamente 22/07/2026 e 27/07/2026.
-- Filtrar por "Data Inicial = 22/07/2026" deve incluir demandas desse dia.
+2. Adicionar um estado local `showSuccess: boolean`.
+
+3. No `onSuccess` da mutation:
+   - Manter `queryClient.invalidateQueries(...)`.
+   - Remover a chamada `toast.success(...)`.
+   - Setar `showSuccess = true`.
+   - Atrasar o `navigate({ to: "/demandas" | "/contatos" })` em ~1,8s (via `setTimeout`) para o usuário conseguir ler o alerta antes do redirecionamento.
+
+4. Renderizar o `Alert` no topo do formulário quando `showSuccess` for `true`, usando exatamente as classes do exemplo:
+   ```tsx
+   <Alert className="border-none bg-green-600/10 text-green-600 dark:bg-green-400/10 dark:text-green-400 mb-4">
+     <CheckCheck />
+     <AlertTitle>{titulo}</AlertTitle>
+     <AlertDescription className="text-green-600/80 dark:text-green-400/80">
+       {descricao}
+     </AlertDescription>
+   </Alert>
+   ```
+
+   Textos (conforme solicitado pelo usuário):
+   - **Demanda** — título: `Demanda Salva com sucesso` / descrição: `A demanda foi cadastrada e já está disponível na lista de demandas.`
+   - **Contato** — título: `Contato Salvo com sucesso` / descrição: `O contato foi cadastrado e já está disponível na lista de contatos.`
 
 ## Fora do escopo
-Nenhuma mudança em Server Functions, planilha, cálculo de vencimento, layout ou outros arquivos. Apenas o parse de datas ISO na lista de demandas.
+
+- Telas de edição (`Atualizar Demanda` / `Atualizar Contato`) — não alteradas.
+- `AlertDialog` de confirmação prévia — mantido.
+- Mensagens de erro (`toast.error`) — mantidas como estão.
